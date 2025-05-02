@@ -36,13 +36,12 @@ async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
 	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
 	const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
 	const boutWithScores = addScoresToBoutMap(boutRounds, scoreNodeRounds);
-	console.log(boutWithScores[16]);
 	// console.log(JSON.stringify(boutRounds["4"]));
-	return {};
+	return boutWithScores;
 }
 
 namespace LiveResults {
-	export type Tableau = {};
+	export type Tableau = RoundMap<BoutWithScore>;
 	export type FencerNode = {
 		lastName: any;
 		firstName: any;
