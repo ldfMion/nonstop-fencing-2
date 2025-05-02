@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 export async function getTableauData() {
 	const url =
 		"https://www.fencingtimelive.com/tableaus/scores/906625D1D3A8480EB245C3B059A3B06C/72F409219AAB44D4BF5259B79CAABACB/trees/6CD6DB2E13C84D1EBCD52027E402C8B0/tables/0/7";
-	await scrapeTableauPage(url);
+	return scrapeTableauPage(url);
 }
 
 async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
@@ -32,11 +32,9 @@ async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
 	console.log(scoreTextNodes.length);
 	const scoreNodes = scoreTextNodes.map(parseScoreNode);
 	const scoreNodeRounds = filterNodesForRounds(scoreNodes);
-	// console.log(scoreNodeRounds);
 	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
 	const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
 	const boutWithScores = addScoresToBoutMap(boutRounds, scoreNodeRounds);
-	// console.log(JSON.stringify(boutRounds["4"]));
 	return boutWithScores;
 }
 
@@ -97,9 +95,7 @@ function addScoresToBouts(
 	bouts: LiveResults.BoutJustWithFencers[],
 	scores: LiveResults.ScoreNode[]
 ): LiveResults.BoutWithScore[] {
-	console.log(bouts, scores);
 	return bouts.map((bout, index) => {
-		console.log(bout, index);
 		const score = scores[index];
 		assert(score, "Score is undefined");
 		return {
