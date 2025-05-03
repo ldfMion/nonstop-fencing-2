@@ -1,11 +1,69 @@
 import assert from "assert";
 import puppeteer from "puppeteer";
+import type { Fie } from "./fie";
 
-export async function getTableauData() {
+export async function getTableauData(tournamentUrl: string, event: Fie.Event) {
 	// const url = "https://www.fencingtimelive.com/tableaus/scores/906625D1D3A8480EB245C3B059A3B06C/72F409219AAB44D4BF5259B79CAABACB/trees/6CD6DB2E13C84D1EBCD52027E402C8B0/tables/0/7";
-	const url =
-		"https://www.fencingtimelive.com/tableaus/scores/3769F76EFA3E4370AED992957A6C6BCE/A8B41199D3F74E1A9A3C57E71FA43253/trees/5E31594493E94D1594DBB1E7660C9407/tables/0/7";
-	return scrapeTableauPage(url);
+	const eventResultsUrl = await getEventResultsUrl(tournamentUrl, event);
+	const tableauHtmlUrl = await getTableauHtmlUrl(eventResultsUrl);
+	console.log("Event results ftl tableau url: ", tableauHtmlUrl);
+	// const url = "https://www.fencingtimelive.com/tableaus/scores/3769F76EFA3E4370AED992957A6C6BCE/A8B41199D3F74E1A9A3C57E71FA43253/trees/5E31594493E94D1594DBB1E7660C9407/tables/0/7";
+	return scrapeTableauPage(tableauHtmlUrl);
+}
+
+async function getTableauHtmlUrl(eventResultsUrl: string): Promise<string> {
+	// i don't know what these ids are
+	const split = eventResultsUrl.split("/");
+	const lastId = split[split.length - 1];
+	const secondToLastId = split[split.length - 2];
+	const treeIdRequestUrl = `https://www.fencingtimelive.com/tableaus/scores/${secondToLastId}/${lastId}/trees`;
+	const response = await fetch(treeIdRequestUrl);
+	const json = (await response.json()) as any;
+	// TODO probably fix this any
+	const additionalId = json[0].guid;
+	assert(typeof additionalId == "string");
+	return `https://www.fencingtimelive.com/tableaus/scores/${secondToLastId}/${lastId}/trees/${additionalId}/tables/0/7`;
+}
+
+async function getEventResultsUrl(
+	tournamentUrl: string,
+	event: Fie.Event
+): Promise<string> {
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
+	await page.goto(tournamentUrl, { waitUntil: "domcontentloaded" });
+	const eventTitle = `${
+		event.gender == "men" ? "Men's" : "Women's"
+	} ${parseEventWeapon(event.weapon)} (Day 2)`;
+	console.log("Event title: ", eventTitle);
+	const eventResultsUrl = await page.evaluate(text => {
+		// Find elements that contain the text
+		const elements = Array.from(document.querySelectorAll("td>a"));
+		const targetElement = elements.find(element =>
+			element.innerText.includes(text)
+		);
+		return targetElement.href;
+	}, eventTitle);
+	console.log("eventResultsUrl", eventResultsUrl);
+	await page.goto(eventResultsUrl, { waitUntil: "domcontentloaded" });
+	const eventResultsAfterRedirect = page.url();
+	console.log("eventResultsAfterRedirect", eventResultsAfterRedirect);
+	browser.close();
+	assert(typeof eventResultsAfterRedirect == "string");
+	return eventResultsAfterRedirect;
+}
+
+function parseEventWeapon(weapon: string) {
+	switch (weapon) {
+		case "epee":
+			return "Épée";
+		case "foil":
+			return "Foil";
+		case "sabre":
+			return "Saber";
+		default:
+			throw new Error(`Unexpected weapon in fie event data '${weapon}'`);
+	}
 }
 
 async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
@@ -203,9 +261,7 @@ function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
 	let roundNumber: LiveResults.Round = 64;
 	let remaining = nodes;
 	const roundMap: LiveResults.RoundMap<T> = {};
-	console.log("num", remaining.length);
 	while (!isPowerOf2(remaining.length)) {
-		console.log("num", remaining.length);
 		const [round, nextRemaining] = partitionRound(remaining);
 		remaining = nextRemaining;
 		roundMap[roundNumber] = round;

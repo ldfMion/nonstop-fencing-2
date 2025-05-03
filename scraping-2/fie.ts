@@ -1,10 +1,7 @@
 import puppeteer from "puppeteer";
-import assert from "assert";
-
-console.log("Hello, world!");
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
-async function fetchCompetitions() {
+export async function fetchCompetitions() {
 	const body = {
 		competitionCategory: "",
 		fetchPage: 1,
@@ -14,6 +11,7 @@ async function fetchCompetitions() {
 		name: "",
 		season: "2025",
 		status: "passed",
+		// status: "",
 		toDate: "",
 		type: [],
 		weapon: [],
@@ -25,13 +23,17 @@ async function fetchCompetitions() {
 		},
 		body: JSON.stringify(body),
 	});
-	console.log(response);
+	// console.log(response);
 	const data = (await response.json()) as any;
 	return data.items as Fie.Event[];
 }
 
-async function getEventData(event: Fie.Event) {
-	const url = `https://fie.org/competitions/${event.season}/${event.competitionId}`;
+export function getFieEventUrl(event: Fie.Event): string {
+	return `https://fie.org/competitions/${event.season}/${event.competitionId}`;
+}
+
+export async function getEventData(event: Fie.Event) {
+	const url = getFieEventUrl(event);
 
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
@@ -70,7 +72,7 @@ async function getEventData(event: Fie.Event) {
 	return data;
 }
 
-namespace Fie {
+export namespace Fie {
 	export type Tableau = {
 		rounds: Rounds;
 	}[];
@@ -112,10 +114,3 @@ namespace Fie {
 	type Weapon = string;
 	type Category = string;
 }
-
-const events = await fetchCompetitions();
-console.log(events);
-console.log(events[0]);
-const eventData = await getEventData(events[0]);
-assert(eventData[1] != undefined, "No data found");
-console.log(eventData[1].rounds);
