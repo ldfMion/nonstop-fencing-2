@@ -2,8 +2,9 @@ import assert from "assert";
 import puppeteer from "puppeteer";
 
 export async function getTableauData() {
+	// const url = "https://www.fencingtimelive.com/tableaus/scores/906625D1D3A8480EB245C3B059A3B06C/72F409219AAB44D4BF5259B79CAABACB/trees/6CD6DB2E13C84D1EBCD52027E402C8B0/tables/0/7";
 	const url =
-		"https://www.fencingtimelive.com/tableaus/scores/906625D1D3A8480EB245C3B059A3B06C/72F409219AAB44D4BF5259B79CAABACB/trees/6CD6DB2E13C84D1EBCD52027E402C8B0/tables/0/7";
+		"https://www.fencingtimelive.com/tableaus/scores/3769F76EFA3E4370AED992957A6C6BCE/A8B41199D3F74E1A9A3C57E71FA43253/trees/5E31594493E94D1594DBB1E7660C9407/tables/0/7";
 	return scrapeTableauPage(url);
 }
 
@@ -11,25 +12,38 @@ async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
-	const fencerNodes = await page.$$eval(".tbb, .tbbr", els =>
-		els.map((el, index) => ({
-			lastName: el.children[1].innerText,
-			firstName: el.children[2].innerText,
-			countryCode: el.children[3]?.innerText.trim(),
-			seed: el.children[0]?.innerText
-				.replace("(", "")
-				.replace(")", "")
-				.trim(),
-			index: index,
-		}))
-	);
+	const fencerNodes = (
+		await page.$$eval(".tbb, .tbbr", els =>
+			els.map((el, index) =>
+				el.children.length <= 1
+					? null
+					: {
+							lastName: el.children[1].innerText,
+							firstName: el.children[2].innerText,
+							countryCode: el.children[3]?.innerText.trim(),
+							seed: el.children[0]?.innerText
+								.replace("(", "")
+								.replace(")", "")
+								.trim(),
+							index: index,
+					  }
+			)
+		)
+	).filter(node => node != null);
 	const scoreTextNodes = (
 		await page.$$eval(".tscoref", els =>
-			els.map(el => el.children[0]?.innerText.split("\n")[0])
+			els.map(el => {
+				if (el.children.length == 0) {
+					return null;
+				}
+				const textValue = el.children[0].innerText
+					.split("\n")[0]
+					.trim();
+				return textValue || null;
+			})
 		)
 	).filter(el => el != null);
 	browser.close();
-	console.log(scoreTextNodes.length);
 	const scoreNodes = scoreTextNodes.map(parseScoreNode);
 	const scoreNodeRounds = filterNodesForRounds(scoreNodes);
 	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
@@ -39,22 +53,22 @@ async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
 }
 
 namespace LiveResults {
-	export type Tableau = RoundMap<BoutWithScore>;
+	export type Tableau = RoundMap<BoutWithScore | BoutJustWithFencers>;
 	export type FencerNode = {
 		lastName: any;
 		firstName: any;
 		countryCode?: any;
 		seed: any;
 	};
-	type Round = 64 | 32 | 16 | 8 | 4 | 2;
-	export type RoundMap<T> = Record<Round, T[]>;
+	export type Round = 64 | 32 | 16 | 8 | 4 | 2;
+	export type RoundMap<T> = Partial<Record<Round, T[]>>;
 	export type BoutJustWithFencers = {
 		fencer1: Fencer;
 		fencer2: Fencer;
 	};
 	export type BoutWithScore = {
-		fencer1: Fencer;
-		fencer2: Fencer;
+		fencer1: ScoreFencer;
+		fencer2: ScoreFencer;
 		withdrawal?: boolean;
 	};
 	export type Fencer = {
@@ -79,7 +93,9 @@ namespace LiveResults {
 function addScoresToBoutMap(
 	boutRounds: LiveResults.RoundMap<LiveResults.BoutJustWithFencers>,
 	scoreRounds: LiveResults.RoundMap<LiveResults.ScoreNode>
-): LiveResults.RoundMap<LiveResults.BoutWithScore> {
+): LiveResults.RoundMap<
+	LiveResults.BoutWithScore | LiveResults.BoutJustWithFencers
+> {
 	return {
 		"64": addScoresToBouts(boutRounds["64"], scoreRounds["64"]),
 		"32": addScoresToBouts(boutRounds["32"], scoreRounds["32"]),
@@ -92,9 +108,15 @@ function addScoresToBoutMap(
 
 // TODO this function doesn't handle priority in epee and foil
 function addScoresToBouts(
-	bouts: LiveResults.BoutJustWithFencers[],
-	scores: LiveResults.ScoreNode[]
-): LiveResults.BoutWithScore[] {
+	bouts: LiveResults.BoutJustWithFencers[] | undefined,
+	scores: LiveResults.ScoreNode[] | undefined
+): LiveResults.BoutWithScore[] | LiveResults.BoutJustWithFencers[] | undefined {
+	if (bouts == undefined) {
+		return undefined;
+	}
+	if (scores == undefined) {
+		return bouts;
+	}
 	return bouts.map((bout, index) => {
 		const score = scores[index];
 		assert(score, "Score is undefined");
@@ -133,6 +155,7 @@ function getBoutsFromNodeMap(
 }
 
 function parseScoreNode(node: string): LiveResults.ScoreNode {
+	console.log(`score node: '${node}'`);
 	if (node.toLowerCase().includes("opponent withdrew")) {
 		return "opponent-withdrew";
 	}
@@ -143,8 +166,11 @@ function parseScoreNode(node: string): LiveResults.ScoreNode {
 }
 
 function getBoutsFromNodes(
-	nodes: LiveResults.FencerNode[]
-): LiveResults.BoutJustWithFencers[] {
+	nodes: LiveResults.FencerNode[] | undefined
+): LiveResults.BoutJustWithFencers[] | undefined {
+	if (nodes == undefined) {
+		return undefined;
+	}
 	const bouts: LiveResults.BoutJustWithFencers[] = [];
 	for (let i = 0; i < nodes.length; i += 2) {
 		const node1 = nodes[i];
@@ -171,22 +197,27 @@ function getBoutsFromNodes(
 }
 
 function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
-	const [round64, remaining] = partitionRound(nodes);
-	// console.log(round64);
-	// throw new Error("Stop");
-	const [round32, remaining2] = partitionRound(remaining);
-	const [round16, remaining3] = partitionRound(remaining2);
-	const [round8, remaining4] = partitionRound(remaining3);
-	const [round4, remaining5] = partitionRound(remaining4);
-	const [round2, _] = partitionRound(remaining5);
-	return {
-		"64": round64,
-		"32": round32,
-		"16": round16,
-		"8": round8,
-		"4": round4,
-		"2": round2,
-	};
+	if (nodes.length == 0) {
+		return {};
+	}
+	let roundNumber: LiveResults.Round = 64;
+	let remaining = nodes;
+	const roundMap: LiveResults.RoundMap<T> = {};
+	console.log("num", remaining.length);
+	while (!isPowerOf2(remaining.length)) {
+		console.log("num", remaining.length);
+		const [round, nextRemaining] = partitionRound(remaining);
+		remaining = nextRemaining;
+		roundMap[roundNumber] = round;
+		roundNumber = (roundNumber / 2) as LiveResults.Round; // is this a problem?
+		assert((roundNumber as number) != 1);
+	}
+	roundMap[roundNumber] = remaining;
+	return roundMap;
+}
+
+function isPowerOf2(n: number): boolean {
+	return Math.log2(n) % 1 === 0;
 }
 
 function partitionRound<T>(nodes: T[]): [T[], T[]] {
