@@ -1,37 +1,52 @@
 export namespace LiveResults {
-	export type Tableau = RoundMap<BoutWithScore | BoutJustWithFencers>;
-	export type FencerNode = {
-		lastName: any;
-		firstName: any;
-		countryCode?: any;
-		seed: any;
-	} | null;
+	export type Tableau = RoundMap<Bout>;
+	export type FencerNode =
+		| {
+				lastName: any;
+				firstName: any;
+				countryCode?: any;
+				seed: any;
+		  }
+		| "future";
 	export type Round = 64 | 32 | 16 | 8 | 4 | 2;
-	export type RoundMap<T> = Partial<Record<Round, T[]>>;
+	export type RoundMap<T> = Record<Round, T[]>;
 	export type BoutJustWithFencers = {
+		fencer1?: Fencer;
+		fencer2?: Fencer;
+	};
+	export interface Bout {}
+
+	export interface PlannedBout extends Bout {
+		fencer1?: Fencer;
+		fencer2?: Fencer;
+	}
+
+	export interface UnfinishedBout extends Bout {
 		fencer1: Fencer;
 		fencer2: Fencer;
-	};
-	export type BoutWithScore = {
+	}
+
+	export interface FinishedBout extends Bout {
 		fencer1: ScoreFencer;
 		fencer2: ScoreFencer;
 		withdrawal?: boolean;
-	};
-	export type Fencer = {
+	}
+
+	export interface Fencer {
 		firstName: string;
 		lastName: string;
 		countryCode: string;
 		seed: string;
-	};
-	export type ScoreFencer = Fencer & {
+	}
+	export interface ScoreFencer extends Fencer {
 		score: number | null;
-		winner: boolean;
-	};
+	}
 
 	export type ScoreNode =
 		| {
 				fencer1: number;
 				fencer2: number;
 		  }
-		| "opponent-withdrew";
+		| "opponent-withdrew"
+		| "future";
 }

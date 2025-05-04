@@ -11,7 +11,7 @@ export async function scrapeTableauPage(
 	const fencerNodes = await page.$$eval(".tbb, .tbbr", els =>
 		els.map((el, index) =>
 			el.children.length <= 1
-				? null
+				? "future"
 				: {
 						lastName: el.children[1].innerText,
 						firstName: el.children[2].innerText,
@@ -33,14 +33,16 @@ export async function scrapeTableauPage(
 				const textValue = el.children[0].innerText
 					.split("\n")[0]
 					.trim();
-				return textValue || null;
+				return textValue || "future";
 			})
 		)
 	).filter(el => el != null);
+	// console.log("Number of fencerNodes: ", fencerNodes.length);
+	// console.log("Number of scoreTextNodes: ", scoreTextNodes.length);
 	browser.close();
 	const scoreNodes = scoreTextNodes.map(parseScoreNode);
-	const scoreNodeRounds = filterNodesForRounds(scoreNodes);
 	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
+	const scoreNodeRounds = filterNodesForRounds(scoreNodes);
 	const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
 	const boutWithScores = addScoresToBoutMap(boutRounds, scoreNodeRounds);
 	return boutWithScores;
@@ -49,9 +51,7 @@ export async function scrapeTableauPage(
 function addScoresToBoutMap(
 	boutRounds: LiveResults.RoundMap<LiveResults.BoutJustWithFencers>,
 	scoreRounds: LiveResults.RoundMap<LiveResults.ScoreNode>
-): LiveResults.RoundMap<
-	LiveResults.BoutWithScore | LiveResults.BoutJustWithFencers
-> {
+): LiveResults.RoundMap<LiveResults.Bout> {
 	return {
 		"64": addScoresToBouts(boutRounds["64"], scoreRounds["64"]),
 		"32": addScoresToBouts(boutRounds["32"], scoreRounds["32"]),
@@ -64,42 +64,30 @@ function addScoresToBoutMap(
 
 // TODO this function doesn't handle priority in epee and foil
 function addScoresToBouts(
-	bouts: LiveResults.BoutJustWithFencers[] | undefined,
-	scores: LiveResults.ScoreNode[] | undefined
-): LiveResults.BoutWithScore[] | LiveResults.BoutJustWithFencers[] | undefined {
-	if (bouts == undefined) {
-		return undefined;
-	}
-	if (scores == undefined) {
-		return bouts;
-	}
-	return bouts
-		.map((bout, index) => {
-			const score = scores[index];
-			if (!score) {
-				return null;
-			}
-			assert(score, "Score is undefined");
-			return {
-				fencer1: {
-					...bout.fencer1,
-					score: score == "opponent-withdrew" ? null : score.fencer1,
-					winner:
-						score == "opponent-withdrew"
-							? false
-							: score.fencer1 > score.fencer2,
-				},
-				fencer2: {
-					...bout.fencer2,
-					score: score == "opponent-withdrew" ? null : score.fencer2,
-					winner:
-						score == "opponent-withdrew"
-							? false
-							: score.fencer2 > score.fencer1,
-				},
-			};
-		})
-		.filter(el => el != null);
+	bouts: LiveResults.BoutJustWithFencers[],
+	scores: LiveResults.ScoreNode[]
+): LiveResults.Bout[] {
+	return bouts.map((bout, index) => {
+		const score = scores[index];
+		assert(score, "Score is undefined");
+		switch (score) {
+			case "opponent-withdrew":
+				return { ...bout };
+			case "future":
+				return { ...bout };
+			default:
+				return {
+					fencer1: {
+						...bout.fencer1,
+						score: score.fencer1,
+					},
+					fencer2: {
+						...bout.fencer2,
+						score: score.fencer2,
+					},
+				};
+		}
+	});
 }
 
 function getBoutsFromNodeMap(
@@ -116,7 +104,9 @@ function getBoutsFromNodeMap(
 }
 
 function parseScoreNode(node: string): LiveResults.ScoreNode {
-	// console.log(`score node: '${node}'`);
+	if (node == "future") {
+		return "future";
+	}
 	if (node.toLowerCase().includes("opponent withdrew")) {
 		return "opponent-withdrew";
 	}
@@ -127,33 +117,33 @@ function parseScoreNode(node: string): LiveResults.ScoreNode {
 }
 
 function getBoutsFromNodes(
-	nodes: LiveResults.FencerNode[] | undefined
-): LiveResults.BoutJustWithFencers[] | undefined {
-	if (nodes == undefined) {
-		return undefined;
-	}
+	nodes: LiveResults.FencerNode[]
+): LiveResults.BoutJustWithFencers[] {
 	const bouts: LiveResults.BoutJustWithFencers[] = [];
 	for (let i = 0; i < nodes.length; i += 2) {
 		const node1 = nodes[i];
 		const node2 = nodes[i + 1];
-		if (!node1 || !node2) {
-			return bouts;
-		}
 		assert(node1, "Node 1 is undefined");
 		assert(node2, "Node 2 is undefined");
 		const bout = {
-			fencer1: {
-				firstName: node1.firstName,
-				lastName: node1.lastName,
-				countryCode: node1.countryCode,
-				seed: node1.seed,
-			},
-			fencer2: {
-				firstName: node2.firstName,
-				lastName: node2.lastName,
-				countryCode: node2.countryCode,
-				seed: node2.seed,
-			},
+			fencer1:
+				node1 == "future"
+					? undefined
+					: {
+							firstName: node1.firstName,
+							lastName: node1.lastName,
+							countryCode: node1.countryCode,
+							seed: node1.seed,
+					  },
+			fencer2:
+				node2 == "future"
+					? undefined
+					: {
+							firstName: node2.firstName,
+							lastName: node2.lastName,
+							countryCode: node2.countryCode,
+							seed: node2.seed,
+					  },
 		};
 		bouts.push(bout);
 	}
@@ -161,21 +151,20 @@ function getBoutsFromNodes(
 }
 
 function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
-	if (nodes.length == 0) {
-		return {};
-	}
-	let roundNumber: LiveResults.Round = 64;
-	let remaining = nodes;
-	const roundMap: LiveResults.RoundMap<T> = {};
-	while (roundNumber >= 2) {
-		console.log("remaining", remaining);
-		const [round, nextRemaining] = partitionRound(remaining);
-		remaining = nextRemaining;
-		roundMap[roundNumber] = round;
-		roundNumber = (roundNumber / 2) as LiveResults.Round; // is this a problem?
-	}
-	roundMap[roundNumber] = remaining;
-	return roundMap;
+	const [round64, remaining1] = partitionRound(nodes);
+	const [round32, remaining2] = partitionRound(remaining1);
+	const [round16, remaining3] = partitionRound(remaining2);
+	const [round8, remaining4] = partitionRound(remaining3);
+	const [round4, remaining5] = partitionRound(remaining4);
+	const [round2, _] = partitionRound(remaining5);
+	return {
+		"64": round64,
+		"32": round32,
+		"16": round16,
+		"8": round8,
+		"4": round4,
+		"2": round2,
+	};
 }
 
 function partitionRound<T>(nodes: T[]): [T[], T[]] {
