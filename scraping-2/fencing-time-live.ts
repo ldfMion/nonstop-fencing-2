@@ -70,24 +70,22 @@ async function scrapeTableauPage(url: string): Promise<LiveResults.Tableau> {
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
-	const fencerNodes = (
-		await page.$$eval(".tbb, .tbbr", els =>
-			els.map((el, index) =>
-				el.children.length <= 1
-					? null
-					: {
-							lastName: el.children[1].innerText,
-							firstName: el.children[2].innerText,
-							countryCode: el.children[3]?.innerText.trim(),
-							seed: el.children[0]?.innerText
-								.replace("(", "")
-								.replace(")", "")
-								.trim(),
-							index: index,
-					  }
-			)
+	const fencerNodes = await page.$$eval(".tbb, .tbbr", els =>
+		els.map((el, index) =>
+			el.children.length <= 1
+				? null
+				: {
+						lastName: el.children[1].innerText,
+						firstName: el.children[2].innerText,
+						countryCode: el.children[3]?.innerText.trim(),
+						seed: el.children[0]?.innerText
+							.replace("(", "")
+							.replace(")", "")
+							.trim(),
+						index: index,
+				  }
 		)
-	).filter(node => node != null);
+	);
 	const scoreTextNodes = (
 		await page.$$eval(".tscoref", els =>
 			els.map(el => {
@@ -117,7 +115,7 @@ namespace LiveResults {
 		firstName: any;
 		countryCode?: any;
 		seed: any;
-	};
+	} | null;
 	export type Round = 64 | 32 | 16 | 8 | 4 | 2;
 	export type RoundMap<T> = Partial<Record<Round, T[]>>;
 	export type BoutJustWithFencers = {
@@ -175,28 +173,33 @@ function addScoresToBouts(
 	if (scores == undefined) {
 		return bouts;
 	}
-	return bouts.map((bout, index) => {
-		const score = scores[index];
-		assert(score, "Score is undefined");
-		return {
-			fencer1: {
-				...bout.fencer1,
-				score: score == "opponent-withdrew" ? null : score.fencer1,
-				winner:
-					score == "opponent-withdrew"
-						? false
-						: score.fencer1 > score.fencer2,
-			},
-			fencer2: {
-				...bout.fencer2,
-				score: score == "opponent-withdrew" ? null : score.fencer2,
-				winner:
-					score == "opponent-withdrew"
-						? false
-						: score.fencer2 > score.fencer1,
-			},
-		};
-	});
+	return bouts
+		.map((bout, index) => {
+			const score = scores[index];
+			if (!score) {
+				return null;
+			}
+			assert(score, "Score is undefined");
+			return {
+				fencer1: {
+					...bout.fencer1,
+					score: score == "opponent-withdrew" ? null : score.fencer1,
+					winner:
+						score == "opponent-withdrew"
+							? false
+							: score.fencer1 > score.fencer2,
+				},
+				fencer2: {
+					...bout.fencer2,
+					score: score == "opponent-withdrew" ? null : score.fencer2,
+					winner:
+						score == "opponent-withdrew"
+							? false
+							: score.fencer2 > score.fencer1,
+				},
+			};
+		})
+		.filter(el => el != null);
 }
 
 function getBoutsFromNodeMap(
@@ -213,7 +216,7 @@ function getBoutsFromNodeMap(
 }
 
 function parseScoreNode(node: string): LiveResults.ScoreNode {
-	console.log(`score node: '${node}'`);
+	// console.log(`score node: '${node}'`);
 	if (node.toLowerCase().includes("opponent withdrew")) {
 		return "opponent-withdrew";
 	}
@@ -233,6 +236,9 @@ function getBoutsFromNodes(
 	for (let i = 0; i < nodes.length; i += 2) {
 		const node1 = nodes[i];
 		const node2 = nodes[i + 1];
+		if (!node1 || !node2) {
+			return bouts;
+		}
 		assert(node1, "Node 1 is undefined");
 		assert(node2, "Node 2 is undefined");
 		const bout = {
@@ -261,12 +267,12 @@ function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
 	let roundNumber: LiveResults.Round = 64;
 	let remaining = nodes;
 	const roundMap: LiveResults.RoundMap<T> = {};
-	while (!isPowerOf2(remaining.length)) {
+	while (roundNumber >= 2) {
+		console.log("remaining", remaining);
 		const [round, nextRemaining] = partitionRound(remaining);
 		remaining = nextRemaining;
 		roundMap[roundNumber] = round;
 		roundNumber = (roundNumber / 2) as LiveResults.Round; // is this a problem?
-		assert((roundNumber as number) != 1);
 	}
 	roundMap[roundNumber] = remaining;
 	return roundMap;
@@ -279,9 +285,6 @@ function isPowerOf2(n: number): boolean {
 function partitionRound<T>(nodes: T[]): [T[], T[]] {
 	const [firstHalf, secondHalf] = splitArray(nodes);
 	if (nodes.length == 1) {
-		console.log("nodes has length 1");
-		console.log("firstHalf", firstHalf);
-		console.log("secondHalf", secondHalf);
 		const onlyNode = nodes[0];
 		assert(onlyNode);
 		return [[onlyNode], []];
