@@ -1,4 +1,7 @@
 import puppeteer from "puppeteer";
+import assert from "assert";
+import type { Fie } from "./types";
+export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
 export async function fetchCompetitions() {
@@ -40,6 +43,7 @@ export async function getEventData(event: Fie.Event) {
 
 	// Inject this before any page script executes
 	await page.evaluateOnNewDocument(() => {
+		// @ts-expect-error
 		Object.defineProperty(window, "__captureData", {
 			value: {},
 			// writable: false,
@@ -47,14 +51,17 @@ export async function getEventData(event: Fie.Event) {
 		});
 
 		// Hook into variable assignment
+		// @ts-expect-error
 		Object.defineProperty(window, "_tableau", {
 			set: function (value) {
 				if (value == undefined) {
 					return;
 				}
+				// @ts-expect-error
 				window.__captureData.tableau = value;
 			},
 			get: function () {
+				// @ts-expect-error
 				return window.__captureData.tableau;
 			},
 		});
@@ -65,6 +72,7 @@ export async function getEventData(event: Fie.Event) {
 	});
 
 	const data = (await page.evaluate(
+		// @ts-expect-error
 		() => window.__captureData.tableau
 	)) as Fie.Tableau;
 
@@ -72,45 +80,15 @@ export async function getEventData(event: Fie.Event) {
 	return data;
 }
 
-export namespace Fie {
-	export type Tableau = {
-		rounds: Rounds;
-	}[];
-
-	type Rounds = Record<RoundId, Bout[]>;
-
-	type RoundId = string;
-	type Bout = {
-		fencer1: Fencer;
-		fencer2: Fencer;
-	};
-	type Fencer = {
-		name: string;
-		id: number;
-		nationality: string;
-		isWinner: boolean;
-		score: number;
-	};
-	export type Event = {
-		season: number;
-		competitionId: number;
-		name: string;
-		location: string;
-		country: string;
-		federation: string;
-		flag: string;
-		startDate: string;
-		endDate: string;
-		weapon: Weapon;
-		weapons: Weapon[];
-		gender: string;
-		category: Category;
-		categories: Category[];
-		type: string;
-		hasResults: number;
-		isSubCompetition: boolean;
-		isLink: boolean;
-	};
-	type Weapon = string;
-	type Category = string;
+export async function getLinkToLiveResults(event: Fie.Event): Promise<string> {
+	const url = getFieEventUrl(event);
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
+	await page.goto(url, { waitUntil: "domcontentloaded" });
+	// TODO change waitForSelector to something else that actually finds the element, idk why this is working though
+	const textSelector = await page.waitForSelector("text/Live Results");
+	const liveResultsUrl: unknown = await textSelector!.evaluate(el => el.href);
+	browser.close();
+	assert(typeof liveResultsUrl == "string");
+	return liveResultsUrl;
 }
