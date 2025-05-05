@@ -11,3 +11,4 @@ function createLocalFilePupppeteerUrl(fileName: string) {
 const url = createLocalFilePupppeteerUrl(TEST_FILE_NAME);
 const data = await scrapeTableauPage(url);
 console.log(data);
+data[64].forEach(console.log);

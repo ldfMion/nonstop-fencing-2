@@ -40,12 +40,98 @@ export async function scrapeTableauPage(
 	// console.log("Number of fencerNodes: ", fencerNodes.length);
 	// console.log("Number of scoreTextNodes: ", scoreTextNodes.length);
 	browser.close();
-	const scoreNodes = scoreTextNodes.map(parseScoreNode);
+	// const scoreNodes = scoreTextNodes.map(parseScoreNode);
 	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
-	const scoreNodeRounds = filterNodesForRounds(scoreNodes);
-	const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
-	const boutWithScores = addScoresToBoutMap(boutRounds, scoreNodeRounds);
-	return boutWithScores;
+	const scoreNodeRounds = filterNodesForRounds(scoreTextNodes);
+	// const scoreNodeRounds = filterNodesForRounds(scoreNodes);
+	// const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
+	// const boutWithScores = addScoresToBoutMap(boutRounds, scoreNodeRounds);
+	const bouts = parseIntoBouts(fencerNodeRounds, scoreNodeRounds);
+	return bouts;
+}
+
+function parseIntoBouts(
+	fencerNodeRounds: LiveResults.RoundMap<LiveResults.FencerNode>,
+	scoreNodeRounds: LiveResults.RoundMap<string>
+) {
+	return {
+		"64": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"32": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"16": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"8": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"4": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"2": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+	};
+}
+
+function processBoutsInRound(
+	round: LiveResults.Round,
+	fencerNodeRounds: LiveResults.RoundMap<LiveResults.FencerNode>,
+	scoreNodeRounds: LiveResults.RoundMap<string>
+): LiveResults.Bout[] {
+	const fencerNodes = fencerNodeRounds[round];
+	const scoreNodes = scoreNodeRounds[round];
+	const bouts = new Array(round);
+	for (let i = 0; i < fencerNodes.length; i += 2) {
+		const fencerNode1 = fencerNodes[i];
+		const fencerNode2 = fencerNodes[i + 1];
+		const scoreNode = scoreNodes[Math.floor(i / 2)];
+		assert(fencerNode1, "Node 1 is undefined");
+		assert(fencerNode2, "Node 2 is undefined");
+		assert(scoreNode, "scoreNode is undefined");
+		const parsedScore = parseScoreNode(scoreNode);
+		const winnerFencerNode =
+			fencerNodeRounds[(round / 2) as LiveResults.Round][i / 2];
+		assert(winnerFencerNode, "winnerFencerNode is undefined");
+		const hasWinner = winnerFencerNode != "future";
+		const fencer1IsWinner =
+			winnerFencerNode != "future" &&
+			fencerNode1 != "future" &&
+			winnerFencerNode.lastName == fencerNode1.lastName;
+		const fencer2IsWinner =
+			winnerFencerNode != "future" &&
+			fencerNode2 != "future" &&
+			winnerFencerNode.lastName == fencerNode2.lastName;
+		const fencer1Score =
+			parsedScore != "future" && parsedScore != "opponent-withdrew"
+				? fencer1IsWinner
+					? parsedScore.fencer1
+					: parsedScore.fencer2
+				: undefined;
+		const fencer2Score =
+			parsedScore != "future" && parsedScore != "opponent-withdrew"
+				? fencer2IsWinner
+					? parsedScore.fencer1
+					: parsedScore.fencer2
+				: undefined;
+		const bout = {
+			withdrawal: parsedScore == "opponent-withdrew",
+			fencer1:
+				fencerNode1 == "future"
+					? undefined
+					: {
+							firstName: fencerNode1.firstName,
+							lastName: fencerNode1.lastName,
+							countryCode: fencerNode1.countryCode,
+							seed: fencerNode1.seed,
+							winner: hasWinner ? fencer1IsWinner : undefined,
+							score: fencer1Score,
+					  },
+			fencer2:
+				fencerNode2 == "future"
+					? undefined
+					: {
+							firstName: fencerNode2.firstName,
+							lastName: fencerNode2.lastName,
+							countryCode: fencerNode2.countryCode,
+							seed: fencerNode2.seed,
+							winner: hasWinner ? fencer2IsWinner : undefined,
+							score: fencer2Score,
+					  },
+		};
+		bouts[i / 2] = bout;
+	}
+	return bouts;
 }
 
 function addScoresToBoutMap(
