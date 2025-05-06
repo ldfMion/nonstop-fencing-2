@@ -4,37 +4,56 @@ import type * as Fie from "./types";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
-export async function fetchCompetitions() {
-	const body = {
+export async function fetchCompetitions(season: number) {
+	const baseBody = {
 		competitionCategory: "",
 		fetchPage: 1,
 		fromDate: "",
 		gender: [],
 		level: "s",
 		name: "",
-		season: "2025",
-		status: "passed",
+		season: season.toString(),
+		// status: "passed",
 		// status: "",
 		toDate: "",
 		type: [],
 		weapon: [],
 	};
-	const response = await fetch(COMPETITIONS_ENDPOINT, {
+	const bodyPassed = {
+		...baseBody,
+		status: "passed",
+	};
+	const bodyUpcoming = {
+		...baseBody,
+		status: "",
+	};
+	const responsePassed = await fetch(COMPETITIONS_ENDPOINT, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(body),
+		body: JSON.stringify(bodyPassed),
+	});
+	const responseUpcoming = await fetch(COMPETITIONS_ENDPOINT, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(bodyUpcoming),
 	});
 	// console.log(response);
-	const data = (await response.json()) as any;
-	return (data.items as Fie.Event[]).filter(event => {
-		// console.log(event.name);
-		// console.log(event.name.toLowerCase() == "tournoi satellite");
-		return !["tournoi satellite", "tournoi satelite"].includes(
-			event.name.toLowerCase()
-		);
-	});
+	// TODO validate with zod
+	const dataPassed = (await responsePassed.json()) as any;
+	const dataUpcoming = (await responseUpcoming.json()) as any;
+	return (dataPassed.items.concat(dataUpcoming.items) as Fie.Event[]).filter(
+		event => {
+			// console.log(event.name);
+			// console.log(event.name.toLowerCase() == "tournoi satellite");
+			return !["tournoi satellite", "tournoi satelite"].includes(
+				event.name.toLowerCase()
+			);
+		}
+	);
 }
 
 export function getFieEventUrl(event: Fie.Event): string {

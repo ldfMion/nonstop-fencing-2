@@ -9,8 +9,10 @@ export function mapFieEventToDBEvent(event: Fie.Event): DBEventInput {
 		countryCode: event.federation,
 		weapon: parseFieWeapon(event.weapon),
 		type: parseFieType(event.type),
+		gender: parseFieGender(event.gender),
 		season: event.season,
 		hasFieResults: event.hasResults == 1,
+		fieCompetitionId: event.competitionId,
 	};
 }
 
@@ -50,4 +52,14 @@ function parseFieName(name: string) {
 		default:
 			return name;
 	}
+}
+
+function parseFieGender(gender: string) {
+	if (gender == "men") {
+		return "MEN";
+	}
+	if (gender == "women") {
+		return "WOMEN";
+	}
+	throw new Error(`Unexpected gender '${gender}'`);
 }
