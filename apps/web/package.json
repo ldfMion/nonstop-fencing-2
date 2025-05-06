@@ -1,28 +1,40 @@
 {
-  "name": "web",
-  "version": "0.1.0",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack --port 3000",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint --max-warnings 0",
-    "check-types": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@repo/ui": "workspace:*",
-    "next": "^15.3.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.3",
-    "@types/react": "19.1.0",
-    "@types/react-dom": "19.1.1",
-    "eslint": "^9.26.0",
-    "typescript": "5.8.2"
-  }
+	"name": "web",
+	"version": "0.1.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack --port 3000",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint --max-warnings 0",
+		"check-types": "tsc --noEmit",
+		"scrape": "tsx server/scraping/index.ts"
+	},
+	"dependencies": {
+		"@repo/ui": "workspace:*",
+		"@t3-oss/env-nextjs": "^0.13.4",
+		"@tailwindcss/postcss": "^4.1.5",
+		"next": "^15.3.0",
+		"postcss": "^8.5.3",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"tailwindcss": "^4.1.5"
+	},
+	"devDependencies": {
+		"@repo/eslint-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"@types/node": "^22.15.3",
+		"@types/react": "19.1.0",
+		"@types/react-dom": "19.1.1",
+		"dotenv": "^16.5.0",
+		"drizzle-kit": "^0.31.1",
+		"drizzle-orm": "^0.43.1",
+		"eslint": "^9.26.0",
+		"postgres": "^3.4.5",
+		"puppeteer": "^24.8.1",
+		"tsx": "^4.19.4",
+		"typescript": "5.8.2",
+		"zod": "^3.24.4"
+	}
 }
