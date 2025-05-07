@@ -28,32 +28,27 @@ function DesktopNavbar() {
 			</Link>
 			<NavigationMenu>
 				<NavigationMenuList className="flex flex-row gap-2">
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							className={navigationMenuTriggerStyle()}
-							asChild
-						>
-							<Link href="/">Rankings</Link>
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							className={navigationMenuTriggerStyle()}
-							asChild
-						>
-							<Link href="">Events</Link>
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							className={navigationMenuTriggerStyle()}
-							asChild
-						>
-							<Link href="/about">About Us</Link>
-						</NavigationMenuLink>
-					</NavigationMenuItem>
+					<DesktopBaseLink href="/">Rankings</DesktopBaseLink>
+					<DesktopBaseLink href="/">Events</DesktopBaseLink>
+					<DesktopBaseLink href="/about">About</DesktopBaseLink>
 				</NavigationMenuList>
 			</NavigationMenu>
 		</div>
+	);
+}
+
+function DesktopBaseLink({
+	href,
+	children,
+}: {
+	href: string;
+	children: string;
+}) {
+	return (
+		<NavigationMenuItem>
+			<Link href={href} passHref className={navigationMenuTriggerStyle()}>
+				{children}
+			</Link>
+		</NavigationMenuItem>
 	);
 }
