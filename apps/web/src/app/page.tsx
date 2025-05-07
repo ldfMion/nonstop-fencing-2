@@ -1,9 +1,12 @@
+import { Events } from "~/layouts/events";
+
 export default function Home() {
 	return (
 		<div className="">
-			<main className="text-3xl font-bold">new app</main>
-			<p>test</p>
-			<footer className={""}></footer>
+			<main className="">
+				<Events />
+			</main>
+			<footer></footer>
 		</div>
 	);
 }

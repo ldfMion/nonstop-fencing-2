@@ -12,6 +12,9 @@
 		"scrape": "tsx server/scraping/index.ts"
 	},
 	"dependencies": {
+		"@radix-ui/react-dialog": "^1.1.13",
+		"@radix-ui/react-navigation-menu": "^1.2.12",
+		"@radix-ui/react-slot": "^1.2.2",
 		"@repo/ui": "workspace:*",
 		"@t3-oss/env-nextjs": "^0.13.4",
 		"@tailwindcss/postcss": "^4.1.5",
