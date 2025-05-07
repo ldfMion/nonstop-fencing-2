@@ -8,7 +8,10 @@ export const events = t.pgTable("events_0", {
 	id: t.serial("id").primaryKey(),
 	name: t.text("name").notNull(),
 	// ioc country code from the .federation property on the FIE API
-	countryCode: t.char("country_code", { length: 3 }).notNull(),
+	host: t
+		.char("host", { length: 3 })
+		.references(() => countries.iocCode)
+		.notNull(),
 	date: t.date("date", { mode: "date" }).notNull(),
 	weapon: weaponsEnum("weapon").notNull(),
 	type: typeEnum("type").notNull(),
@@ -23,4 +26,9 @@ export const events = t.pgTable("events_0", {
 
 export const seasons = t.pgTable("seasons_0", {
 	id: t.integer("id").primaryKey(),
+});
+
+export const countries = t.pgTable("countries_0", {
+	iocCode: t.char("ioc_code", { length: 3 }).primaryKey(),
+	isoCode: t.char("iso_code", { length: 2 }).unique().notNull(),
 });

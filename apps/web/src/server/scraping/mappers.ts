@@ -6,7 +6,7 @@ export function mapFieEventToDBEvent(event: Fie.Event): DBEventInput {
 	return {
 		date: parseDate(event.startDate),
 		name: `${event.location} ${parseFieName(event.name)}`,
-		countryCode: event.federation,
+		host: event.federation,
 		weapon: parseFieWeapon(event.weapon),
 		type: parseFieType(event.type),
 		gender: parseFieGender(event.gender),

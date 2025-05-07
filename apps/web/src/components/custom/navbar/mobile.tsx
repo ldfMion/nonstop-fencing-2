@@ -65,16 +65,16 @@ function MobileBaseLink({
 	return (
 		<MobileLink onOpenChange={onOpenChange}>
 			<NavigationMenuItem>
-				<NavigationMenuLink
+				<Link
+					href={href}
+					passHref
 					className={cn(
 						buttonVariants({ variant: "link" }),
 						"p-0 text-lg text-foreground"
 					)}
 				>
-					<Link href={href} passHref>
-						{title}
-					</Link>
-				</NavigationMenuLink>
+					{title}
+				</Link>
 			</NavigationMenuItem>
 		</MobileLink>
 	);
