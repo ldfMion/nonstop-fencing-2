@@ -2,17 +2,37 @@ import type { Fie } from "./fie";
 import type { DBEventInput } from "../db/queries";
 import { createWeaponParser } from "./utils";
 
-export function mapFieEventToDBEvent(event: Fie.Event): DBEventInput {
+export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
+	const withName = events.map(event => ({
+		...event,
+		competitionName: createName(event),
+	}));
+	const filtered = withName.filter((event, index, self) => {
+		const i =
+			index ===
+			self.findIndex(e => e.competitionName === event.competitionName);
+		return i;
+	});
+	const competitions = filtered.map(event => ({
+		name: event.competitionName,
+		host: event.federation,
+		season: event.season,
+	}));
+	return competitions;
+}
+
+export function mapFieEventToDBEvent(
+	event: Fie.Event,
+	competitionId: number
+): DBEventInput {
 	return {
 		date: parseDate(event.startDate),
-		name: `${event.location} ${parseFieName(event.name)}`,
-		host: event.federation,
 		weapon: parseFieWeapon(event.weapon),
 		type: parseFieType(event.type),
 		gender: parseFieGender(event.gender),
-		season: event.season,
 		hasFieResults: event.hasResults == 1,
 		fieCompetitionId: event.competitionId,
+		competition: competitionId,
 	};
 }
 
@@ -44,7 +64,11 @@ function parseDate(str: string) {
 	return date;
 }
 
-function parseFieName(name: string) {
+export function createName(event: Fie.Event) {
+	return `${event.location} ${parseFieEventTypeInName(event.name)}`;
+}
+
+function parseFieEventTypeInName(name: string) {
 	switch (name) {
 		case "Coupe du Monde":
 		case "Coupe du Monde par équipes":
