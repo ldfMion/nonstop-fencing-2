@@ -4,7 +4,7 @@ import { EventsList } from "./events-list";
 export async function Events() {
 	const c = await QUERIES.getCompetitions();
 	return (
-		<div className="p-6">
+		<div className="mx-auto px-6 max-w-xl">
 			<EventsList competitions={c} />
 		</div>
 	);

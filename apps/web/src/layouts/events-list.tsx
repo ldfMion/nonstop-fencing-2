@@ -1,27 +1,23 @@
 import { format } from "date-fns";
-import { ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { Badge } from "~/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardTitle,
-} from "~/components/ui/card";
+import { CompetitionCard } from "./competition-card";
+import { Fragment } from "react";
 
-type Competition = {
+export type Competition = {
 	id: number;
 	name: string;
-	events: Event[];
 	flag: string;
+	weapons: ("FOIL" | "EPEE" | "SABER")[];
+	types: ("INDIVIDUAL" | "TEAM")[];
+	genders: ("MEN" | "WOMEN")[];
+	date: {
+		start: Date;
+		end: Date;
+	};
 };
 
-type Event = {
+export type Event = {
 	id: number;
 	date: Date;
-	weapon: "FOIL" | "EPEE" | "SABER";
-	type: "INDIVIDUAL" | "TEAM";
-	gender: "MEN" | "WOMEN";
 };
 
 export function EventsList({ competitions }: { competitions: Competition[] }) {
@@ -36,24 +32,16 @@ export function EventsList({ competitions }: { competitions: Competition[] }) {
 	}
 
 	competitions.sort(
-		(b, a) => a.events[0]!.date.getTime() - b.events[0]!.date.getTime()
+		(b, a) => a.date.start.getTime() - b.date.start.getTime()
 	);
-
-	const getEventDescription = (event: Event) => {
-		const gender = event.gender === "MEN" ? "Men's" : "Women's";
-		const weapon =
-			event.weapon.charAt(0) + event.weapon.slice(1).toLowerCase();
-		const type = event.type.charAt(0) + event.type.slice(1).toLowerCase();
-		return `${gender} ${weapon} ${type}`;
-	};
 
 	const groupCompetitionsByMonth = (competitions: Competition[]) => {
 		const grouped = new Map<string, Competition[]>();
 		competitions.forEach(competition => {
-			const earliestDate = Math.min(
-				...competition.events.map(e => new Date(e.date).getTime())
+			const monthKey = format(
+				new Date(competition.date.start),
+				"MMMM yyyy"
 			);
-			const monthKey = format(new Date(earliestDate), "MMMM yyyy");
 			const existing = grouped.get(monthKey) || [];
 			grouped.set(monthKey, [...existing, competition]);
 		});
@@ -66,81 +54,23 @@ export function EventsList({ competitions }: { competitions: Competition[] }) {
 		});
 	};
 
-	const getCompetitionDateRange = (events: Event[]) => {
-		const dates = events.map(e => new Date(e.date).getTime());
-		const startDate = new Date(Math.min(...dates));
-		const endDate = new Date(Math.max(...dates));
-		return `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`;
-	};
-
 	return (
-		<div className="flex flex-col gap-8">
+		<>
 			{groupCompetitionsByMonth(competitions).map(
 				([month, monthCompetitions]) => (
-					<div key={month} className="space-y-6">
-						<h2 className="text-xl font-semibold px-4">{month}</h2>
+					<Fragment key={month}>
+						<h2 className="text-xl font-semibold px-4 mt-4 mb-2">
+							{month}
+						</h2>
 						{monthCompetitions.map(competition => (
-							<Card key={competition.id} className="relative">
-								<CardContent className="pt-6">
-									<div className="flex items-start gap-4 mb-4">
-										<div className="flex-shrink-0 w-12 h-8 overflow-hidden rounded-md border">
-											<Image
-												src={`https://flagcdn.com/w1280/${competition.flag.toLowerCase()}.png`}
-												alt={`${competition.flag} flag`}
-												className="w-full h-full object-cover"
-												height={400}
-												width={400}
-											/>
-										</div>
-										<div className="flex flex-col">
-											<CardTitle className="text-xl font-semibold">
-												{competition.name}
-											</CardTitle>
-											<CardDescription>
-												{getCompetitionDateRange(
-													competition.events
-												)}
-											</CardDescription>
-										</div>
-									</div>
-
-									<div className="ml-6 mt-6 border-l-2 border-gray-200">
-										{competition.events
-											.sort(
-												(a, b) =>
-													new Date(a.date).getTime() -
-													new Date(b.date).getTime()
-											)
-											.map(event => (
-												<div
-													key={event.id}
-													className="relative pl-6 pb-6 last:pb-0"
-												>
-													<div className="absolute -left-[5px] top-2 h-2 w-2 rounded-full bg-gray-400" />
-													<div className="flex flex-row items-center gap-1">
-														<div className="text-sm font-medium">
-															{format(
-																new Date(
-																	event.date
-																),
-																"MMMM d"
-															)}
-														</div>
-														<div className="text-md font-bold">
-															{getEventDescription(
-																event
-															)}
-														</div>
-													</div>
-												</div>
-											))}
-									</div>
-								</CardContent>
-							</Card>
+							<CompetitionCard
+								key={competition.id}
+								competition={competition}
+							/>
 						))}
-					</div>
+					</Fragment>
 				)
 			)}
-		</div>
+		</>
 	);
 }

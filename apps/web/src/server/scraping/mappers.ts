@@ -69,9 +69,9 @@ export function createName(event: Fie.Event) {
 }
 
 function parseFieEventTypeInName(name: string) {
-	switch (name) {
-		case "Coupe du Monde":
-		case "Coupe du Monde par équipes":
+	switch (name.toLocaleLowerCase()) {
+		case "coupe du monde":
+		case "coupe du monde par équipes":
 			return "World Cup";
 		default:
 			return name;
