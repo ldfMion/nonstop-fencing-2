@@ -6,7 +6,6 @@ import { buttonVariants } from "~/components/ui/button";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
-	NavigationMenuLink,
 	NavigationMenuList,
 } from "~/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";

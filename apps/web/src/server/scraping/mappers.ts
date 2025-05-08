@@ -26,7 +26,7 @@ export function mapFieEventToDBEvent(
 	competitionId: number
 ): DBEventInput {
 	return {
-		date: parseDate(event.startDate),
+		date: parseDate(event.endDate),
 		weapon: parseFieWeapon(event.weapon),
 		type: parseFieType(event.type),
 		gender: parseFieGender(event.gender),
