@@ -22,6 +22,7 @@ export default async function EventsPage({
 }: {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+	console.log("rendering page");
 	const parsed = searchParamsSchema.parse(await searchParams);
 	const filters = {
 		season: 2025,

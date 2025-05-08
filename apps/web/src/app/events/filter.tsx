@@ -77,11 +77,12 @@ export function Filter() {
 	// For now, assuming single select based on the provided schema literals.
 	// If they are multiple, change the `|| ''` to `?.split(',') || []` and
 	// the ToggleGroup type to "multiple".
+	const active = !(!currentGender && !currentWeapon && !currentType);
 
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
-				<Button variant="outline">
+				<Button variant={active ? "default" : "outline"}>
 					Filter
 					<FilterIcon className="ml-2 h-4 w-4" />
 				</Button>

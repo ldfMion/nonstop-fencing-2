@@ -5,6 +5,7 @@ export default function EventsLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	console.log("rendering layout");
 	return (
 		<div className="mx-auto px-4 max-w-xl">
 			<div className="flex flex-row justify-between w-full items-center">
