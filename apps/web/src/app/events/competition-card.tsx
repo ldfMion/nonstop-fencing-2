@@ -7,7 +7,6 @@ import {
 import Image from "next/image";
 import { Competition } from "./events-list";
 import { format } from "date-fns";
-import { Event } from "./events-list";
 import { Badge } from "~/components/ui/badge";
 
 export function CompetitionCard({ competition }: { competition: Competition }) {

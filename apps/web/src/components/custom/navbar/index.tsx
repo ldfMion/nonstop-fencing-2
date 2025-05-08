@@ -2,9 +2,7 @@ import Link from "next/link";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
-	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import { MobileNavbar } from "./mobile";

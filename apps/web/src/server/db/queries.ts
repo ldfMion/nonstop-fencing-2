@@ -1,7 +1,8 @@
 // import "server-only";
-import { competitions, countries, events } from "./schema";
+// import { competitions, countries, events } from "./schema";
+import { events } from "./schema";
 import { db } from ".";
-import { Competition } from "~/layouts/events-list";
+import { Competition } from "~/app/events/events-list";
 
 export type DBEventInput = typeof events.$inferInsert;
 
