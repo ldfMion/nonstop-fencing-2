@@ -3,7 +3,6 @@
 import { events } from "./schema";
 import { db } from ".";
 import { Competition } from "~/app/events/events-list";
-import { and, eq, sql } from "drizzle-orm";
 
 export type DBEventInput = typeof events.$inferInsert;
 
@@ -17,7 +16,7 @@ export const QUERIES = {
 		} = { season: 2025 }
 	): Promise<Competition[]> {
 		const cs = await db.query.competitions.findMany({
-			where: (c, { eq, and, exists, sql }) =>
+			where: (c, { eq, and, exists }) =>
 				and(
 					eq(c.season, filters.season),
 					exists(

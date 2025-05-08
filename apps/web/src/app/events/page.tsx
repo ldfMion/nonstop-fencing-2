@@ -1,6 +1,7 @@
 import { EventsList } from "~/app/events/events-list";
 import { z } from "zod";
 import { QUERIES } from "~/server/db/queries";
+import { Filter } from "./filter";
 
 const searchParamsSchema = z
 	.object({
@@ -32,5 +33,13 @@ export default async function EventsPage({
 		type: parsed?.type?.toUpperCase() as "INDIVIDUAL" | "TEAM" | undefined,
 	};
 	const c = await QUERIES.getCompetitions(filters);
-	return <EventsList competitions={c} />;
+	return (
+		<main>
+			<div className="flex flex-row justify-between w-full items-center">
+				<h1 className="text-2xl font-bold">Competitions</h1>
+				<Filter />
+			</div>
+			<EventsList competitions={c} />
+		</main>
+	);
 }
