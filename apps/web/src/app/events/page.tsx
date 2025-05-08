@@ -1,3 +1,5 @@
+"server only";
+
 import { EventsList } from "~/app/events/events-list";
 import { z } from "zod";
 import { QUERIES } from "~/server/db/queries";
@@ -31,6 +33,7 @@ export default async function EventsPage({
 			| "SABER"
 			| undefined,
 		type: parsed?.type?.toUpperCase() as "INDIVIDUAL" | "TEAM" | undefined,
+		upcoming: parsed?.status == "upcoming",
 	};
 	const c = await QUERIES.getCompetitions(filters);
 	return (
