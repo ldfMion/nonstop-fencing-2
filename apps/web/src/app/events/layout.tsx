@@ -3,5 +3,5 @@ export default function EventsLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	return <div className="mx-auto px-6 max-w-xl">{children}</div>;
+	return <div className="mx-auto px-4 max-w-xl">{children}</div>;
 }

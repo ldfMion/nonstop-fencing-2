@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import "./globals.css";
 import { fontSans } from "~/lib/fonts";
 import { cn } from "~/lib/utils";
@@ -13,7 +13,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body
 				className={cn(
-					"min-h-screen bg-background font-sans antialiased",
+					"min-h-screen bg-gray-100 font-sans antialiased",
 					fontSans.variable
 				)}
 			>

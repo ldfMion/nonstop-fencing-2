@@ -35,7 +35,7 @@ export function MobileNavbar() {
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
-									href="/24-25/events"
+									href="events"
 									title="Events"
 									onOpenChange={setOpen}
 								/>

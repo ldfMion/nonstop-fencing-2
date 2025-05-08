@@ -27,7 +27,7 @@ function DesktopNavbar() {
 			<NavigationMenu>
 				<NavigationMenuList className="flex flex-row gap-2">
 					<DesktopBaseLink href="/">Rankings</DesktopBaseLink>
-					<DesktopBaseLink href="/">Events</DesktopBaseLink>
+					<DesktopBaseLink href="/events">Events</DesktopBaseLink>
 					<DesktopBaseLink href="/about">About</DesktopBaseLink>
 				</NavigationMenuList>
 			</NavigationMenu>
