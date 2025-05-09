@@ -39,6 +39,32 @@ export const countries = t.pgTable("countries_0", {
 	isoCode: t.char("iso_code", { length: 2 }).unique().notNull(),
 });
 
+export const fencers = t.pgTable("fencers_0", {
+	id: t.serial("id").primaryKey(),
+	firstName: t.text("first_name").notNull(),
+	lastName: t.text("last_name").notNull(),
+	country: t
+		.char("country", { length: 3 })
+		.references(() => countries.iocCode)
+		.notNull(),
+});
+
+export const liveBouts = t.pgTable("live_bouts_0", {
+	id: t.serial("id").primaryKey(),
+	fencerA: t
+		.integer("fencer_a")
+		.references(() => fencers.id)
+		.notNull(),
+	fencerB: t
+		.integer("fencer_b")
+		.references(() => fencers.id)
+		.notNull(),
+	fencerAScore: t.smallint("fencer_a_score"),
+	fencerBScore: t.smallint("fencer_b_score"),
+	// status: t.pgEnum("live_bout_status", ["PLANNED", "FINISHED", "LIVE"])("status").notNull()
+	winnerIsA: t.boolean("winner_is_a"),
+});
+
 export const competitionsRelations = relations(
 	competitions,
 	({ many, one }) => ({
@@ -63,4 +89,13 @@ export const seasons = t.pgTable("seasons_0", {
 
 export const seasonsRelations = relations(seasons, ({ many }) => ({
 	competitions: many(competitions),
+}));
+
+export const liveBoutsRelations = relations(liveBouts, ({ many, one }) => ({
+	fencerA: one(fencers),
+	fencerB: one(fencers),
+}));
+
+export const fencersRelations = relations(fencers, ({ many }) => ({
+	liveBouts: many(liveBouts),
 }));
