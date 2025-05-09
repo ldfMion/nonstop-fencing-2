@@ -1,6 +1,6 @@
 import assert from "assert";
 import puppeteer from "puppeteer";
-import type { LiveResults } from "./types";
+import type * as LiveResults from "./types";
 
 export async function scrapeTableauPage(
 	url: string
@@ -46,7 +46,7 @@ export async function scrapeTableauPage(
 	// console.log("Number of scoreTextNodes: ", scoreTextNodes.length);
 	browser.close();
 	// const scoreNodes = scoreTextNodes.map(parseScoreNode);
-	const fencerNodeRounds = filterNodesForRounds(fencerNodes);
+	const fencerNodeRounds = filterFencerNodesForRounds(fencerNodes);
 	const scoreNodeRounds = filterNodesForRounds(scoreTextNodes);
 	// const scoreNodeRounds = filterNodesForRounds(scoreNodes);
 	// const boutRounds = getBoutsFromNodeMap(fencerNodeRounds);
@@ -56,22 +56,28 @@ export async function scrapeTableauPage(
 }
 
 function parseIntoBouts(
-	fencerNodeRounds: LiveResults.RoundMap<LiveResults.FencerNode>,
+	fencerNodeRounds: Record<
+		LiveResults.FencerNodeRound,
+		LiveResults.FencerNode[]
+	>,
 	scoreNodeRounds: LiveResults.RoundMap<string>
 ) {
 	return {
 		"64": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
-		"32": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
-		"16": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
-		"8": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
-		"4": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
-		"2": processBoutsInRound(64, fencerNodeRounds, scoreNodeRounds),
+		"32": processBoutsInRound(32, fencerNodeRounds, scoreNodeRounds),
+		"16": processBoutsInRound(16, fencerNodeRounds, scoreNodeRounds),
+		"8": processBoutsInRound(8, fencerNodeRounds, scoreNodeRounds),
+		"4": processBoutsInRound(4, fencerNodeRounds, scoreNodeRounds),
+		"2": processBoutsInRound(2, fencerNodeRounds, scoreNodeRounds),
 	};
 }
 
 function processBoutsInRound(
 	round: LiveResults.Round,
-	fencerNodeRounds: LiveResults.RoundMap<LiveResults.FencerNode>,
+	fencerNodeRounds: Record<
+		LiveResults.FencerNodeRound,
+		LiveResults.FencerNode[]
+	>,
 	scoreNodeRounds: LiveResults.RoundMap<string>
 ): LiveResults.Bout[] {
 	const fencerNodes = fencerNodeRounds[round];
@@ -139,61 +145,6 @@ function processBoutsInRound(
 	return bouts;
 }
 
-function addScoresToBoutMap(
-	boutRounds: LiveResults.RoundMap<LiveResults.BoutJustWithFencers>,
-	scoreRounds: LiveResults.RoundMap<LiveResults.ScoreNode>
-): LiveResults.RoundMap<LiveResults.Bout> {
-	return {
-		"64": addScoresToBouts(boutRounds["64"], scoreRounds["64"]),
-		"32": addScoresToBouts(boutRounds["32"], scoreRounds["32"]),
-		"16": addScoresToBouts(boutRounds["16"], scoreRounds["16"]),
-		"8": addScoresToBouts(boutRounds["8"], scoreRounds["8"]),
-		"4": addScoresToBouts(boutRounds["4"], scoreRounds["4"]),
-		"2": addScoresToBouts(boutRounds["2"], scoreRounds["2"]),
-	};
-}
-
-// TODO this function doesn't handle priority in epee and foil
-function addScoresToBouts(
-	bouts: LiveResults.BoutJustWithFencers[],
-	scores: LiveResults.ScoreNode[]
-): LiveResults.Bout[] {
-	return bouts.map((bout, index) => {
-		const score = scores[index];
-		assert(score, "Score is undefined");
-		switch (score) {
-			case "opponent-withdrew":
-				return { ...bout };
-			case "future":
-				return { ...bout };
-			default:
-				return {
-					fencer1: {
-						...bout.fencer1,
-						score: score.fencer1,
-					},
-					fencer2: {
-						...bout.fencer2,
-						score: score.fencer2,
-					},
-				};
-		}
-	});
-}
-
-function getBoutsFromNodeMap(
-	nodeRounds: LiveResults.RoundMap<LiveResults.FencerNode>
-): LiveResults.RoundMap<LiveResults.BoutJustWithFencers> {
-	return {
-		"64": getBoutsFromNodes(nodeRounds["64"]),
-		"32": getBoutsFromNodes(nodeRounds["32"]),
-		"16": getBoutsFromNodes(nodeRounds["16"]),
-		"8": getBoutsFromNodes(nodeRounds["8"]),
-		"4": getBoutsFromNodes(nodeRounds["4"]),
-		"2": getBoutsFromNodes(nodeRounds["2"]),
-	};
-}
-
 function parseScoreNode(node: string): LiveResults.ScoreNode {
 	if (node == "future") {
 		return "future";
@@ -207,47 +158,13 @@ function parseScoreNode(node: string): LiveResults.ScoreNode {
 	return { fencer1, fencer2 };
 }
 
-function getBoutsFromNodes(
-	nodes: LiveResults.FencerNode[]
-): LiveResults.BoutJustWithFencers[] {
-	const bouts: LiveResults.BoutJustWithFencers[] = [];
-	for (let i = 0; i < nodes.length; i += 2) {
-		const node1 = nodes[i];
-		const node2 = nodes[i + 1];
-		assert(node1, "Node 1 is undefined");
-		assert(node2, "Node 2 is undefined");
-		const bout = {
-			fencer1:
-				node1 == "future"
-					? undefined
-					: {
-							firstName: node1.firstName,
-							lastName: node1.lastName,
-							countryCode: node1.countryCode,
-							seed: node1.seed,
-						},
-			fencer2:
-				node2 == "future"
-					? undefined
-					: {
-							firstName: node2.firstName,
-							lastName: node2.lastName,
-							countryCode: node2.countryCode,
-							seed: node2.seed,
-						},
-		};
-		bouts.push(bout);
-	}
-	return bouts;
-}
-
 function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
 	const [round64, remaining1] = partitionRound(nodes);
 	const [round32, remaining2] = partitionRound(remaining1);
 	const [round16, remaining3] = partitionRound(remaining2);
 	const [round8, remaining4] = partitionRound(remaining3);
 	const [round4, remaining5] = partitionRound(remaining4);
-	const [round2, _] = partitionRound(remaining5);
+	const [round2] = partitionRound(remaining5);
 	return {
 		"64": round64,
 		"32": round32,
@@ -258,6 +175,26 @@ function filterNodesForRounds<T>(nodes: T[]): LiveResults.RoundMap<T> {
 	};
 }
 
+function filterFencerNodesForRounds(
+	nodes: LiveResults.FencerNode[]
+): Record<LiveResults.FencerNodeRound, LiveResults.FencerNode[]> {
+	const [round64, remaining1] = partitionRound(nodes);
+	const [round32, remaining2] = partitionRound(remaining1);
+	const [round16, remaining3] = partitionRound(remaining2);
+	const [round8, remaining4] = partitionRound(remaining3);
+	const [round4, remaining5] = partitionRound(remaining4);
+	const [round2, final] = partitionRound(remaining5);
+	return {
+		"64": round64,
+		"32": round32,
+		"16": round16,
+		"8": round8,
+		"4": round4,
+		"2": round2,
+		"1": final,
+	};
+}
+
 function partitionRound<T>(nodes: T[]): [T[], T[]] {
 	const [firstHalf, secondHalf] = splitArray(nodes);
 	if (nodes.length == 1) {
@@ -265,11 +202,12 @@ function partitionRound<T>(nodes: T[]): [T[], T[]] {
 		assert(onlyNode);
 		return [[onlyNode], []];
 	}
-	// idk why this is different from [filterEven(nodes), filterOdd(nodes)]
-	return [
+	const result: [T[], T[]] = [
 		filterEven(firstHalf).concat(filterOdd(secondHalf)),
 		filterOdd(firstHalf).concat(filterEven(secondHalf)),
 	];
+	// idk why this is different from [filterEven(nodes), filterOdd(nodes)]
+	return result;
 }
 
 function filterEven<T>(nodes: T[]): T[] {

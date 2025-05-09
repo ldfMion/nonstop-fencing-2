@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import assert from "assert";
 import type * as Fie from "./types";
+import { EventModel } from "~/models";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
@@ -56,12 +57,15 @@ export async function fetchCompetitions(season: number) {
 	);
 }
 
-export function getFieEventUrl(event: Fie.Event): string {
-	return `https://fie.org/competitions/${event.season}/${event.competitionId}`;
+export function getFieEventUrl(
+	fieCompetitionId: number,
+	season: number
+): string {
+	return `https://fie.org/competitions/${season}/${fieCompetitionId}`;
 }
 
 export async function getEventData(event: Fie.Event) {
-	const url = getFieEventUrl(event);
+	const url = getFieEventUrl(event.competitionId, event.season);
 
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
@@ -103,8 +107,8 @@ export async function getEventData(event: Fie.Event) {
 	return data;
 }
 
-export async function getLinkToLiveResults(event: Fie.Event): Promise<string> {
-	const url = getFieEventUrl(event);
+export async function getLinkToLiveResults(event: EventModel): Promise<string> {
+	const url = getFieEventUrl(event.fieCompetitionId, event.season);
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });

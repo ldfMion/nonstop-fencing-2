@@ -1,9 +1,10 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 
 export const weaponsEnum = t.pgEnum("weapons", ["FOIL", "EPEE", "SABER"]);
 export const gendersEnum = t.pgEnum("genders", ["MEN", "WOMEN"]);
 export const typeEnum = t.pgEnum("types", ["INDIVIDUAL", "TEAM"]);
+export const roundEnum = t.pgEnum("rounds", ["2", "4", "8", "16", "32", "64"]);
 
 export const competitions = t.pgTable("competitions_0", {
 	id: t.serial("id").primaryKey(),
@@ -36,34 +37,49 @@ export const events = t.pgTable("events_0", {
 
 export const countries = t.pgTable("countries_0", {
 	iocCode: t.char("ioc_code", { length: 3 }).primaryKey(),
-	isoCode: t.char("iso_code", { length: 2 }).unique().notNull(),
+	isoCode: t.char("iso_code", { length: 2 }).unique(),
 });
 
-export const fencers = t.pgTable("fencers_0", {
-	id: t.serial("id").primaryKey(),
-	firstName: t.text("first_name").notNull(),
-	lastName: t.text("last_name").notNull(),
-	country: t
-		.char("country", { length: 3 })
-		.references(() => countries.iocCode)
-		.notNull(),
-});
+export const fencers = t.pgTable(
+	"fencers_0",
+	{
+		id: t.serial("id").primaryKey(),
+		firstName: t.text("first_name").notNull(),
+		lastName: t.text("last_name").notNull(),
+		country: t
+			.char("country", { length: 3 })
+			.references(() => countries.iocCode)
+			.notNull(),
+		gender: gendersEnum("gender").notNull(),
+	},
+	table => [t.unique().on(table.firstName, table.lastName, table.country)]
+);
 
-export const liveBouts = t.pgTable("live_bouts_0", {
-	id: t.serial("id").primaryKey(),
-	fencerA: t
-		.integer("fencer_a")
-		.references(() => fencers.id)
-		.notNull(),
-	fencerB: t
-		.integer("fencer_b")
-		.references(() => fencers.id)
-		.notNull(),
-	fencerAScore: t.smallint("fencer_a_score"),
-	fencerBScore: t.smallint("fencer_b_score"),
-	// status: t.pgEnum("live_bout_status", ["PLANNED", "FINISHED", "LIVE"])("status").notNull()
-	winnerIsA: t.boolean("winner_is_a"),
-});
+export const liveBouts = t.pgTable(
+	"live_bouts_0",
+	{
+		id: t.serial("id").primaryKey(),
+		fencerA: t.integer("fencer_a").references(() => fencers.id),
+		fencerB: t.integer("fencer_b").references(() => fencers.id),
+		fencerAScore: t.smallint("fencer_a_score"),
+		fencerBScore: t.smallint("fencer_b_score"),
+		// status: t.pgEnum("live_bout_status", ["PLANNED", "FINISHED", "LIVE"])("status").notNull()
+		winnerIsA: t.boolean("winner_is_a"),
+		round: roundEnum("round").notNull(),
+		order: t.integer("order").notNull(),
+		event: t
+			.integer("event")
+			.references(() => events.id)
+			.notNull(),
+	},
+	table => [
+		t.check(
+			"at_least_one_fencer",
+			sql`${table.fencerA} IS NOT NULL OR ${table.fencerB} IS NOT NULL`
+		),
+		t.unique().on(table.event, table.order, table.round),
+	]
+);
 
 export const competitionsRelations = relations(
 	competitions,
@@ -91,7 +107,7 @@ export const seasonsRelations = relations(seasons, ({ many }) => ({
 	competitions: many(competitions),
 }));
 
-export const liveBoutsRelations = relations(liveBouts, ({ many, one }) => ({
+export const liveBoutsRelations = relations(liveBouts, ({ one }) => ({
 	fencerA: one(fencers),
 	fencerB: one(fencers),
 }));

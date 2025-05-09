@@ -1,6 +1,6 @@
 // import "server-only";
 // import { competitions, countries, events } from "./schema";
-import { competitions, countries, events } from "./schema";
+import { competitions, countries, events, fencers, liveBouts } from "./schema";
 import { db } from ".";
 import { Competition } from "~/app/events/events-list";
 import {
@@ -13,9 +13,10 @@ import {
 	GetColumnData,
 	max,
 	min,
+	inArray,
 } from "drizzle-orm";
-
-export type DBEventInput = typeof events.$inferInsert;
+import assert from "assert";
+import { EventModel, NewBoutModel } from "~/models";
 
 export const QUERIES = {
 	async getCompetitions(
@@ -66,12 +67,77 @@ export const QUERIES = {
 		return rows.map(r => ({
 			id: r.id,
 			name: r.name,
-			flag: r.flag,
+			flag: r.flag ?? undefined,
 			weapons: r.weapons,
 			types: r.types,
 			genders: r.genders,
 			date: { start: r.startDate!, end: r.endDate! },
 		}));
+	},
+	async getEvent(id: number): Promise<EventModel> {
+		const row = await db
+			.select()
+			.from(events)
+			.where(eq(events.id, id))
+			.leftJoin(competitions, eq(events.competition, competitions.id))
+			.limit(1);
+		assert(row.length == 1, `found ${row.length} events with id ${id}`);
+		return {
+			...row[0]!.events_0,
+			season: row[0]!.competitions_0!.season,
+		};
+	},
+	async insertFencers(
+		newFencers: {
+			firstName: string;
+			lastName: string;
+			country: string;
+			gender: "MEN" | "WOMEN";
+		}[]
+	) {
+		console.log(
+			db
+				.insert(fencers)
+				.values(newFencers)
+				.onConflictDoNothing({
+					target: [
+						fencers.firstName,
+						fencers.lastName,
+						fencers.country,
+					],
+				})
+		);
+	},
+	async insertCountries(
+		newCountries: { iocCode: string; isoCode?: string }[]
+	) {
+		console.log(
+			await db
+				.insert(countries)
+				.values(newCountries)
+				.onConflictDoNothing()
+		);
+	},
+	async getFencers(filters: { firstName: string[]; lastName?: string[] }) {
+		return await db
+			.select()
+			.from(fencers)
+			.where(
+				and(
+					filters.firstName
+						? inArray(fencers.firstName, filters.firstName)
+						: undefined,
+					filters.lastName
+						? inArray(fencers.lastName, filters.lastName)
+						: undefined
+				)
+			);
+	},
+	async insertLiveBouts(bouts: NewBoutModel[]) {
+		console.log("inserting live bouts");
+		console.log(
+			await db.transaction(tx => tx.insert(liveBouts).values(bouts))
+		);
 	},
 };
 

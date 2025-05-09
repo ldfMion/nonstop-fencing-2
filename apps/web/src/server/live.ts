@@ -1,0 +1,48 @@
+import { NewFencerModel } from "~/models";
+import { QUERIES } from "./db/queries";
+import { getLiveResults } from "./scraping/live-results";
+import {
+	mapFTLBoutsToBoutModel,
+	mapFTLFencerToFencerModel,
+} from "./scraping/fencing-time-live/mappers";
+import type * as LiveResults from "./scraping/fencing-time-live/types";
+
+export async function updateLiveEvents() {
+	//TODO find events that are live today
+	const eventId = 6;
+	updateLiveEvent(eventId);
+}
+
+async function updateLiveEvent(eventId: number) {
+	const event = await QUERIES.getEvent(eventId);
+	const results = await getLiveResults(event);
+	const newFencers: NewFencerModel[] = results[64].flatMap(bout => {
+		const fencers: NewFencerModel[] = [];
+		if (bout.fencer1) {
+			fencers.push(mapFTLFencerToFencerModel(bout.fencer1, event.gender));
+		}
+		if (bout.fencer2) {
+			fencers.push(mapFTLFencerToFencerModel(bout.fencer2, event.gender));
+		}
+		return fencers;
+	});
+	const countries = newFencers.map(f => ({ iocCode: f.country }));
+	QUERIES.insertCountries(countries).then(async () => {
+		await QUERIES.insertFencers(newFencers).then(async () => {
+			const uploadedFencers = await QUERIES.getFencers({
+				firstName: newFencers.map(f => f.firstName),
+				lastName: newFencers.map(f => f.lastName),
+			});
+			const bouts = Object.entries(results).flatMap(([round, bouts]) =>
+				mapFTLBoutsToBoutModel(
+					bouts,
+					round as unknown as LiveResults.Round,
+					uploadedFencers,
+					event
+				)
+			);
+			console.log("bouts to insert", bouts);
+			QUERIES.insertLiveBouts(bouts);
+		});
+	});
+}

@@ -3,7 +3,7 @@ import {
 	createName,
 	mapFieEventsToDBCompetitions,
 	mapFieEventToDBEvent,
-} from "./mappers";
+} from "./fie/mappers";
 import { db } from "../db";
 import { competitions, events } from "../db/schema";
 

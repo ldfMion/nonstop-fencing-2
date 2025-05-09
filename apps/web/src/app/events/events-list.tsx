@@ -5,7 +5,7 @@ import { Fragment } from "react";
 export type Competition = {
 	id: number;
 	name: string;
-	flag: string;
+	flag?: string;
 	weapons: ("FOIL" | "EPEE" | "SABER")[];
 	types: ("INDIVIDUAL" | "TEAM")[];
 	genders: ("MEN" | "WOMEN")[];

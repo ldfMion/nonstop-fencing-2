@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer";
-import type { Fie } from "../fie";
 import assert from "assert";
+import { EventModel } from "~/models";
 
-export async function resolveUrl(fieTournamentUrl: string, event: Fie.Event) {
+export async function resolveUrl(fieTournamentUrl: string, event: EventModel) {
 	const eventResultsUrl = await getEventResultsUrl(fieTournamentUrl, event);
 	const tableauHtmlUrl = await getTableauHtmlUrl(eventResultsUrl);
 	return tableauHtmlUrl;
@@ -24,13 +24,13 @@ async function getTableauHtmlUrl(eventResultsUrl: string): Promise<string> {
 
 async function getEventResultsUrl(
 	tournamentUrl: string,
-	event: Fie.Event
+	event: EventModel
 ): Promise<string> {
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(tournamentUrl, { waitUntil: "domcontentloaded" });
 	const eventTitle = `${
-		event.gender == "men" ? "Men's" : "Women's"
+		event.gender == "MEN" ? "Men's" : "Women's"
 	} ${parseEventWeapon(event.weapon)} (Day 2)`;
 	console.log("Event title: ", eventTitle);
 	const eventResultsUrl = await page.evaluate(text => {
@@ -44,21 +44,34 @@ async function getEventResultsUrl(
 		return targetElement.href;
 	}, eventTitle);
 	console.log("eventResultsUrl", eventResultsUrl);
-	await page.goto(eventResultsUrl, { waitUntil: "domcontentloaded" });
+	await page.goto(eventResultsUrl, { waitUntil: "networkidle0" });
 	const eventResultsAfterRedirect = page.url();
 	console.log("eventResultsAfterRedirect", eventResultsAfterRedirect);
-	browser.close();
 	assert(typeof eventResultsAfterRedirect == "string");
-	return eventResultsAfterRedirect;
+	if (eventResultsAfterRedirect.includes("tableau")) {
+		browser.close();
+		return eventResultsAfterRedirect;
+	}
+	const eventTableauUrl = await page.$$eval(
+		"a.nav-link",
+		els =>
+			els
+				.filter(el => el.innerHTML.toLowerCase().includes("tableau"))
+				.at(-1)!.href
+	);
+	console.log("tabs", eventTableauUrl);
+	browser.close();
+	assert(typeof eventTableauUrl == "string");
+	return eventTableauUrl;
 }
 
-function parseEventWeapon(weapon: string) {
+function parseEventWeapon(weapon: EventModel["weapon"]) {
 	switch (weapon) {
-		case "epee":
+		case "EPEE":
 			return "Épée";
-		case "foil":
+		case "FOIL":
 			return "Foil";
-		case "sabre":
+		case "SABER":
 			return "Saber";
 		default:
 			throw new Error(`Unexpected weapon in fie event data '${weapon}'`);

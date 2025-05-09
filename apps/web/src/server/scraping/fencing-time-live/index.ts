@@ -1,8 +1,8 @@
-import type { Fie } from "../fie";
 import { scrapeTableauPage } from "./tableau";
 import { resolveUrl } from "./resolveUrl";
+import { EventModel } from "~/models";
 
-export async function getTableauData(tournamentUrl: string, event: Fie.Event) {
+export async function getTableauData(tournamentUrl: string, event: EventModel) {
 	// const url = "https://www.fencingtimelive.com/tableaus/scores/906625D1D3A8480EB245C3B059A3B06C/72F409219AAB44D4BF5259B79CAABACB/trees/6CD6DB2E13C84D1EBCD52027E402C8B0/tables/0/7";
 	const tableauHtmlUrl = await resolveUrl(tournamentUrl, event);
 	console.log("Event results ftl tableau url: ", tableauHtmlUrl);

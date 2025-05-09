@@ -1,6 +1,8 @@
-import type { Fie } from "./fie";
-import type { DBEventInput } from "../db/queries";
-import { createWeaponParser } from "./utils";
+import { events } from "../../db/schema";
+import type { Fie } from ".";
+import { createWeaponParser } from "../utils";
+
+type DBEventInput = typeof events.$inferInsert;
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 	const withName = events.map(event => ({
