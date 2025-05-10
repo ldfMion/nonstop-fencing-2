@@ -18,7 +18,7 @@ import {
 	aliasedTable,
 } from "drizzle-orm";
 import assert from "assert";
-import { EventModel, NewBoutModel } from "~/models";
+import { BoutModel, EventModel, NewBoutModel } from "~/models";
 
 export const QUERIES = {
 	async getCompetitions(
@@ -100,8 +100,9 @@ export const QUERIES = {
 			gender: "MEN" | "WOMEN";
 		}[]
 	) {
+		console.log("inserting fencers", newFencers);
 		console.log(
-			db
+			await db
 				.insert(fencers)
 				.values(newFencers)
 				.onConflictDoNothing({
@@ -159,29 +160,58 @@ export const QUERIES = {
 			)
 		);
 	},
-	async getLiveTableau(eventId: number) {
+	async getLiveTableau(eventId: number): Promise<BoutModel[]> {
 		const fencers2 = aliasedTable(fencers, "fencers2");
-		return db
-			.select({
-				fencerA: {
-					firstName: fencers.firstName,
-					lastName: fencers.lastName,
-					score: liveBouts.fencerAScore,
-				},
-				fencerB: {
-					firstName: fencers2.firstName,
-					lastName: fencers2.lastName,
-					score: liveBouts.fencerBScore,
-				},
-				round: liveBouts.round,
-				order: liveBouts.order,
-				winnerIsA: liveBouts.winnerIsA,
-			})
-			.from(liveBouts)
-			.where(eq(liveBouts.event, eventId))
-			.orderBy(desc(liveBouts.round), liveBouts.order)
-			.leftJoin(fencers, eq(liveBouts.fencerA, fencers.id))
-			.leftJoin(fencers2, eq(liveBouts.fencerB, fencers2.id));
+		const countries2 = aliasedTable(countries, "countries2");
+		return (
+			await db
+				.select({
+					id: liveBouts.id,
+					fencerA: {
+						firstName: fencers.firstName,
+						lastName: fencers.lastName,
+						score: liveBouts.fencerAScore,
+						flag: countries.isoCode,
+					},
+					fencerB: {
+						firstName: fencers2.firstName,
+						lastName: fencers2.lastName,
+						score: liveBouts.fencerBScore,
+						flag: countries2.isoCode,
+					},
+					round: liveBouts.round,
+					order: liveBouts.order,
+					winnerIsA: liveBouts.winnerIsA,
+				})
+				.from(liveBouts)
+				.where(eq(liveBouts.event, eventId))
+				.orderBy(desc(liveBouts.round), liveBouts.order)
+				.leftJoin(fencers, eq(liveBouts.fencerA, fencers.id))
+				.leftJoin(fencers2, eq(liveBouts.fencerB, fencers2.id))
+				.leftJoin(countries, eq(fencers.country, countries.iocCode))
+				.leftJoin(countries2, eq(fencers2.country, countries2.iocCode))
+		).map(b => ({
+			fencerA: b.fencerA.firstName
+				? {
+						firstName: b.fencerA.firstName!,
+						lastName: b.fencerA.lastName!,
+						score: b.fencerA.score ?? undefined,
+						flag: b.fencerA.flag ?? undefined,
+					}
+				: undefined,
+			fencerB: b.fencerB.firstName
+				? {
+						firstName: b.fencerB.firstName!,
+						lastName: b.fencerB.lastName!,
+						score: b.fencerB.score ?? undefined,
+						flag: b.fencerB.flag ?? undefined,
+					}
+				: undefined,
+			round: b.round,
+			order: b.order,
+			winnerIsA: b.winnerIsA ?? undefined,
+			id: b.id,
+		}));
 	},
 };
 

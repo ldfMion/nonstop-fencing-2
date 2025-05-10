@@ -1,4 +1,5 @@
 import { QUERIES } from "~/server/db/queries";
+import { Bracket } from "./bracket";
 
 export default async function BracketPage({
 	params,
@@ -7,5 +8,5 @@ export default async function BracketPage({
 }) {
 	const { id } = await params;
 	const tableau = await QUERIES.getLiveTableau(Number(id));
-	return <p>{JSON.stringify(tableau)}</p>;
+	return <Bracket bouts={tableau} />;
 }

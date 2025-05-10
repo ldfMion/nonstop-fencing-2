@@ -9,7 +9,7 @@ import type * as LiveResults from "./scraping/fencing-time-live/types";
 
 export async function updateLiveEvents() {
 	//TODO find events that are live today
-	const eventId = 6;
+	const eventId = 67;
 	updateLiveEvent(eventId);
 }
 
@@ -28,19 +28,21 @@ async function updateLiveEvent(eventId: number) {
 	});
 	const countries = newFencers.map(f => ({ iocCode: f.country }));
 	QUERIES.insertCountries(countries).then(async () => {
-		await QUERIES.insertFencers(newFencers).then(async () => {
+		QUERIES.insertFencers(newFencers).then(async () => {
 			const uploadedFencers = await QUERIES.getFencers({
 				firstName: newFencers.map(f => f.firstName),
 				lastName: newFencers.map(f => f.lastName),
 			});
-			const bouts = Object.entries(results).flatMap(([round, bouts]) =>
-				mapFTLBoutsToBoutModel(
-					bouts,
-					round as unknown as LiveResults.Round,
-					uploadedFencers,
-					event
+			const bouts = Object.entries(results)
+				.flatMap(([round, bouts]) =>
+					mapFTLBoutsToBoutModel(
+						bouts,
+						round as unknown as LiveResults.Round,
+						uploadedFencers,
+						event
+					)
 				)
-			);
+				.filter(b => b.fencerA || b.fencerB);
 			QUERIES.insertLiveBouts(bouts);
 		});
 	});
