@@ -2,7 +2,7 @@
 // import { competitions, countries, events } from "./schema";
 import { competitions, countries, events, fencers, liveBouts } from "./schema";
 import { db } from ".";
-import { Competition } from "~/app/events/events-list";
+import { Competition } from "~/app/events/(browse)/events-list";
 import {
 	sql,
 	eq,
@@ -14,6 +14,8 @@ import {
 	max,
 	min,
 	inArray,
+	desc,
+	aliasedTable,
 } from "drizzle-orm";
 import assert from "assert";
 import { EventModel, NewBoutModel } from "~/models";
@@ -80,11 +82,14 @@ export const QUERIES = {
 			.from(events)
 			.where(eq(events.id, id))
 			.leftJoin(competitions, eq(events.competition, competitions.id))
+			.innerJoin(countries, eq(competitions.host, countries.iocCode))
 			.limit(1);
 		assert(row.length == 1, `found ${row.length} events with id ${id}`);
 		return {
 			...row[0]!.events_0,
 			season: row[0]!.competitions_0!.season,
+			name: row[0]!.competitions_0!.name,
+			flag: row[0]!.countries_0!.isoCode ?? undefined,
 		};
 	},
 	async insertFencers(
@@ -134,10 +139,49 @@ export const QUERIES = {
 			);
 	},
 	async insertLiveBouts(bouts: NewBoutModel[]) {
-		console.log("inserting live bouts");
 		console.log(
-			await db.transaction(tx => tx.insert(liveBouts).values(bouts))
+			await db.transaction(tx =>
+				tx
+					.insert(liveBouts)
+					.values(bouts)
+					.onConflictDoUpdate({
+						set: {
+							fencerAScore: liveBouts.fencerAScore,
+							fencerBScore: liveBouts.fencerBScore,
+							winnerIsA: liveBouts.winnerIsA,
+						},
+						target: [
+							liveBouts.event,
+							liveBouts.order,
+							liveBouts.round,
+						],
+					})
+			)
 		);
+	},
+	async getLiveTableau(eventId: number) {
+		const fencers2 = aliasedTable(fencers, "fencers2");
+		return db
+			.select({
+				fencerA: {
+					firstName: fencers.firstName,
+					lastName: fencers.lastName,
+					score: liveBouts.fencerAScore,
+				},
+				fencerB: {
+					firstName: fencers2.firstName,
+					lastName: fencers2.lastName,
+					score: liveBouts.fencerBScore,
+				},
+				round: liveBouts.round,
+				order: liveBouts.order,
+				winnerIsA: liveBouts.winnerIsA,
+			})
+			.from(liveBouts)
+			.where(eq(liveBouts.event, eventId))
+			.orderBy(desc(liveBouts.round), liveBouts.order)
+			.leftJoin(fencers, eq(liveBouts.fencerA, fencers.id))
+			.leftJoin(fencers2, eq(liveBouts.fencerB, fencers2.id));
 	},
 };
 

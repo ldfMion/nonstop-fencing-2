@@ -1,6 +1,8 @@
 import { events, fencers, liveBouts } from "./server/db/schema";
 export type EventModel = typeof events.$inferSelect & {
 	season: number;
+	name: string;
+	flag?: string;
 };
 
 export type NewFencerModel = typeof fencers.$inferInsert;

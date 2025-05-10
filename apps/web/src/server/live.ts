@@ -41,7 +41,6 @@ async function updateLiveEvent(eventId: number) {
 					event
 				)
 			);
-			console.log("bouts to insert", bouts);
 			QUERIES.insertLiveBouts(bouts);
 		});
 	});
