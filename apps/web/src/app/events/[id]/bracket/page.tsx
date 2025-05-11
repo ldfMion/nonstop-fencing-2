@@ -6,7 +6,7 @@ import { JSX } from "react";
 import { env } from "~/../env";
 
 const MINUTES_TO_SCRAPE_AGAIN = 60;
-export const revalidate = 900; // 15 minutes
+export const revalidate = 300; // 15 minutes
 
 export async function generateStaticParams() {
 	const eventIds = [67, 68];
