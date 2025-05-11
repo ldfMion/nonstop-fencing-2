@@ -37,6 +37,7 @@ export const events = t.pgTable("events_0", {
 		withTimezone: true,
 		mode: "date",
 	}),
+	liveResultsTableauUrl: t.text("live_results_tableau_url"),
 });
 
 export const countries = t.pgTable("countries_0", {

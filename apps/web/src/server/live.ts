@@ -27,23 +27,21 @@ export async function updateLiveEvent(eventId: number) {
 		return fencers;
 	});
 	const countries = newFencers.map(f => ({ iocCode: f.country }));
-	QUERIES.insertCountries(countries).then(async () => {
-		QUERIES.insertFencers(newFencers).then(async () => {
-			const uploadedFencers = await QUERIES.getFencers({
-				firstName: newFencers.map(f => f.firstName),
-				lastName: newFencers.map(f => f.lastName),
-			});
-			const bouts = Object.entries(results)
-				.flatMap(([round, bouts]) =>
-					mapFTLBoutsToBoutModel(
-						bouts,
-						round as unknown as LiveResults.Round,
-						uploadedFencers,
-						event
-					)
-				)
-				.filter(b => b.fencerA || b.fencerB);
-			QUERIES.insertLiveBouts(bouts);
-		});
+	await QUERIES.insertCountries(countries);
+	await QUERIES.insertFencers(newFencers);
+	const uploadedFencers = await QUERIES.getFencers({
+		firstName: newFencers.map(f => f.firstName),
+		lastName: newFencers.map(f => f.lastName),
 	});
+	const bouts = Object.entries(results)
+		.flatMap(([round, bouts]) =>
+			mapFTLBoutsToBoutModel(
+				bouts,
+				round as unknown as LiveResults.Round,
+				uploadedFencers,
+				event
+			)
+		)
+		.filter(b => b.fencerA || b.fencerB);
+	await QUERIES.insertLiveBouts(bouts);
 }

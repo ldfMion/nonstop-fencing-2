@@ -175,10 +175,10 @@ export const QUERIES = {
 			);
 	},
 	async insertLiveBouts(bouts: NewBoutModel[]) {
-		// TODO I don't think this will update a bout with a new score/fencer
 		if (bouts.length == 0) {
 			return;
 		}
+		console.log("inserting live bouts");
 		console.log(
 			await db.transaction(tx =>
 				tx
@@ -199,13 +199,6 @@ export const QUERIES = {
 						],
 					})
 			)
-		);
-		console.log("updating last live update in event");
-		console.log(
-			await db
-				.update(events)
-				.set({ lastLiveUpdate: sql`now()` })
-				.where(eq(events.id, bouts[0]!.event))
 		);
 	},
 	async getLiveTableau(eventId: number): Promise<BoutModel[]> {
@@ -260,5 +253,11 @@ export const QUERIES = {
 			winnerIsA: b.winnerIsA ?? undefined,
 			id: b.id,
 		}));
+	},
+	async updateEvent(event: EventModel, set: Partial<EventModel>) {
+		console.log("updating event", event);
+		console.log(
+			await db.update(events).set(set).where(eq(events.id, event.id))
+		);
 	},
 };
