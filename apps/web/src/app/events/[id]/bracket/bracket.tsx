@@ -1,6 +1,6 @@
 // components/fencing-bracket.tsx
 import { BoutModel, Round } from "~/models";
-import { BracketCarousel } from "./bracketCarousel";
+import { BracketCarousel } from "./bracket-carousel";
 
 export type BracketBout = Omit<BoutModel, "id">;
 
@@ -11,7 +11,6 @@ export function Bracket({
 	bouts: BoutModel[];
 	isLive?: boolean;
 }) {
-	console.log("bouts from db", bouts.length);
 	const bracketBouts = createTableauBouts(64, bouts);
 	const rounds = bracketBouts.reduce(
 		(acc, bout) => {
@@ -62,9 +61,7 @@ function createTableauBouts(
 	let currRound = startingRound;
 	const tableau: BracketBout[] = [];
 	while (currRound > 1) {
-		console.log("currRound", currRound);
 		const numBouts = currRound / 2;
-		console.log("numBouts", numBouts);
 		const bouts = new Array(numBouts).fill(null).map((_, i) => ({
 			round: currRound.toString() as Round,
 			order: i,

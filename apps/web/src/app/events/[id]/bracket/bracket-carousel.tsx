@@ -64,16 +64,14 @@ export function BracketCarousel({
 							return (
 								<CarouselItem
 									key={roundKey}
-									className="!flex-shrink-1 min-w-50 flex flex-col"
+									className="!flex-shrink-1 min-w-60 flex flex-col gap-2"
 								>
-									{/* Round Header - Not sticky in Carousel item by default, but visible per slide */}
 									<Badge
 										className="text-base font-semibold"
 										variant="secondary"
 									>
 										{getRoundDisplayName(roundKey)}
 									</Badge>
-									{/* Bouts Display - Add vertical scrolling if needed */}
 									<div
 										className={cn(
 											"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in"

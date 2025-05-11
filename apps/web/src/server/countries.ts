@@ -8,5 +8,3 @@ export async function getIsoCodeFromIocCode(iocCode: string): Promise<string> {
 	const response = await axios.get(getUrl(iocCode));
 	return response.data[0].cca2;
 }
-
-console.log(await getIsoCodeFromIocCode("USA"));

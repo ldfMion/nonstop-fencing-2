@@ -13,7 +13,7 @@ export async function updateLiveEvents() {
 	updateLiveEvent(eventId);
 }
 
-async function updateLiveEvent(eventId: number) {
+export async function updateLiveEvent(eventId: number) {
 	const event = await QUERIES.getEvent(eventId);
 	const results = await getLiveResults(event);
 	const newFencers: NewFencerModel[] = results[64].flatMap(bout => {

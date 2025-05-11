@@ -55,7 +55,7 @@ function Fencer({
 		>
 			<div className="flex items-center gap-1 truncate">
 				{fencer.flag && (
-					<div className="flex-shrink-0 w-6 h-4 overflow-hidden rounded-[5px]">
+					<div className="flex-shrink-0 w-6 h-4 overflow-hidden rounded-[5px] border">
 						<Image
 							src={`https://flagcdn.com/w1280/${fencer.flag.toLowerCase()}.png`}
 							alt={`${fencer.flag} flag`}

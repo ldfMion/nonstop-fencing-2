@@ -21,25 +21,25 @@ export default async function EventLayout({
 	const event = await QUERIES.getEvent(Number(eventId));
 	return (
 		<>
-			<div className="lg:p-6">
+			<div className="lg:px-6">
 				<Card className="rounded-none lg:rounded-3xl  !p-6 ">
 					<div className="flex flex-row gap-2 items-start">
 						{event.flag && (
-							<div className="h-20 overflow-hidden rounded-sm border self-stretch">
+							<div className="h-14 aspect-3/2 md:h-20 md:w-28 overflow-hidden rounded-sm border self-stretch">
 								<Image
 									src={`https://flagcdn.com/w1280/${event.flag.toLowerCase()}.png`}
 									alt={`${event.flag} flag`}
-									className="w-full h-full object-cover"
+									className="h-full w-full object-cover"
 									height={400}
 									width={400}
 								/>
 							</div>
 						)}
 						<CardHeader className="flex-grow">
-							<CardTitle className="text-3xl">
+							<CardTitle className="text-xl md:text-3xl">
 								{event.name}
 							</CardTitle>
-							<CardDescription className="capitalize text-xl">
+							<CardDescription className="capitalize text-base md:text-xl">
 								{formatEventDescription(event)}
 							</CardDescription>
 						</CardHeader>

@@ -9,8 +9,6 @@ import {
 	and,
 	gt,
 	lt,
-	AnyColumn,
-	GetColumnData,
 	max,
 	min,
 	inArray,
@@ -22,6 +20,7 @@ import {
 import assert from "assert";
 import { BoutModel, EventModel, NewBoutModel } from "~/models";
 import { getIsoCodeFromIocCode } from "../countries";
+import { arrayAgg } from "./utils";
 
 export const QUERIES = {
 	async getCompetitions(
@@ -103,18 +102,19 @@ export const QUERIES = {
 			gender: "MEN" | "WOMEN";
 		}[]
 	) {
-		console.log("inserting fencers", newFencers);
 		console.log(
-			await db
-				.insert(fencers)
-				.values(newFencers)
-				.onConflictDoNothing({
-					target: [
-						fencers.firstName,
-						fencers.lastName,
-						fencers.country,
-					],
-				})
+			await db.transaction(tx =>
+				tx
+					.insert(fencers)
+					.values(newFencers)
+					.onConflictDoNothing({
+						target: [
+							fencers.firstName,
+							fencers.lastName,
+							fencers.country,
+						],
+					})
+			)
 		);
 	},
 	async insertCountries(
@@ -176,6 +176,9 @@ export const QUERIES = {
 	},
 	async insertLiveBouts(bouts: NewBoutModel[]) {
 		// TODO I don't think this will update a bout with a new score/fencer
+		if (bouts.length == 0) {
+			return;
+		}
 		console.log(
 			await db.transaction(tx =>
 				tx
@@ -183,9 +186,11 @@ export const QUERIES = {
 					.values(bouts)
 					.onConflictDoUpdate({
 						set: {
-							fencerAScore: liveBouts.fencerAScore,
-							fencerBScore: liveBouts.fencerBScore,
-							winnerIsA: liveBouts.winnerIsA,
+							fencerA: sql`EXCLUDED.fencer_a`,
+							fencerB: sql`EXCLUDED.fencer_b`,
+							fencerAScore: sql`EXCLUDED.fencer_a_score`,
+							fencerBScore: sql`EXCLUDED.fencer_b_score`,
+							winnerIsA: sql`EXCLUDED.winner_is_a`,
 						},
 						target: [
 							liveBouts.event,
@@ -194,6 +199,13 @@ export const QUERIES = {
 						],
 					})
 			)
+		);
+		console.log("updating last live update in event");
+		console.log(
+			await db
+				.update(events)
+				.set({ lastLiveUpdate: sql`now()` })
+				.where(eq(events.id, bouts[0]!.event))
 		);
 	},
 	async getLiveTableau(eventId: number): Promise<BoutModel[]> {
@@ -250,9 +262,3 @@ export const QUERIES = {
 		}));
 	},
 };
-
-function arrayAgg<Col extends AnyColumn>(column: Col) {
-	return sql<
-		GetColumnData<Col, "raw">[]
-	>`array_agg(distinct ${sql`${column}`}) filter (where ${column} is not null)`;
-}
