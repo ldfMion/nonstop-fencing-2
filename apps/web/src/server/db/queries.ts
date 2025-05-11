@@ -17,6 +17,7 @@ import {
 	desc,
 	aliasedTable,
 	isNull,
+	SQL,
 } from "drizzle-orm";
 import assert from "assert";
 import { BoutModel, EventModel, NewBoutModel } from "~/models";
@@ -129,6 +130,9 @@ export const QUERIES = {
 			.select({ iocCode: countries.iocCode })
 			.from(countries)
 			.where(isNull(countries.isoCode));
+		if (missingIsoCode.length == 0) {
+			return;
+		}
 		const updated = await Promise.all(
 			missingIsoCode.map(async row => ({
 				isoCode: await getIsoCodeFromIocCode(row.iocCode),
@@ -136,15 +140,24 @@ export const QUERIES = {
 			}))
 		);
 		console.log("update countries");
-		// TODO maybe I can make the update more performant
-		updated.forEach(async row => {
-			console.log(
-				await db
-					.update(countries)
-					.set({ isoCode: row.isoCode })
-					.where(eq(countries.iocCode, row.iocCode))
-			);
-		});
+
+		const sqlChunks: SQL[] = [];
+		sqlChunks.push(sql`(case`);
+		sqlChunks.push(
+			...updated.map(
+				row =>
+					sql`when ${countries.iocCode} = ${row.iocCode} then ${row.isoCode}`
+			)
+		);
+		const iocCodes: string[] = updated.map(row => row.iocCode);
+		sqlChunks.push(sql`end)`);
+		const finalSql: SQL = sql.join(sqlChunks, sql.raw(" "));
+		console.log(
+			await db
+				.update(countries)
+				.set({ isoCode: finalSql })
+				.where(inArray(countries.iocCode, iocCodes))
+		);
 	},
 	async getFencers(filters: { firstName: string[]; lastName?: string[] }) {
 		return await db
