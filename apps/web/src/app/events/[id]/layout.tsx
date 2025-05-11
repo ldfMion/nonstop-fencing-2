@@ -15,7 +15,7 @@ export default async function EventLayout({
 	params,
 }: {
 	children: Readonly<React.ReactNode>;
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }) {
 	const { id: eventId } = await params;
 	const event = await QUERIES.getEvent(Number(eventId));

@@ -5,7 +5,7 @@ import { Roboto, Anton } from "next/font/google";
 // 	variable: "--font-sans",
 // });
 
-export const anton = Anton({ weight: "400" });
+export const anton = Anton({ weight: "400", subsets: ["latin"] });
 
 export const fontSans = Roboto({
 	subsets: ["latin"],

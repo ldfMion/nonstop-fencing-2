@@ -7,7 +7,6 @@ import {
 	Sheet,
 	SheetClose,
 	SheetContent,
-	SheetDescription,
 	SheetFooter,
 	SheetHeader,
 	SheetTitle,
@@ -130,10 +129,12 @@ export function Filter() {
 							value={currentGender}
 							onValueChange={handleGenderChange}
 						>
-							<ToggleGroupItem value="men">Men's</ToggleGroupItem>{" "}
+							<ToggleGroupItem value="men">
+								{"Men's"}
+							</ToggleGroupItem>{" "}
 							{/* Lowercase value */}
 							<ToggleGroupItem value="women">
-								Women's
+								{"Women's"}
 							</ToggleGroupItem>{" "}
 							{/* Lowercase value */}
 						</ToggleGroup>

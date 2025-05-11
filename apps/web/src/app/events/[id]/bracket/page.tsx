@@ -13,7 +13,7 @@ const DEVELOPMENT = env.MODE == "DEV";
 export default async function BracketPage({
 	params,
 }: {
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }): Promise<JSX.Element> {
 	const { id } = await params;
 	const eventId = Number(id);
