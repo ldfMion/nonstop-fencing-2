@@ -10,12 +10,12 @@ export default function Home() {
 			<main className="flex-1">
 				{/* Hero Section */}
 				<section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 relative overflow-hidden">
-					<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background -skew-y-6 transform-gpu -translate-y-24 z-0"></div>
+					<div className="absolute inset-0 top-0 bg-gradient-to-br from-primary/20 via-background to-background -skew-y-6 transform-gpu -translate-y-24 z-0"></div>
 					<div className="container px-4 md:px-6 relative z-10">
 						<div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
 							<div className="flex flex-col justify-center space-y-4 p-10">
 								<div className="space-y-2">
-									<h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+									<h1 className="text-3xl font-bold sm:text-5xl xl:text-6xl/none anton">
 										Follow Fencing Like{" "}
 										<span className="text-primary">
 											Never Before
@@ -65,8 +65,8 @@ export default function Home() {
 					<div className="container px-4 md:px-6 z-10 mx-auto relative">
 						<div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
 							<div className="space-y-2 max-w-[800px]">
-								<h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-									The First Platform from a Fan Perspective
+								<h2 className="text-3xl font-bold sm:text-5xl anton">
+									Upgrading the Fencing Fan Experience
 								</h2>
 							</div>
 						</div>

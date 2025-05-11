@@ -20,7 +20,7 @@ function DesktopNavbar() {
 	return (
 		<div className="hidden flex-row justify-between py-6 md:flex">
 			<Link href="/">
-				<h1 className="text-2xl font-extrabold">
+				<h1 className="text-2xl anton tracking-wide">
 					<span className="text-primary">nonstop</span>
 					fencing
 				</h1>

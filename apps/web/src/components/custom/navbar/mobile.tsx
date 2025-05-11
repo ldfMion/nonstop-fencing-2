@@ -16,7 +16,7 @@ export function MobileNavbar() {
 	return (
 		<div className="flex flex-row items-center justify-between py-4 md:hidden">
 			<Link href="/">
-				<h1 className="text-xl font-extrabold">
+				<h1 className="text-xl anton tracking-wide">
 					<span className="text-primary">nonstop</span>fencing
 				</h1>
 			</Link>
