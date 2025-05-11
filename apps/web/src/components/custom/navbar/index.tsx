@@ -9,7 +9,7 @@ import { MobileNavbar } from "./mobile";
 
 export default function Navbar() {
 	return (
-		<div className="sticky top-0 z-10 px-6 backdrop-blur-xl">
+		<div className="sticky top-0 z-20 px-6 backdrop-blur-xl">
 			<DesktopNavbar />
 			<MobileNavbar />
 		</div>
