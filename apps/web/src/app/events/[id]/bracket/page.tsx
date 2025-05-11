@@ -3,9 +3,12 @@ import { Bracket } from "./bracket";
 import assert from "assert";
 import { updateLiveEvent } from "~/server/live";
 import { JSX } from "react";
+import { env } from "~/../env";
 
-const MINUTES_TO_SCRAPE_AGAIN = 15;
-export const dynamic = "force-dynamic";
+const MINUTES_TO_SCRAPE_AGAIN = 60;
+export const revalidate = 900; // 15 minutes
+
+const DEVELOPMENT = env.MODE == "DEV";
 
 export default async function BracketPage({
 	params,
@@ -21,12 +24,11 @@ export default async function BracketPage({
 		: MINUTES_TO_SCRAPE_AGAIN + 1;
 	console.log("event.lastLiveUpdate: ", event.lastLiveUpdate);
 	console.log("Time since last update: ", timeSinceLastUpdate);
-	if (timeSinceLastUpdate < MINUTES_TO_SCRAPE_AGAIN) {
+	if (DEVELOPMENT && timeSinceLastUpdate < MINUTES_TO_SCRAPE_AGAIN) {
 		console.log("Rendering with the existing data");
 		const tableau = await QUERIES.getLiveTableau(Number(id));
 		return <Bracket bouts={tableau} />;
 	}
-
 	console.log("Updating live event data");
 	await updateLiveEvent(eventId);
 	const tableau = await QUERIES.getLiveTableau(eventId);

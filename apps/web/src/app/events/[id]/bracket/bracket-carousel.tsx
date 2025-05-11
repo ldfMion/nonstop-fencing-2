@@ -84,9 +84,8 @@ export function BracketCarousel({
 												hidden={
 													!!(
 														slidesInView &&
-														!slidesInView.includes(
-															index
-														)
+														slidesInView[0] &&
+														index < slidesInView[0]
 													)
 												}
 											/>
