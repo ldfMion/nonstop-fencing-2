@@ -1,7 +1,7 @@
-import puppeteer from "puppeteer";
 import assert from "assert";
 import type * as Fie from "./types";
 import { EventModel } from "~/models";
+import { browserless } from "../browserless";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
@@ -67,7 +67,7 @@ export function getFieEventUrl(
 export async function getEventData(event: Fie.Event) {
 	const url = getFieEventUrl(event.competitionId, event.season);
 
-	const browser = await puppeteer.launch();
+	const browser = await browserless();
 	const page = await browser.newPage();
 
 	// Inject this before any page script executes
@@ -109,7 +109,7 @@ export async function getEventData(event: Fie.Event) {
 
 export async function getLinkToLiveResults(event: EventModel): Promise<string> {
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
-	const browser = await puppeteer.launch();
+	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
 	// TODO change waitForSelector to something else that actually finds the element, idk why this is working though
