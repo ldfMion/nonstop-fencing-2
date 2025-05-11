@@ -10,10 +10,12 @@ export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().url(),
 		MODE: z.enum(["DEV", "PROD"]),
+		BLESS_TOKEN: z.string(),
 	},
 
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		MODE: process.env.MODE,
+		BLESS_TOKEN: process.env.BLESS_TOKEN,
 	},
 });

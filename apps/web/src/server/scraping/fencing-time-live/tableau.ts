@@ -1,11 +1,11 @@
 import assert from "assert";
-import puppeteer from "puppeteer";
 import type * as LiveResults from "./types";
+import { browserless } from "../browserless";
 
 export async function scrapeTableauPage(
 	url: string
 ): Promise<LiveResults.Tableau> {
-	const browser = await puppeteer.launch();
+	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
 	const fencerNodes = await page.$$eval(".tbb, .tbbr", els =>

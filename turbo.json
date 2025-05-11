@@ -1,5 +1,5 @@
 {
-	"globalEnv": ["DATABASE_URL, MODE"],
+	"globalEnv": ["DATABASE_URL", "MODE", "BLESS_TOKEN"],
 	"$schema": "https://turborepo.com/schema.json",
 	"ui": "tui",
 	"tasks": {

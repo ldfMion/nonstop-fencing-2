@@ -21,7 +21,8 @@ function DesktopNavbar() {
 		<div className="hidden flex-row justify-between py-6 md:flex">
 			<Link href="/">
 				<h1 className="text-2xl font-extrabold">
-					<span className="text-primary">nonstop</span>fencing
+					<span className="text-primary">nonstop</span>
+					fencing
 				</h1>
 			</Link>
 			<NavigationMenu>

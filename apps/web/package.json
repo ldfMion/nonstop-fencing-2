@@ -27,14 +27,17 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
+		"drizzle-orm": "^0.43.1",
 		"embla-carousel-react": "^8.6.0",
 		"lucide-react": "^0.507.0",
 		"next": "^15.3.0",
 		"postcss": "^8.5.3",
+		"puppeteer-core": "^24.8.2",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"tailwind-merge": "^3.2.0",
-		"tailwindcss": "^4.1.5"
+		"tailwindcss": "^4.1.5",
+		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
 		"@repo/eslint-config": "workspace:*",

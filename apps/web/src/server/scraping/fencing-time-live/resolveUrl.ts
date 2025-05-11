@@ -1,6 +1,6 @@
-import puppeteer from "puppeteer";
 import assert from "assert";
 import { EventModel } from "~/models";
+import { browserless } from "../browserless";
 
 export async function resolveUrl(fieTournamentUrl: string, event: EventModel) {
 	const eventResultsUrl = await getEventResultsUrl(fieTournamentUrl, event);
@@ -26,7 +26,7 @@ async function getEventResultsUrl(
 	tournamentUrl: string,
 	event: EventModel
 ): Promise<string> {
-	const browser = await puppeteer.launch();
+	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(tournamentUrl, { waitUntil: "domcontentloaded" });
 	const eventTitle = `${
