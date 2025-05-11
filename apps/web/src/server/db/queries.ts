@@ -16,9 +16,11 @@ import {
 	inArray,
 	desc,
 	aliasedTable,
+	isNull,
 } from "drizzle-orm";
 import assert from "assert";
 import { BoutModel, EventModel, NewBoutModel } from "~/models";
+import { getIsoCodeFromIocCode } from "../countries";
 
 export const QUERIES = {
 	async getCompetitions(
@@ -123,6 +125,26 @@ export const QUERIES = {
 				.values(newCountries)
 				.onConflictDoNothing()
 		);
+		const missingIsoCode = await db
+			.select({ iocCode: countries.iocCode })
+			.from(countries)
+			.where(isNull(countries.isoCode));
+		const updated = await Promise.all(
+			missingIsoCode.map(async row => ({
+				isoCode: await getIsoCodeFromIocCode(row.iocCode),
+				iocCode: row.iocCode,
+			}))
+		);
+		console.log("update countries");
+		// TODO maybe I can make the update more performant
+		updated.forEach(async row => {
+			console.log(
+				await db
+					.update(countries)
+					.set({ isoCode: row.isoCode })
+					.where(eq(countries.iocCode, row.iocCode))
+			);
+		});
 	},
 	async getFencers(filters: { firstName: string[]; lastName?: string[] }) {
 		return await db
@@ -140,6 +162,7 @@ export const QUERIES = {
 			);
 	},
 	async insertLiveBouts(bouts: NewBoutModel[]) {
+		// TODO I don't think this will update a bout with a new score/fencer
 		console.log(
 			await db.transaction(tx =>
 				tx
