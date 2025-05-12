@@ -28,7 +28,9 @@ function DesktopNavbar() {
 			<NavigationMenu>
 				<NavigationMenuList className="flex flex-row gap-2">
 					<DesktopBaseLink href="/">Rankings</DesktopBaseLink>
-					<DesktopBaseLink href="/events">Events</DesktopBaseLink>
+					<DesktopBaseLink href="/competitions">
+						Competitions
+					</DesktopBaseLink>
 					<DesktopBaseLink href="/about">About</DesktopBaseLink>
 				</NavigationMenuList>
 			</NavigationMenu>
@@ -45,7 +47,7 @@ function DesktopBaseLink({
 }) {
 	return (
 		<NavigationMenuItem>
-			<Link href={href} passHref className={navigationMenuTriggerStyle()}>
+			<Link href={href} className={navigationMenuTriggerStyle()}>
 				{children}
 			</Link>
 		</NavigationMenuItem>

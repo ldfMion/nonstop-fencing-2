@@ -8,7 +8,12 @@ import {
 	NavigationMenuItem,
 	NavigationMenuList,
 } from "~/components/ui/navigation-menu";
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger,
+} from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
 
 export function MobileNavbar() {
@@ -26,6 +31,9 @@ export function MobileNavbar() {
 						<MenuIcon />
 					</SheetTrigger>
 					<SheetContent className="overflow-y-scroll p-10">
+						<SheetTitle className="hidden">
+							Mobile Navigation
+						</SheetTitle>
 						<NavigationMenu>
 							<NavigationMenuList className="flex flex-col items-start">
 								<MobileBaseLink
@@ -34,8 +42,8 @@ export function MobileNavbar() {
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
-									href="events"
-									title="Events"
+									href="competitions"
+									title="Competitions"
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
@@ -66,7 +74,6 @@ function MobileBaseLink({
 			<NavigationMenuItem>
 				<Link
 					href={href}
-					passHref
 					className={cn(
 						buttonVariants({ variant: "link" }),
 						"p-0 text-lg text-foreground"

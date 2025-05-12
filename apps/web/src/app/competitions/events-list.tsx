@@ -31,10 +31,6 @@ export function EventsList({ competitions }: { competitions: Competition[] }) {
 		);
 	}
 
-	competitions.sort(
-		(b, a) => a.date.start.getTime() - b.date.start.getTime()
-	);
-
 	const groupCompetitionsByMonth = (competitions: Competition[]) => {
 		const grouped = new Map<string, Competition[]>();
 		competitions.forEach(competition => {
@@ -47,11 +43,7 @@ export function EventsList({ competitions }: { competitions: Competition[] }) {
 		});
 
 		// Create array of entries and sort by actual date, not string
-		return Array.from(grouped.entries()).sort((a, b) => {
-			const aDate = new Date(a[0]); // Parse the "Month YYYY" string
-			const bDate = new Date(b[0]);
-			return bDate.getTime() - aDate.getTime();
-		});
+		return Array.from(grouped.entries());
 	};
 
 	return (

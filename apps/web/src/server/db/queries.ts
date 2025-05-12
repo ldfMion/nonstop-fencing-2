@@ -2,7 +2,7 @@
 // import { competitions, countries, events } from "./schema";
 import { competitions, countries, events, fencers, liveBouts } from "./schema";
 import { db } from ".";
-import { Competition } from "~/app/events/(browse)/events-list";
+import { Competition } from "~/app/competitions/events-list";
 import {
 	sql,
 	eq,
@@ -16,6 +16,7 @@ import {
 	aliasedTable,
 	isNull,
 	SQL,
+	asc,
 } from "drizzle-orm";
 import assert from "assert";
 import { BoutModel, EventModel, NewBoutModel } from "~/models";
@@ -33,7 +34,6 @@ export const QUERIES = {
 		} = { season: 2025, upcoming: false }
 	): Promise<Competition[]> {
 		const now = sql`now()`;
-
 		const rows = await db
 			.select({
 				id: competitions.id,
@@ -66,7 +66,7 @@ export const QUERIES = {
 					? gt(max(events.date), now)
 					: lt(max(events.date), now)
 			)
-			.orderBy(min(events.date));
+			.orderBy(asc(min(events.date)));
 
 		return rows.map(r => ({
 			id: r.id,

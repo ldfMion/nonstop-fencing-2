@@ -1,6 +1,6 @@
 "server only";
 
-import { EventsList } from "~/app/events/(browse)/events-list";
+import { EventsList } from "~/app/competitions/events-list";
 import { z } from "zod";
 import { QUERIES } from "~/server/db/queries";
 
