@@ -1,19 +1,7 @@
 import { format } from "date-fns";
 import { CompetitionCard } from "./competition-card";
 import { Fragment } from "react";
-
-export type Competition = {
-	id: number;
-	name: string;
-	flag?: string;
-	weapons: ("FOIL" | "EPEE" | "SABER")[];
-	types: ("INDIVIDUAL" | "TEAM")[];
-	genders: ("MEN" | "WOMEN")[];
-	date: {
-		start: Date;
-		end: Date;
-	};
-};
+import { Competition } from "~/models";
 
 export type Event = {
 	id: number;

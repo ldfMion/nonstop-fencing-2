@@ -5,7 +5,7 @@ import { updateLiveEvent } from "~/server/live";
 import { JSX } from "react";
 import { env } from "~/../env";
 
-const MINUTES_TO_SCRAPE_AGAIN = 60;
+const MINUTES_TO_SCRAPE_AGAIN = 900;
 export const revalidate = 300; // 15 minutes
 
 export async function generateStaticParams() {
@@ -27,6 +27,7 @@ export default async function BracketPage({
 	assert(!isNaN(eventId), "Event ID must be a number");
 	const event = await QUERIES.getEvent(eventId);
 	if (DEVELOPMENT) {
+		console.log("is in development");
 		const timeSinceLastUpdate = event.lastLiveUpdate
 			? getMinutesSinceDate(event.lastLiveUpdate)
 			: MINUTES_TO_SCRAPE_AGAIN + 1;

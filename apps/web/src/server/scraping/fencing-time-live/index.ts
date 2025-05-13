@@ -18,7 +18,6 @@ export async function getTableauData(
 	// const url = "https://www.fencingtimelive.com/tableaus/scores/3769F76EFA3E4370AED992957A6C6BCE/A8B41199D3F74E1A9A3C57E71FA43253/trees/5E31594493E94D1594DBB1E7660C9407/tables/0/7";
 	const result = await scrapeTableauPage(tableauHtmlUrl);
 	QUERIES.updateEvent(event, {
-		lastLiveUpdate: new Date(),
 		liveResultsTableauUrl: tableauHtmlUrl,
 	});
 	return result;

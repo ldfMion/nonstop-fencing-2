@@ -2,7 +2,6 @@
 // import { competitions, countries, events } from "./schema";
 import { competitions, countries, events, fencers, liveBouts } from "./schema";
 import { db } from ".";
-import { Competition } from "~/app/competitions/events-list";
 import {
 	sql,
 	eq,
@@ -19,7 +18,7 @@ import {
 	asc,
 } from "drizzle-orm";
 import assert from "assert";
-import { BoutModel, EventModel, NewBoutModel } from "~/models";
+import { BoutModel, Competition, EventModel, NewBoutModel } from "~/models";
 import { getIsoCodeFromIocCode } from "../countries";
 import { arrayAgg } from "./utils";
 
@@ -66,7 +65,11 @@ export const QUERIES = {
 					? gt(max(events.date), now)
 					: lt(max(events.date), now)
 			)
-			.orderBy(asc(min(events.date)));
+			.orderBy(
+				filters.upcoming
+					? asc(min(events.date))
+					: desc(min(events.date))
+			);
 
 		return rows.map(r => ({
 			id: r.id,
@@ -77,6 +80,51 @@ export const QUERIES = {
 			genders: r.genders,
 			date: { start: r.startDate!, end: r.endDate! },
 		}));
+	},
+	async getCompetition(id: number) {
+		/*
+		const row = await db
+			.select({
+				id: competitions.id,
+				name: competitions.name,
+				flag: countries.isoCode,
+				date: {
+					startDate: min(events.date),
+					endDate: max(events.date),
+				},
+				events: arrayAgg(events.id),
+			})
+			.from(competitions)
+			.where(eq(competitions.id, id))
+			.leftJoin(countries, eq(competitions.host, countries.iocCode))
+			.leftJoin(events, eq(events.competition, competitions.id))
+			.groupBy(competitions.id, countries.iocCode);
+		return row;
+        */
+		const fromDb = await db.query.competitions.findFirst({
+			where: (competitions, { eq }) => eq(competitions.id, id),
+			with: {
+				events: true,
+				host: true,
+			},
+		});
+		if (fromDb == undefined) {
+			return undefined;
+		}
+		const sortedEvents = fromDb.events.sort(
+			(a, b) => a.date.getTime() - b.date.getTime()
+		);
+		return {
+			id: fromDb.id,
+			name: fromDb.name,
+			season: fromDb.season,
+			events: fromDb.events,
+			date: {
+				start: sortedEvents[0]!.date,
+				end: sortedEvents.at(-1)!.date,
+			},
+			flag: fromDb.host.isoCode ?? undefined,
+		};
 	},
 	async getEvent(id: number): Promise<EventModel> {
 		const row = await db
@@ -255,7 +303,6 @@ export const QUERIES = {
 		}));
 	},
 	async updateEvent(event: EventModel, set: Partial<EventModel>) {
-		console.log("updating event", event);
 		console.log(
 			await db.update(events).set(set).where(eq(events.id, event.id))
 		);

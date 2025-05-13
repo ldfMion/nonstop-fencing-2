@@ -6,41 +6,44 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import Image from "next/image";
-import { Competition } from "./events-list";
-import { format } from "date-fns";
 import { Badge } from "~/components/ui/badge";
+import { Competition } from "~/models";
+import { getDateRange } from "~/lib/utils";
+import Link from "next/link";
 
 export function CompetitionCard({ competition }: { competition: Competition }) {
 	return (
-		<Card
-			key={competition.id}
-			className="mb-2 shadow-none rounded-3xl flex flex-col gap-2"
-		>
-			<CardHeader className="flex flex-row gap-2 items-center">
-				{competition.flag && (
-					<div className="flex-shrink-0 w-12 h-8 overflow-hidden rounded-sm border">
-						<Image
-							src={`https://flagcdn.com/w1280/${competition.flag.toLowerCase()}.png`}
-							alt={`${competition.flag} flag`}
-							className="w-full h-full object-cover"
-							height={400}
-							width={400}
-						/>
+		<Link href={`/competitions/${competition.id}`}>
+			<Card
+				key={competition.id}
+				className="mb-2 shadow-none rounded-3xl flex flex-col gap-2"
+			>
+				<CardHeader className="flex flex-row gap-2 items-center">
+					{competition.flag && (
+						<div className="flex-shrink-0 w-12 h-8 overflow-hidden rounded-sm border">
+							<Image
+								src={`https://flagcdn.com/w1280/${competition.flag.toLowerCase()}.png`}
+								alt={`${competition.flag} flag`}
+								className="w-full h-full object-cover"
+								height={400}
+								width={400}
+							/>
+						</div>
+					)}
+					<div className="flex flex-col">
+						<CardTitle className="text-md font-semibold leading-none">
+							{competition.name}
+						</CardTitle>
+						<CardDescription className="text-sm">
+							{getDateRange(competition.date)}
+						</CardDescription>
 					</div>
-				)}
-				<div className="flex flex-col">
-					<CardTitle className="text-md font-semibold leading-none">
-						{competition.name}
-					</CardTitle>
-					<CardDescription className="text-sm">
-						{getCompetitionDateRange(competition)}
-					</CardDescription>
-				</div>
-			</CardHeader>
-			<CardContent className="">
-				<Badges competition={competition} />
-			</CardContent>
-		</Card>
+				</CardHeader>
+				<CardContent className="">
+					<Badges competition={competition} />
+				</CardContent>
+			</Card>
+		</Link>
 	);
 }
 
@@ -72,10 +75,6 @@ function Badges({ competition }: { competition: Competition }) {
 		</div>
 	);
 }
-
-const getCompetitionDateRange = (competition: Competition) => {
-	return `${format(competition.date.start, "MMM d")} - ${format(competition.date.end, "MMM d, yyyy")}`;
-};
 
 // Get weapon color based on weapon type
 const getWeaponColor = (weapon: "FOIL" | "EPEE" | "SABER") => {

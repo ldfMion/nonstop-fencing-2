@@ -31,3 +31,16 @@ export type BoutModel = {
 	winnerIsA?: boolean;
 	id: number;
 };
+
+export type Competition = {
+	id: number;
+	name: string;
+	flag?: string;
+	weapons: ("FOIL" | "EPEE" | "SABER")[];
+	types: ("INDIVIDUAL" | "TEAM")[];
+	genders: ("MEN" | "WOMEN")[];
+	date: {
+		start: Date;
+		end: Date;
+	};
+};

@@ -31,23 +31,23 @@ export function BracketCarousel({
 	}, [api]);
 
 	return (
-		<div className="p-0 md:p-6">
-			<Carousel
-				opts={{
-					align: "start",
-				}}
-				className="w-full"
-				setApi={setApi}
-			>
-				<div className="absolute top-0 right-0 z-20 flex space-x-2 p-4">
-					{/* Override default button positioning */}
-					<Button asChild variant="secondary">
-						<CarouselPrevious className="static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
-					</Button>
-					<Button asChild variant="secondary">
-						<CarouselNext className="static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
-					</Button>
-				</div>
+		<Carousel
+			opts={{
+				align: "start",
+			}}
+			className="w-full"
+			setApi={setApi}
+		>
+			<div className="absolute top-0 right-0 z-20 flex space-x-2 p-4">
+				{/* Override default button positioning */}
+				<Button asChild variant="default">
+					<CarouselPrevious className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
+				</Button>
+				<Button asChild variant="default">
+					<CarouselNext className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
+				</Button>
+			</div>
+			<div className="p-0 md:p-6">
 				<Card className="p-6 bg-transparent md:bg-card rounded-none md:rounded-2xl border-none md:border">
 					{/* Shadcn Carousel */}
 					{/* Custom positioned navigation - absolute to parent Carousel, then flexbox */}
@@ -96,8 +96,8 @@ export function BracketCarousel({
 						})}
 					</CarouselContent>
 				</Card>
-			</Carousel>
-		</div>
+			</div>
+		</Carousel>
 	);
 }
 

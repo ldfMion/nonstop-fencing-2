@@ -1,4 +1,3 @@
-// components/fencing-bracket.tsx
 import { BoutModel, Round } from "~/models";
 import { BracketCarousel } from "./bracket-carousel";
 

@@ -44,4 +44,9 @@ export async function updateLiveEvent(eventId: number) {
 		)
 		.filter(b => b.fencerA || b.fencerB);
 	await QUERIES.insertLiveBouts(bouts);
+
+	console.log("updating lastLiveUpdate");
+	QUERIES.updateEvent(event, {
+		lastLiveUpdate: new Date(),
+	});
 }
