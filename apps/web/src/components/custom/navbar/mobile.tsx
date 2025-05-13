@@ -42,7 +42,7 @@ export function MobileNavbar() {
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
-									href="competitions"
+									href="/competitions"
 									title="Competitions"
 									onOpenChange={setOpen}
 								/>
