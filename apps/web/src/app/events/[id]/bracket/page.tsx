@@ -5,16 +5,15 @@ import { updateLiveEvent } from "~/server/live";
 import { JSX } from "react";
 import { env } from "~/../env";
 
-const MINUTES_TO_SCRAPE_AGAIN = 900;
-export const revalidate = 300; // 15 minutes
-
+//NEXT SETTINGS
+export const revalidate = 300;
+// this should make it create a static page when it is requested the first time
+export const dynamic = "force-static";
 export async function generateStaticParams() {
-	const eventIds = [67, 68];
-	return eventIds.map(id => ({
-		id: String(id),
-	}));
+	return [];
 }
 
+const MINUTES_TO_SCRAPE_AGAIN = 900;
 const DEVELOPMENT = env.MODE == "DEV";
 
 export default async function BracketPage({
