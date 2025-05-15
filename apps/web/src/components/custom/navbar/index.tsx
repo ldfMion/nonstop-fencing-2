@@ -6,6 +6,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import { MobileNavbar } from "./mobile";
+import { router } from "~/router";
 
 export default function Navbar() {
 	return (
@@ -27,11 +28,13 @@ function DesktopNavbar() {
 			</Link>
 			<NavigationMenu>
 				<NavigationMenuList className="flex flex-row gap-2">
-					<DesktopBaseLink href="/">Rankings</DesktopBaseLink>
-					<DesktopBaseLink href="/competitions">
+					<DesktopBaseLink href={router.home}>
+						Rankings
+					</DesktopBaseLink>
+					<DesktopBaseLink href={router.competitions()}>
 						Competitions
 					</DesktopBaseLink>
-					<DesktopBaseLink href="/about">About</DesktopBaseLink>
+					<DesktopBaseLink href={router.home}>About</DesktopBaseLink>
 				</NavigationMenuList>
 			</NavigationMenu>
 		</div>

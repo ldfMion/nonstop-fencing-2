@@ -1,21 +1,8 @@
 "server only";
 
 import { EventsList } from "~/app/competitions/(browse)/events-list";
-import { z } from "zod";
 import { QUERIES } from "~/server/db/queries";
-
-const searchParamsSchema = z
-	.object({
-		gender: z.literal("men").or(z.literal("women")).optional(),
-		weapon: z
-			.literal("foil")
-			.or(z.literal("epee"))
-			.or(z.literal("saber"))
-			.optional(),
-		type: z.literal("individual").or(z.literal("team")).optional(),
-		status: z.literal("upcoming").or(z.literal("previous")).optional(),
-	})
-	.optional();
+import { parseCompetitionSearchParams } from "~/router";
 
 export default async function EventsPage({
 	searchParams,
@@ -23,7 +10,7 @@ export default async function EventsPage({
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
 	console.log("rendering page");
-	const parsed = searchParamsSchema.parse(await searchParams);
+	const parsed = parseCompetitionSearchParams(await searchParams);
 	const filters = {
 		season: 2025,
 		gender: parsed?.gender?.toUpperCase() as "MEN" | "WOMEN" | undefined,

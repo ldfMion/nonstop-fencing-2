@@ -15,6 +15,7 @@ import {
 	SheetTrigger,
 } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
+import { router } from "~/router";
 
 export function MobileNavbar() {
 	const [open, setOpen] = useState(false);
@@ -37,17 +38,17 @@ export function MobileNavbar() {
 						<NavigationMenu>
 							<NavigationMenuList className="flex flex-col items-start">
 								<MobileBaseLink
-									href="/about"
+									href={router.home}
 									title="About"
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
-									href="/competitions"
+									href={router.competitions()}
 									title="Competitions"
 									onOpenChange={setOpen}
 								/>
 								<MobileBaseLink
-									href="/"
+									href={router.home}
 									title="Rankings"
 									onOpenChange={setOpen}
 								/>
