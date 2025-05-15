@@ -3,7 +3,6 @@ import type * as Fie from "./types";
 import { EventModel } from "~/models";
 import { browserless } from "../browserless";
 export type { Fie };
-import puppeteer from "puppeteer";
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
 export async function fetchCompetitions(season: number) {
@@ -47,15 +46,20 @@ export async function fetchCompetitions(season: number) {
 	// TODO validate with zod
 	const dataPassed = (await responsePassed.json()) as any;
 	const dataUpcoming = (await responseUpcoming.json()) as any;
+	const filters = ["satellite", "satelite", "university"];
 	return (dataPassed.items.concat(dataUpcoming.items) as Fie.Event[]).filter(
-		event => {
-			// console.log(event.name);
-			// console.log(event.name.toLowerCase() == "tournoi satellite");
-			return !["tournoi satellite", "tournoi satelite"].includes(
-				event.name.toLowerCase()
-			);
-		}
+		event => !includesAny(event.name, filters)
 	);
+}
+
+function includesAny(str: string, matches: string[]) {
+	const lower = str.toLowerCase();
+	for (const match of matches) {
+		if (lower.includes(match)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 export function getFieEventUrl(
@@ -69,7 +73,7 @@ export async function getEventData(event: EventModel) {
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
 	console.log("url", url);
 
-	const browser = await puppeteer.launch();
+	const browser = await browserless();
 	const page = await browser.newPage();
 
 	// Inject this before any page script executes

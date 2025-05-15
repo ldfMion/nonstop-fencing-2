@@ -1,9 +1,12 @@
-import { events } from "../../db/schema";
+import { toTitleCase } from "~/lib/utils";
 import type { Fie } from ".";
 import { createWeaponParser } from "../utils";
-import { FencerModel, NewPastBoutModel, NewFencerModel } from "~/models";
-
-type DBEventInput = typeof events.$inferInsert;
+import {
+	FencerModel,
+	NewPastBoutModel,
+	NewFencerModel,
+	NewEventModel,
+} from "~/models";
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 	const withName = events.map(event => ({
@@ -27,7 +30,7 @@ export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 export function mapFieEventToDBEvent(
 	event: Fie.Event,
 	competitionId: number
-): DBEventInput {
+): NewEventModel {
 	return {
 		date: parseDate(event.endDate),
 		weapon: parseFieWeapon(event.weapon),
@@ -68,11 +71,22 @@ function parseDate(str: string) {
 }
 
 export function createName(event: Fie.Event) {
-	return `${event.location} ${parseFieEventTypeInName(event.name)}`;
+	const eventType = parseFieEventTypeInName(event.name);
+	if (
+		eventType.toLowerCase().includes("world cup") ||
+		eventType.toLowerCase().includes("grand prix")
+	) {
+		return toTitleCase(
+			`${event.location} ${parseFieWeapon(event.weapon)} ${parseFieEventTypeInName(event.name)}`
+		);
+	}
+	return toTitleCase(
+		`${event.location} ${parseFieEventTypeInName(event.name)}`
+	);
 }
 
 function parseFieEventTypeInName(name: string) {
-	switch (name.toLocaleLowerCase()) {
+	switch (name.trim().toLocaleLowerCase()) {
 		case "coupe du monde":
 		case "coupe du monde par équipes":
 			return "World Cup";

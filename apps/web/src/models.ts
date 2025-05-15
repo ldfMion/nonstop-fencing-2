@@ -1,9 +1,19 @@
-import { events, fencers, liveBouts, pastBouts } from "./server/db/schema";
+import {
+	competitions,
+	events,
+	fencers,
+	liveBouts,
+	pastBouts,
+} from "./server/db/schema";
 export type EventModel = typeof events.$inferSelect & {
 	season: number;
 	name: string;
 	flag?: string;
 };
+
+export type NewEventModel = typeof events.$inferInsert;
+
+export type NewCompetitionModel = typeof competitions.$inferInsert;
 
 export type NewFencerModel = typeof fencers.$inferInsert;
 

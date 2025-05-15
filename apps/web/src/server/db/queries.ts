@@ -32,6 +32,8 @@ import {
 	EventModel,
 	NewLiveBoutModel,
 	NewPastBoutModel,
+	NewEventModel,
+	NewCompetitionModel,
 } from "~/models";
 import { getIsoCodeFromIocCode } from "../countries";
 import { arrayAgg } from "./utils";
@@ -389,5 +391,26 @@ export const QUERIES = {
 			.select({ id: events.id })
 			.from(events)
 			.where(eq(events.hasResults, true));
+	},
+	async insertEvents(newEvents: NewEventModel[]) {
+		db.insert(events)
+			.values(newEvents)
+			.onConflictDoUpdate({
+				target: [events.fieCompetitionId],
+				set: {
+					date: sql`EXCLUDED.date`,
+					hasFieResults: sql`EXCLUDED.has_fie_results`,
+				},
+			});
+	},
+	async insertCompetitions(newCompetitions: NewCompetitionModel[]) {
+		return db
+			.insert(competitions)
+			.values(newCompetitions)
+			.returning({ name: competitions.name, id: competitions.id })
+			.onConflictDoUpdate({
+				target: [competitions.id],
+				set: { name: sql`EXCLUDED.name`, host: sql`EXCLUDED.host` },
+			});
 	},
 };
