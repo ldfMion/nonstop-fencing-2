@@ -50,6 +50,7 @@
 		"drizzle-orm": "^0.43.1",
 		"eslint": "^9.26.0",
 		"postgres": "^3.4.5",
+		"puppeteer": "^24.8.2",
 		"tsx": "^4.19.4",
 		"tw-animate-css": "^1.2.9",
 		"typescript": "5.8.2",

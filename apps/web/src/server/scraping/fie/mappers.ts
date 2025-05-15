@@ -1,6 +1,7 @@
 import { events } from "../../db/schema";
 import type { Fie } from ".";
 import { createWeaponParser } from "../utils";
+import { FencerModel, NewPastBoutModel, NewFencerModel } from "~/models";
 
 type DBEventInput = typeof events.$inferInsert;
 
@@ -88,4 +89,92 @@ function parseFieGender(gender: string) {
 		return "WOMEN";
 	}
 	throw new Error(`Unexpected gender '${gender}'`);
+}
+
+export function mapFieTableauToFencers(
+	tableau: Fie.Tableau,
+	gender: "MEN" | "WOMEN"
+): NewFencerModel[] {
+	return tableau[1]!.rounds["B64"]!.flatMap(bout => [
+		mapFieFencerToModel(bout.fencer1, gender),
+		mapFieFencerToModel(bout.fencer2, gender),
+	]);
+}
+
+function mapFieFencerToModel(
+	f: Fie.Fencer,
+	gender: "MEN" | "WOMEN"
+): NewFencerModel {
+	const [firstName, lastName] = parseFieName(f.name);
+	return {
+		firstName: firstName,
+		lastName: lastName,
+		country: f.nationality,
+		gender: gender,
+	};
+}
+
+function parseFieName(name: string): [string, string] {
+	let firstName = "";
+	let lastName = "";
+	name.split(" ").forEach(word => {
+		if (word == word.toUpperCase()) {
+			firstName += ` ${word}`;
+		} else {
+			lastName += ` ${word}`;
+		}
+	});
+	return [firstName.toLowerCase(), lastName.toLowerCase()];
+}
+
+export function mapFieTableauToBouts(
+	tableau: Fie.Tableau,
+	fencers: FencerModel[],
+	eventId: number
+): NewPastBoutModel[] {
+	return Object.entries(tableau[1]!.rounds).flatMap(([round, bouts]) =>
+		bouts.map((bout, index) =>
+			mapFieBoutToModel(
+				bout,
+				fencers,
+				eventId,
+				index,
+				round.replace("B", "") as "2" | "4" | "8" | "16" | "32" | "64"
+			)
+		)
+	);
+}
+
+function mapFieBoutToModel(
+	b: Fie.Bout,
+	fencers: FencerModel[],
+	eventId: number,
+	order: number,
+	round: "2" | "4" | "8" | "16" | "32" | "64"
+): NewPastBoutModel {
+	const fencer1 = findFieFencer(b.fencer1, fencers);
+	const fencer2 = findFieFencer(b.fencer2, fencers);
+	return {
+		round: round,
+		order: order,
+		fencerA: fencer1.id,
+		fencerB: fencer2.id,
+		fencerAScore: b.fencer1.score,
+		fencerBScore: b.fencer2.score,
+		event: eventId,
+		winnerIsA: b.fencer1.isWinner,
+	};
+}
+
+function findFieFencer(
+	fencer: Fie.Fencer,
+	fencers: FencerModel[]
+): FencerModel {
+	const [firstName, lastName] = parseFieName(fencer.name);
+	return fencers.find(
+		f =>
+			f.firstName == firstName &&
+			f.lastName == lastName &&
+			f.country == fencer.nationality
+	)!;
 }

@@ -68,7 +68,6 @@ export const liveBouts = t.pgTable(
 		fencerB: t.integer("fencer_b").references(() => fencers.id),
 		fencerAScore: t.smallint("fencer_a_score"),
 		fencerBScore: t.smallint("fencer_b_score"),
-		// status: t.pgEnum("live_bout_status", ["PLANNED", "FINISHED", "LIVE"])("status").notNull()
 		winnerIsA: t.boolean("winner_is_a"),
 		round: roundEnum("round").notNull(),
 		order: t.integer("order").notNull(),
@@ -84,6 +83,31 @@ export const liveBouts = t.pgTable(
 		),
 		t.unique().on(table.event, table.order, table.round),
 	]
+);
+
+export const pastBouts = t.pgTable(
+	"past_bouts_0",
+	{
+		id: t.serial("id").primaryKey(),
+		fencerA: t
+			.integer("fencer_a")
+			.references(() => fencers.id)
+			.notNull(),
+		fencerB: t
+			.integer("fencer_b")
+			.references(() => fencers.id)
+			.notNull(),
+		fencerAScore: t.smallint("fencer_a_score").notNull(),
+		fencerBScore: t.smallint("fencer_b_score").notNull(),
+		winnerIsA: t.boolean("winner_is_a").notNull(),
+		round: roundEnum("round").notNull(),
+		order: t.integer("order").notNull(),
+		event: t
+			.integer("event")
+			.references(() => events.id)
+			.notNull(),
+	},
+	table => [t.unique().on(table.event, table.order, table.round)]
 );
 
 export const competitionsRelations = relations(
@@ -117,6 +141,12 @@ export const liveBoutsRelations = relations(liveBouts, ({ one }) => ({
 	fencerB: one(fencers),
 }));
 
+export const pastBoutsRelations = relations(pastBouts, ({ one }) => ({
+	fencerA: one(fencers),
+	fencerB: one(fencers),
+}));
+
 export const fencersRelations = relations(fencers, ({ many }) => ({
 	liveBouts: many(liveBouts),
+	pastBouts: many(pastBouts),
 }));

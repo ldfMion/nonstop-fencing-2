@@ -1,6 +1,13 @@
 // import "server-only";
 // import { competitions, countries, events } from "./schema";
-import { competitions, countries, events, fencers, liveBouts } from "./schema";
+import {
+	competitions,
+	countries,
+	events,
+	fencers,
+	liveBouts,
+	pastBouts,
+} from "./schema";
 import { db } from ".";
 import {
 	sql,
@@ -19,7 +26,13 @@ import {
 	not,
 } from "drizzle-orm";
 import assert from "assert";
-import { BoutModel, Competition, EventModel, NewBoutModel } from "~/models";
+import {
+	BoutModel,
+	Competition,
+	EventModel,
+	NewLiveBoutModel,
+	NewPastBoutModel,
+} from "~/models";
 import { getIsoCodeFromIocCode } from "../countries";
 import { arrayAgg } from "./utils";
 
@@ -228,7 +241,7 @@ export const QUERIES = {
 				)
 			);
 	},
-	async insertLiveBouts(bouts: NewBoutModel[]) {
+	async insertLiveBouts(bouts: NewLiveBoutModel[]) {
 		if (bouts.length == 0) {
 			return;
 		}
@@ -253,6 +266,15 @@ export const QUERIES = {
 						],
 					})
 			)
+		);
+	},
+	async insertPastBouts(bouts: NewPastBoutModel[]) {
+		if (bouts.length == 0) {
+			return;
+		}
+		console.log("inserting past bouts");
+		console.log(
+			await db.transaction(tx => tx.insert(pastBouts).values(bouts))
 		);
 	},
 	async getLiveTableau(eventId: number): Promise<BoutModel[]> {

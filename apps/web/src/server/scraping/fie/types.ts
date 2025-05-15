@@ -5,11 +5,11 @@ export type Tableau = {
 type Rounds = Record<RoundId, Bout[]>;
 
 type RoundId = string;
-type Bout = {
+export type Bout = {
 	fencer1: Fencer;
 	fencer2: Fencer;
 };
-type Fencer = {
+export type Fencer = {
 	name: string;
 	id: number;
 	nationality: string;
@@ -28,7 +28,7 @@ export type Event = {
 	endDate: string;
 	weapon: Weapon;
 	weapons: Weapon[];
-	gender: string;
+	gender: Gender;
 	category: Category;
 	categories: Category[];
 	type: string;
@@ -38,3 +38,4 @@ export type Event = {
 };
 type Weapon = string;
 type Category = string;
+type Gender = string;

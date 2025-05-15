@@ -3,6 +3,7 @@ import type * as Fie from "./types";
 import { EventModel } from "~/models";
 import { browserless } from "../browserless";
 export type { Fie };
+import puppeteer from "puppeteer";
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
 export async function fetchCompetitions(season: number) {
@@ -64,10 +65,11 @@ export function getFieEventUrl(
 	return `https://fie.org/competitions/${season}/${fieCompetitionId}`;
 }
 
-export async function getEventData(event: Fie.Event) {
-	const url = getFieEventUrl(event.competitionId, event.season);
+export async function getEventData(event: EventModel) {
+	const url = getFieEventUrl(event.fieCompetitionId, event.season);
+	console.log("url", url);
 
-	const browser = await browserless();
+	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 
 	// Inject this before any page script executes
@@ -98,11 +100,11 @@ export async function getEventData(event: Fie.Event) {
 		waitUntil: "domcontentloaded",
 	});
 
-	const data = (await page.evaluate(
+	const data = (await page.evaluate(() => {
 		// @ts-expect-error puppeteer window property
-		() => window.__captureData.tableau
-	)) as Fie.Tableau;
-
+		return window.__captureData.tableau;
+	})) as Fie.Tableau;
+	console.log("data in getEventData", data);
 	await browser.close();
 	return data;
 }

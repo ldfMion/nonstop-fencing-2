@@ -1,7 +1,7 @@
 import {
 	EventModel,
 	FencerModel,
-	NewBoutModel,
+	NewLiveBoutModel,
 	NewFencerModel,
 } from "~/models";
 import type * as LiveResults from "./types";
@@ -23,7 +23,7 @@ export function mapFTLBoutsToBoutModel(
 	round: LiveResults.Round,
 	fencers: FencerModel[],
 	event: EventModel
-): NewBoutModel[] {
+): NewLiveBoutModel[] {
 	return bouts.map((bout, index) => {
 		let fencerA = undefined;
 		if (bout.fencer1) {
@@ -59,5 +59,5 @@ export function mapFTLBoutsToBoutModel(
 }
 
 function formatName(str: string) {
-	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+	return str.toLowerCase();
 }
