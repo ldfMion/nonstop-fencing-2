@@ -9,7 +9,7 @@ import type * as LiveResults from "./scraping/fencing-time-live/types";
 
 export async function updateLiveEvents() {
 	//TODO find events that are live today
-	const eventId = 67;
+	const eventId = 9;
 	updateLiveEvent(eventId);
 }
 

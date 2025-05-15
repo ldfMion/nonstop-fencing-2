@@ -16,6 +16,7 @@ import {
 	isNull,
 	SQL,
 	asc,
+	not,
 } from "drizzle-orm";
 import assert from "assert";
 import { BoutModel, Competition, EventModel, NewBoutModel } from "~/models";
@@ -177,7 +178,12 @@ export const QUERIES = {
 		const missingIsoCode = await db
 			.select({ iocCode: countries.iocCode })
 			.from(countries)
-			.where(isNull(countries.isoCode));
+			.where(
+				and(
+					isNull(countries.isoCode),
+					not(eq(countries.iocCode, "AIN"))
+				)
+			);
 		if (missingIsoCode.length == 0) {
 			return;
 		}
