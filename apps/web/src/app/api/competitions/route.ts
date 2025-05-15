@@ -21,6 +21,5 @@ export async function POST() {
 	);
 	console.log(eventsWithCompetitions);
 	QUERIES.insertEvents(eventsWithCompetitions);
-	// QUERIES.insertEvents(events);
 	return Response.json({});
 }

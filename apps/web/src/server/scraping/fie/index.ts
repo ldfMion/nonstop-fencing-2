@@ -70,6 +70,7 @@ export function getFieEventUrl(
 }
 
 export async function getEventData(event: EventModel) {
+	assert(event.type == "INDIVIDUAL");
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
 	console.log("url", url);
 

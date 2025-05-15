@@ -6,19 +6,23 @@ export const gendersEnum = t.pgEnum("genders", ["MEN", "WOMEN"]);
 export const typeEnum = t.pgEnum("types", ["INDIVIDUAL", "TEAM"]);
 export const roundEnum = t.pgEnum("rounds", ["2", "4", "8", "16", "32", "64"]);
 
-export const competitions = t.pgTable("competitions_0", {
-	id: t.serial("id").primaryKey(),
-	name: t.text("name").notNull(),
-	// ioc country code from the .federation property on the FIE API
-	host: t
-		.char("host", { length: 3 })
-		.references(() => countries.iocCode)
-		.notNull(),
-	season: t
-		.integer("season")
-		.references(() => seasons.id)
-		.notNull(),
-});
+export const competitions = t.pgTable(
+	"competitions_0",
+	{
+		id: t.serial("id").primaryKey(),
+		name: t.text("name").notNull(),
+		// ioc country code from the .federation property on the FIE API
+		host: t
+			.char("host", { length: 3 })
+			.references(() => countries.iocCode)
+			.notNull(),
+		season: t
+			.integer("season")
+			.references(() => seasons.id)
+			.notNull(),
+	},
+	table => [t.unique().on(table.name, table.season)]
+);
 
 export const events = t.pgTable("events_0", {
 	id: t.serial("id").primaryKey(),

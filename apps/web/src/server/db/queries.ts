@@ -392,16 +392,32 @@ export const QUERIES = {
 			.from(events)
 			.where(eq(events.hasResults, true));
 	},
+	async getEventsWithFieResults() {
+		return db
+			.select({ id: events.id })
+			.from(events)
+			.where(
+				and(
+					eq(events.hasFieResults, true),
+					eq(events.type, "INDIVIDUAL"),
+					eq(events.hasResults, false)
+				)
+			);
+	},
 	async insertEvents(newEvents: NewEventModel[]) {
-		db.insert(events)
-			.values(newEvents)
-			.onConflictDoUpdate({
-				target: [events.fieCompetitionId],
-				set: {
-					date: sql`EXCLUDED.date`,
-					hasFieResults: sql`EXCLUDED.has_fie_results`,
-				},
-			});
+		console.log("inserting events");
+		console.log(
+			await db
+				.insert(events)
+				.values(newEvents)
+				.onConflictDoUpdate({
+					target: [events.fieCompetitionId],
+					set: {
+						date: sql`EXCLUDED.date`,
+						hasFieResults: sql`EXCLUDED.has_fie_results`,
+					},
+				})
+		);
 	},
 	async insertCompetitions(newCompetitions: NewCompetitionModel[]) {
 		return db
