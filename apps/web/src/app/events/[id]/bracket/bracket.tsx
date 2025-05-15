@@ -1,15 +1,17 @@
-import { BoutModel, Round } from "~/models";
+import { LiveBoutModel, Round } from "~/models";
 import { BracketCarousel } from "./bracket-carousel";
 
-export type BracketBout = Omit<BoutModel, "id">;
+export type BracketBout = Omit<LiveBoutModel, "id">;
 
 export function Bracket({
 	bouts,
-	isLive = true,
 }: {
-	bouts: BoutModel[];
+	bouts: LiveBoutModel[];
 	isLive?: boolean;
 }) {
+	if (bouts.length == 0) {
+		return "Bracket not available";
+	}
 	const bracketBouts = createTableauBouts(64, bouts);
 	const rounds = bracketBouts.reduce(
 		(acc, bout) => {
@@ -55,7 +57,7 @@ export function Bracket({
 
 function createTableauBouts(
 	startingRound: number,
-	bouts: BoutModel[]
+	bouts: LiveBoutModel[]
 ): BracketBout[] {
 	let currRound = startingRound;
 	const tableau: BracketBout[] = [];

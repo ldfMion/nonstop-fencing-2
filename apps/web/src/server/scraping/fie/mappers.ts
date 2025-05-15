@@ -119,9 +119,9 @@ function parseFieName(name: string): [string, string] {
 	let lastName = "";
 	name.split(" ").forEach(word => {
 		if (word == word.toUpperCase()) {
-			firstName += ` ${word}`;
-		} else {
 			lastName += ` ${word}`;
+		} else {
+			firstName += ` ${word}`;
 		}
 	});
 	return [firstName.toLowerCase(), lastName.toLowerCase()];

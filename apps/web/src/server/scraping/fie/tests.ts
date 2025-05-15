@@ -23,5 +23,6 @@ export async function testFieTableau() {
 	await QUERIES.insertPastBouts(bouts);
 	QUERIES.updateEvent(event, {
 		hasFieResults: true,
+		hasResults: true,
 	});
 }

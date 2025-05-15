@@ -27,7 +27,7 @@ import {
 } from "drizzle-orm";
 import assert from "assert";
 import {
-	BoutModel,
+	LiveBoutModel,
 	Competition,
 	EventModel,
 	NewLiveBoutModel,
@@ -277,7 +277,7 @@ export const QUERIES = {
 			await db.transaction(tx => tx.insert(pastBouts).values(bouts))
 		);
 	},
-	async getLiveTableau(eventId: number): Promise<BoutModel[]> {
+	async getLiveTableau(eventId: number): Promise<LiveBoutModel[]> {
 		const fencers2 = aliasedTable(fencers, "fencers2");
 		const countries2 = aliasedTable(countries, "countries2");
 		return (
@@ -330,9 +330,64 @@ export const QUERIES = {
 			id: b.id,
 		}));
 	},
+	async getPastTableau(eventId: number): Promise<LiveBoutModel[]> {
+		const fencers2 = aliasedTable(fencers, "fencers2");
+		const countries2 = aliasedTable(countries, "countries2");
+		return (
+			await db
+				.select({
+					id: pastBouts.id,
+					fencerA: {
+						firstName: fencers.firstName,
+						lastName: fencers.lastName,
+						score: pastBouts.fencerAScore,
+						flag: countries.isoCode,
+					},
+					fencerB: {
+						firstName: fencers2.firstName,
+						lastName: fencers2.lastName,
+						score: pastBouts.fencerBScore,
+						flag: countries2.isoCode,
+					},
+					round: pastBouts.round,
+					order: pastBouts.order,
+					winnerIsA: pastBouts.winnerIsA,
+				})
+				.from(pastBouts)
+				.where(eq(pastBouts.event, eventId))
+				.orderBy(desc(pastBouts.round), pastBouts.order)
+				.leftJoin(fencers, eq(pastBouts.fencerA, fencers.id))
+				.leftJoin(fencers2, eq(pastBouts.fencerB, fencers2.id))
+				.leftJoin(countries, eq(fencers.country, countries.iocCode))
+				.leftJoin(countries2, eq(fencers2.country, countries2.iocCode))
+		).map(b => ({
+			fencerA: {
+				firstName: b.fencerA.firstName!,
+				lastName: b.fencerA.lastName!,
+				score: b.fencerA.score ?? undefined,
+				flag: b.fencerA.flag ?? undefined,
+			},
+			fencerB: {
+				firstName: b.fencerB.firstName!,
+				lastName: b.fencerB.lastName!,
+				score: b.fencerB.score ?? undefined,
+				flag: b.fencerB.flag ?? undefined,
+			},
+			round: b.round,
+			order: b.order,
+			winnerIsA: b.winnerIsA,
+			id: b.id,
+		}));
+	},
 	async updateEvent(event: EventModel, set: Partial<EventModel>) {
 		console.log(
 			await db.update(events).set(set).where(eq(events.id, event.id))
 		);
+	},
+	async getEventsWithResults() {
+		return db
+			.select({ id: events.id })
+			.from(events)
+			.where(eq(events.hasResults, true));
 	},
 };

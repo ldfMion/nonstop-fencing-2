@@ -2,7 +2,7 @@
 import Image from "next/image";
 import * as React from "react";
 import { Card, CardContent } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
+import { cn, toTitleCase } from "~/lib/utils";
 import type { BracketBout } from "./bracket";
 
 export function Bout({ bout, hidden }: { bout: BracketBout; hidden: boolean }) {
@@ -66,7 +66,19 @@ function Fencer({
 					</div>
 				)}
 				<div className="truncate">
-					{fencer?.lastName}, {fencer?.firstName || ""}
+					{fencer ? (
+						<>
+							<span className="">
+								{toTitleCase(fencer.lastName)}
+							</span>
+							,
+							<span className="text-xs">
+								{toTitleCase(fencer.firstName)}
+							</span>
+						</>
+					) : (
+						""
+					)}
 				</div>
 			</div>
 			<div>{fencer?.score !== undefined ? fencer.score : "-"}</div>

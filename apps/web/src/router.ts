@@ -9,7 +9,13 @@ export const router = {
 		!params
 			? `/competitions`
 			: `/competitions?${turnObjectIntoSearchParams(params)}`,
-	events: (id: number) => `/events/${id}`,
+	events: (id: number) => ({
+		root: `/events/${id}`,
+		bracket: {
+			past: `events/${id}/bracket`,
+			live: `events/${id}/bracket/live`,
+		},
+	}),
 	home: `/`,
 };
 

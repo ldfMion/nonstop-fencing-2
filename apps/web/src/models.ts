@@ -15,7 +15,7 @@ export type NewPastBoutModel = typeof pastBouts.$inferInsert;
 
 export type Round = "2" | "4" | "8" | "16" | "32" | "64";
 
-export type BoutModel = {
+export type LiveBoutModel = {
 	fencerA?: {
 		firstName: string;
 		lastName: string;
@@ -31,6 +31,25 @@ export type BoutModel = {
 	round: Round;
 	order: number;
 	winnerIsA?: boolean;
+	id: number;
+};
+
+export type PastBoutModel = {
+	fencerA: {
+		firstName: string;
+		lastName: string;
+		score: number;
+		flag?: string;
+	};
+	fencerB: {
+		firstName: string;
+		lastName: string;
+		score: number;
+		flag?: string;
+	};
+	round: Round;
+	order: number;
+	winnerIsA: boolean;
 	id: number;
 };
 
