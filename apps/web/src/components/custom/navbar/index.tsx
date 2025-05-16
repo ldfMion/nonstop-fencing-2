@@ -6,7 +6,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import { MobileNavbar } from "./mobile";
-import { router } from "~/router";
+import { router } from "~/lib/router";
 
 export default function Navbar() {
 	return (

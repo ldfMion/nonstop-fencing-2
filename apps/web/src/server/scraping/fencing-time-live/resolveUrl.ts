@@ -1,9 +1,17 @@
 import assert from "assert";
 import { EventModel } from "~/models";
-import { browserless } from "../browserless";
+import { Browser } from "../browserless";
 
-export async function resolveUrl(fieTournamentUrl: string, event: EventModel) {
-	const eventResultsUrl = await getEventResultsUrl(fieTournamentUrl, event);
+export async function resolveUrl(
+	fieTournamentUrl: string,
+	event: EventModel,
+	browser: Browser
+) {
+	const eventResultsUrl = await getEventResultsUrl(
+		fieTournamentUrl,
+		event,
+		browser
+	);
 	const tableauHtmlUrl = await getTableauHtmlUrl(eventResultsUrl);
 	return tableauHtmlUrl;
 }
@@ -24,9 +32,9 @@ async function getTableauHtmlUrl(eventResultsUrl: string): Promise<string> {
 
 async function getEventResultsUrl(
 	tournamentUrl: string,
-	event: EventModel
+	event: EventModel,
+	browser: Browser
 ): Promise<string> {
-	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(tournamentUrl, { waitUntil: "domcontentloaded" });
 	const eventTitle = `${
@@ -49,7 +57,6 @@ async function getEventResultsUrl(
 	console.log("eventResultsAfterRedirect", eventResultsAfterRedirect);
 	assert(typeof eventResultsAfterRedirect == "string");
 	if (eventResultsAfterRedirect.includes("tableau")) {
-		browser.close();
 		return eventResultsAfterRedirect;
 	}
 	const eventTableauUrl = await page.$$eval(
@@ -60,7 +67,6 @@ async function getEventResultsUrl(
 				.at(-1)!.href
 	);
 	console.log("tabs", eventTableauUrl);
-	browser.close();
 	assert(typeof eventTableauUrl == "string");
 	return eventTableauUrl;
 }

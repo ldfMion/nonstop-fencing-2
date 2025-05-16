@@ -15,7 +15,7 @@ import {
 	SheetTrigger,
 } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
-import { router } from "~/router";
+import { router } from "~/lib/router";
 
 export function MobileNavbar() {
 	const [open, setOpen] = useState(false);

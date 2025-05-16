@@ -31,8 +31,12 @@ export default async function BracketPage({
 	if (event.hasResults || status != "LIVE") {
 		return <p>Should not be on this page</p>;
 	}
-
-	return <Bracket bouts={await handleLiveBouts(event)} />;
+	try {
+		return <Bracket bouts={await handleLiveBouts(event)} />;
+	} catch (e) {
+		console.error(e);
+		return <p>Bracket not yet available.</p>;
+	}
 }
 
 async function handleLiveBouts(event: EventModel) {

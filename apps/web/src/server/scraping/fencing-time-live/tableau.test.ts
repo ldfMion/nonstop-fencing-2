@@ -1,6 +1,7 @@
 import path from "path";
 import { scrapeTableauPage } from "./tableau";
 import { fileURLToPath } from "url";
+import { withBrowserless } from "../browserless";
 
 const TEST_FILE_NAME = "test-files/incomplete-tableau.test.html";
 
@@ -12,6 +13,10 @@ function createLocalFilePupppeteerUrl(fileName: string) {
 	return `file://${filePath}`;
 }
 
-const url = createLocalFilePupppeteerUrl(TEST_FILE_NAME);
-const data = await scrapeTableauPage(url);
-console.log("data", data);
+withBrowserless([
+	async browser => {
+		const url = createLocalFilePupppeteerUrl(TEST_FILE_NAME);
+		const data = await scrapeTableauPage(url, browser);
+		console.log("data", data);
+	},
+]);

@@ -7,6 +7,7 @@ import {
 	NewFencerModel,
 	NewEventModel,
 } from "~/models";
+import assert from "assert";
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 	const withName = events.map(event => ({
@@ -123,9 +124,20 @@ function mapFieFencerToModel(
 	return {
 		firstName: firstName,
 		lastName: lastName,
-		country: f.nationality,
+		country: parseFieCountry(f.nationality),
 		gender: gender,
 	};
+}
+
+function parseFieCountry(nationality: string) {
+	switch (nationality) {
+		case "_AIN":
+			return "AIN";
+		case "TÜR":
+			return "TUR";
+		default:
+			return nationality;
+	}
 }
 
 function parseFieName(name: string): [string, string] {
@@ -138,7 +150,7 @@ function parseFieName(name: string): [string, string] {
 			firstName += ` ${word}`;
 		}
 	});
-	return [firstName.toLowerCase(), lastName.toLowerCase()];
+	return [firstName.toLowerCase().trim(), lastName.toLowerCase().trim()];
 }
 
 export function mapFieTableauToBouts(
@@ -185,10 +197,12 @@ function findFieFencer(
 	fencers: FencerModel[]
 ): FencerModel {
 	const [firstName, lastName] = parseFieName(fencer.name);
-	return fencers.find(
+	const result = fencers.find(
 		f =>
 			f.firstName == firstName &&
 			f.lastName == lastName &&
-			f.country == fencer.nationality
-	)!;
+			f.country == parseFieCountry(fencer.nationality)
+	);
+	assert(result, `Unable to find fencer ${firstName} ${lastName}`);
+	return result;
 }

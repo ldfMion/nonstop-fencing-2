@@ -1,9 +1,9 @@
 // components/fencing-bout.tsx
-import Image from "next/image";
 import * as React from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn, toTitleCase } from "~/lib/utils";
 import type { BracketBout } from "./bracket";
+import { Flag } from "~/components/custom/flag";
 
 export function Bout({ bout, hidden }: { bout: BracketBout; hidden: boolean }) {
 	const fencerA = "fencerA" in bout ? bout.fencerA : undefined;
@@ -54,24 +54,17 @@ function Fencer({
 			)}
 		>
 			<div className="flex items-center gap-1 truncate">
-				{fencer.flag && (
-					<div className="flex-shrink-0 w-6 h-4 overflow-hidden rounded-[5px] border">
-						<Image
-							src={`https://flagcdn.com/w1280/${fencer.flag.toLowerCase()}.png`}
-							alt={`${fencer.flag} flag`}
-							className="w-full h-full object-cover"
-							height={400}
-							width={400}
-						/>
-					</div>
-				)}
+				<Flag
+					flagCode={fencer.flag}
+					className="flex-shrink-0 w-6 h-4"
+				/>
 				<div className="truncate">
 					{fencer ? (
 						<>
 							<span className="">
 								{toTitleCase(fencer.lastName)}
 							</span>
-							,
+							{", "}
 							<span className="text-xs">
 								{toTitleCase(fencer.firstName)}
 							</span>

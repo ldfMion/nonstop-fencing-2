@@ -1,7 +1,7 @@
 import assert from "assert";
 import type * as Fie from "./types";
 import { EventModel } from "~/models";
-import { browserless } from "../browserless";
+import { Browser, withBrowserless } from "../browserless";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
@@ -69,12 +69,11 @@ export function getFieEventUrl(
 	return `https://fie.org/competitions/${season}/${fieCompetitionId}`;
 }
 
-export async function getEventData(event: EventModel) {
+export async function getEventData(event: EventModel, browser: Browser) {
 	assert(event.type == "INDIVIDUAL");
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
 	console.log("url", url);
 
-	const browser = await browserless();
 	const page = await browser.newPage();
 
 	// Inject this before any page script executes
@@ -110,20 +109,22 @@ export async function getEventData(event: EventModel) {
 		return window.__captureData.tableau;
 	})) as Fie.Tableau;
 	console.log("data in getEventData", data);
-	await browser.close();
 	return data;
 }
 
-export async function getLinkToLiveResults(event: EventModel): Promise<string> {
+export async function getLinkToLiveResults(
+	event: EventModel,
+	browser: Browser
+): Promise<string> {
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
-	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
 	// TODO change waitForSelector to something else that actually finds the element, idk why this is working though
 	const textSelector = await page.waitForSelector("text/Live Results");
-	// @ts-expect-error puppeteer el.href property
-	const liveResultsUrl: unknown = await textSelector!.evaluate(el => el.href);
-	browser.close();
+	const liveResultsUrl: unknown = await textSelector!.evaluate(
+		// @ts-expect-error puppeteer el.href property
+		el => el.href
+	);
 	assert(typeof liveResultsUrl == "string");
 	return liveResultsUrl;
 }

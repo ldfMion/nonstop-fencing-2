@@ -12,8 +12,8 @@ export const router = {
 	events: (id: number) => ({
 		root: `/events/${id}`,
 		bracket: {
-			past: `events/${id}/bracket`,
-			live: `events/${id}/bracket/live`,
+			past: `/events/${id}/bracket`,
+			live: `/events/${id}/bracket/live`,
 		},
 	}),
 	home: `/`,

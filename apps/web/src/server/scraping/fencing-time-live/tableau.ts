@@ -1,11 +1,11 @@
 import assert from "assert";
 import type * as LiveResults from "./types";
-import { browserless } from "../browserless";
+import { Browser } from "../browserless";
 
 export async function scrapeTableauPage(
-	url: string
+	url: string,
+	browser: Browser
 ): Promise<LiveResults.Tableau> {
-	const browser = await browserless();
 	const page = await browser.newPage();
 	await page.goto(url, { waitUntil: "domcontentloaded" });
 	const fencerNodes = await page.$$eval(".tbb, .tbbr", els =>
@@ -44,7 +44,6 @@ export async function scrapeTableauPage(
 	).filter(el => el != null);
 	// console.log("Number of fencerNodes: ", fencerNodes.length);
 	// console.log("Number of scoreTextNodes: ", scoreTextNodes.length);
-	browser.close();
 	// const scoreNodes = scoreTextNodes.map(parseScoreNode);
 	const fencerNodeRounds = filterFencerNodesForRounds(fencerNodes);
 	const scoreNodeRounds = filterNodesForRounds(scoreTextNodes);

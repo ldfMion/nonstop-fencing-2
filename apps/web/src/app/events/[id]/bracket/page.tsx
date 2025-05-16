@@ -3,7 +3,7 @@ import { QUERIES } from "~/server/db/queries";
 import { Bracket } from "./bracket";
 import { getEventStatus } from "../getEventStatus";
 import { redirect } from "next/navigation";
-import { router } from "~/router";
+import { router } from "~/lib/router";
 
 export const revalidate = false;
 
@@ -26,7 +26,9 @@ export default async function BracketPage({
 		return <p>{"Team results aren't supported yet."}</p>;
 	}
 	if (!event.hasResults) {
-		if (getEventStatus(event) == "LIVE") {
+		const status = getEventStatus(event);
+		console.log("Event status: ", status);
+		if (status == "LIVE") {
 			redirect(router.events(eventId).bracket.live);
 		}
 		return <p>This event does not have results.</p>;

@@ -1,9 +1,45 @@
-import puppeteer, { Browser } from "puppeteer-core";
+import puppeteer, { Browser, Page } from "puppeteer-core";
 import { env } from "~/../env";
 
-export function browserless(): Promise<Browser> {
+export { Browser, Page };
+
+export async function withBrowserless(
+	scripts: ((browser: Browser) => Promise<void>)[]
+) {
 	console.log("Connecting to browserless");
-	return puppeteer.connect({
-		browserWSEndpoint: `wss://chrome.browserless.io?token=${env.BLESS_TOKEN}`,
-	});
+	let browser: Browser | null = null;
+
+	try {
+		browser = await puppeteer.connect({
+			browserWSEndpoint: `wss://chrome.browserless.io?token=${env.BLESS_TOKEN}`,
+		});
+	} catch (connectionError) {
+		console.error("Failed to connect to browserless:", connectionError);
+		close(browser, "error in connection");
+		throw new Error("Browserless connection failed: " + connectionError);
+	}
+	try {
+		await Promise.all(
+			scripts.map(async script => {
+				await script(browser);
+			})
+		);
+		close(browser, "finished scripts");
+	} catch (scriptError) {
+		console.error("Error during script execution:", scriptError);
+		close(browser, "error in script" + scriptError);
+		throw new Error("Script execution failed: " + scriptError);
+	}
+}
+
+async function close(browser: Browser | null, message: string) {
+	if (browser) {
+		console.log("closing browser for " + message);
+		try {
+			console.log("Closing browser...");
+			await browser.close();
+		} catch (closeError) {
+			console.error("Error while closing browser:", closeError);
+		}
+	}
 }

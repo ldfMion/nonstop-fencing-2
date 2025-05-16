@@ -1,8 +1,11 @@
 import { EventModel } from "~/models";
-import { browserless } from "../browserless";
+import { Browser } from "../browserless";
 
-export async function getTableauData(event: EventModel, tournamentUrl: string) {
-	const browser = await browserless();
+export async function getTableauData(
+	event: EventModel,
+	tournamentUrl: string,
+	browser: Browser
+) {
 	const page = await browser.newPage();
 	const eventTitle = `${event.gender == "MEN" ? "Men's" : "Women's"} Individual`;
 	console.log("Event title: ", eventTitle);
@@ -27,7 +30,6 @@ export async function getTableauData(event: EventModel, tournamentUrl: string) {
 			el => el.textContent
 		);
 	});
-	browser.close();
 	console.log("fencerNodes: ", fencerNodes);
 	console.log("fencerNodes length: ", fencerNodes.length);
 }

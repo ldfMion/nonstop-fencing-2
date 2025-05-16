@@ -2,16 +2,26 @@ import { EventModel } from "~/models";
 import { getTableauData } from "../fencing-time-live";
 import { getLinkToLiveResults } from "../fie";
 import { Tableau } from "../fencing-time-live/types";
+import { Browser } from "../browserless";
 
-export async function getLiveResults(event: EventModel): Promise<Tableau> {
+export async function getLiveResults(
+	event: EventModel,
+	browser: Browser
+): Promise<Tableau> {
 	if (event.liveResultsTableauUrl) {
-		return switchResultsProvider(event.liveResultsTableauUrl, () =>
-			getTableauData(event)
+		return await switchResultsProvider(
+			event.liveResultsTableauUrl,
+			async () => await getTableauData(browser, event)
 		);
 	}
-	const liveResultsUrlOnFieWebsite = await getLinkToLiveResults(event);
-	return switchResultsProvider(liveResultsUrlOnFieWebsite, () =>
-		getTableauData(event, liveResultsUrlOnFieWebsite)
+	const liveResultsUrlOnFieWebsite = await getLinkToLiveResults(
+		event,
+		browser
+	);
+	return await switchResultsProvider(
+		liveResultsUrlOnFieWebsite,
+		async () =>
+			await getTableauData(browser, event, liveResultsUrlOnFieWebsite)
 	);
 	// console.log("Live results url: ", url);
 }

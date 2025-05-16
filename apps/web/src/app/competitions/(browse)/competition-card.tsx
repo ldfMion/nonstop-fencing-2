@@ -5,11 +5,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
 import { Competition } from "~/models";
 import { getDateRange } from "~/lib/utils";
 import Link from "next/link";
+import { Flag } from "~/components/custom/flag";
 
 export function CompetitionCard({ competition }: { competition: Competition }) {
 	return (
@@ -19,17 +19,10 @@ export function CompetitionCard({ competition }: { competition: Competition }) {
 				className="mb-2 shadow-none rounded-3xl flex flex-col gap-2"
 			>
 				<CardHeader className="flex flex-row gap-2 items-center">
-					{competition.flag && (
-						<div className="flex-shrink-0 w-12 h-8 overflow-hidden rounded-sm border">
-							<Image
-								src={`https://flagcdn.com/w1280/${competition.flag.toLowerCase()}.png`}
-								alt={`${competition.flag} flag`}
-								className="w-full h-full object-cover"
-								height={400}
-								width={400}
-							/>
-						</div>
-					)}
+					<Flag
+						flagCode={competition.flag}
+						className="flex-shrink-0 w-12 h-8 rounded-[8px]"
+					/>
 					<div className="flex flex-col">
 						<CardTitle className="text-md font-semibold leading-none">
 							{competition.name}

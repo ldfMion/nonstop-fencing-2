@@ -2,7 +2,7 @@
 
 import { EventsList } from "~/app/competitions/(browse)/events-list";
 import { QUERIES } from "~/server/db/queries";
-import { parseCompetitionSearchParams } from "~/router";
+import { parseCompetitionSearchParams } from "~/lib/router";
 
 export default async function EventsPage({
 	searchParams,

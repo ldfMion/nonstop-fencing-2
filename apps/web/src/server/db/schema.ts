@@ -36,7 +36,7 @@ export const events = t.pgTable("events_0", {
 	gender: gendersEnum("gender").notNull(),
 	hasFieResults: t.boolean("has_fie_results").notNull(),
 	fieCompetitionId: t.integer("fie_competition_id").unique().notNull(),
-	hasResults: t.boolean().notNull().default(false),
+	hasResults: t.boolean("has_results").notNull().default(false),
 	lastLiveUpdate: t.timestamp("last_live_update", {
 		withTimezone: true,
 		mode: "date",
