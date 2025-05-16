@@ -16,7 +16,7 @@ export async function updateLiveEvents() {
 
 export async function updateLiveEvent(eventId: number) {
 	const event = await QUERIES.getEvent(eventId);
-	withBrowserless([
+	await withBrowserless([
 		async browser => {
 			const results = await getLiveResults(event, browser);
 			const newFencers: NewFencerModel[] = results[64].flatMap(bout => {
