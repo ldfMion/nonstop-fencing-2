@@ -1,5 +1,5 @@
 import { differenceInCalendarDays } from "date-fns";
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 
 export function getEventStatus(event: EventModel) {
 	const today = new Date();

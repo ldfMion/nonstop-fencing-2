@@ -13,7 +13,7 @@ import {
 	CarouselNext,
 } from "~/components/ui/carousel"; // Import Shadcn Carousel components
 import { useEffect, useState } from "react";
-import { Round } from "~/models";
+import { Round } from "~/lib/models";
 import { Button } from "~/components/ui/button";
 
 export function BracketCarousel({

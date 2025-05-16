@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { CompetitionCard } from "./competition-card";
 import { Fragment } from "react";
-import { Competition } from "~/models";
+import { Competition } from "~/lib/models";
 
 export type Event = {
 	id: number;

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { QUERIES } from "~/server/db/queries";
 import { withBrowserless } from "~/server/scraping/browserless";
 import { scrapePastEvent } from "~/server/scraping/past-events";

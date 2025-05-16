@@ -6,7 +6,7 @@ import {
 	NewPastBoutModel,
 	NewFencerModel,
 	NewEventModel,
-} from "~/models";
+} from "~/lib/models";
 import assert from "assert";
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {

@@ -1,6 +1,6 @@
 import { scrapeTableauPage } from "./tableau";
 import { resolveUrl } from "./resolveUrl";
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 import assert from "assert";
 import { QUERIES } from "~/server/db/queries";
 import { Browser } from "../browserless";

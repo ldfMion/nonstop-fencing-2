@@ -6,10 +6,10 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { Competition } from "~/models";
 import { getDateRange } from "~/lib/utils";
 import Link from "next/link";
 import { Flag } from "~/components/custom/flag";
+import { Competition } from "~/lib/models";
 
 export function CompetitionCard({ competition }: { competition: Competition }) {
 	return (

@@ -1,6 +1,6 @@
 import assert from "assert";
 import type * as Fie from "./types";
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 import { Browser, withBrowserless } from "../browserless";
 export type { Fie };
 

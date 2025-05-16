@@ -1,5 +1,5 @@
 import assert from "assert";
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 import { Browser } from "../browserless";
 
 export async function resolveUrl(

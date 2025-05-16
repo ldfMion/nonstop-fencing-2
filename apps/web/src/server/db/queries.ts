@@ -34,7 +34,7 @@ import {
 	NewPastBoutModel,
 	NewEventModel,
 	NewCompetitionModel,
-} from "~/models";
+} from "~/lib/models";
 import { getIsoCodeFromIocCode } from "../countries";
 import { arrayAgg } from "./utils";
 

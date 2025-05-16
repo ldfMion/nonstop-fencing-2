@@ -1,4 +1,4 @@
-import { LiveBoutModel, Round } from "~/models";
+import { LiveBoutModel, Round } from "~/lib/models";
 import { BracketCarousel } from "./bracket-carousel";
 
 export type BracketBout = Omit<LiveBoutModel, "id">;

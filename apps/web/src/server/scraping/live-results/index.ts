@@ -1,4 +1,4 @@
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 import { getTableauData } from "../fencing-time-live";
 import { getLinkToLiveResults } from "../fie";
 import { Tableau } from "../fencing-time-live/types";

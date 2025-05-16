@@ -4,7 +4,7 @@ import assert from "assert";
 import { updateLiveEvent } from "~/server/live";
 import { JSX } from "react";
 import { env } from "~/../env";
-import { EventModel } from "~/models";
+import { EventModel } from "~/lib/models";
 import { getEventStatus } from "../../getEventStatus";
 
 //NEXT SETTINGS

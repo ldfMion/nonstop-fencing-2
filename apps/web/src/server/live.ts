@@ -1,4 +1,4 @@
-import { NewFencerModel } from "~/models";
+import { NewFencerModel } from "~/lib/models";
 import { QUERIES } from "./db/queries";
 import { getLiveResults } from "./scraping/live-results";
 import {

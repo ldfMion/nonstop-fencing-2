@@ -3,7 +3,7 @@ import {
 	FencerModel,
 	NewLiveBoutModel,
 	NewFencerModel,
-} from "~/models";
+} from "~/lib/models";
 import type * as LiveResults from "./types";
 
 export function mapFTLFencerToFencerModel(
