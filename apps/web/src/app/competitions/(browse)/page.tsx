@@ -1,8 +1,8 @@
-"server only";
-
 import { EventsList } from "~/app/competitions/(browse)/events-list";
 import { QUERIES } from "~/server/db/queries";
 import { parseCompetitionSearchParams } from "~/lib/router";
+import { Suspense } from "react";
+import LoadingCompetitions from "./loading";
 
 export default async function EventsPage({
 	searchParams,
@@ -11,6 +11,23 @@ export default async function EventsPage({
 }) {
 	console.log("rendering page");
 	const parsed = parseCompetitionSearchParams(await searchParams);
+
+	return (
+		<Suspense
+			fallback={<LoadingCompetitions />}
+			key={JSON.stringify(parsed)}
+		>
+			<InnerPage parsed={parsed} />;
+		</Suspense>
+	);
+}
+
+async function InnerPage({
+	parsed,
+}: {
+	parsed: ReturnType<typeof parseCompetitionSearchParams>;
+}) {
+	console.log("in inner page");
 	const filters = {
 		season: 2025,
 		gender: parsed?.gender?.toUpperCase() as "MEN" | "WOMEN" | undefined,
@@ -23,9 +40,5 @@ export default async function EventsPage({
 		upcoming: parsed?.status == "upcoming",
 	};
 	const c = await QUERIES.getCompetitions(filters);
-	return (
-		<main>
-			<EventsList competitions={c} />
-		</main>
-	);
+	return <EventsList competitions={c} />;
 }
