@@ -1,4 +1,6 @@
 import { Filter } from "./filter";
+import Link from "next/link";
+import { StatusTabs } from "./status-tabs";
 
 export default function CompetitionsLayout({
 	children,
@@ -17,7 +19,10 @@ export default function CompetitionsLayout({
 					</div>
 				</div>
 				<div className="flex flex-col col-span-2 lg:col-span-1 items-center">
-					<div className="max-w-lg w-full">{children}</div>
+					<div className="max-w-lg w-full">
+						<StatusTabs />
+						{children}
+					</div>
 				</div>
 			</div>
 		</main>
