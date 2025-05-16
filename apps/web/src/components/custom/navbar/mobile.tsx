@@ -1,7 +1,7 @@
 "use client";
-import { MenuIcon } from "lucide-react";
+import { BarChart3, Info, MenuIcon, Trophy } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { buttonVariants } from "~/components/ui/button";
 import {
 	NavigationMenu,
@@ -41,16 +41,19 @@ export function MobileNavbar() {
 									href={router.home}
 									title="About"
 									onOpenChange={setOpen}
+									icon={<Info />}
 								/>
 								<MobileBaseLink
 									href={router.competitions()}
 									title="Competitions"
 									onOpenChange={setOpen}
+									icon={<Trophy />}
 								/>
 								<MobileBaseLink
 									href={router.home}
 									title="Rankings"
 									onOpenChange={setOpen}
+									icon={<BarChart3 />}
 								/>
 							</NavigationMenuList>
 						</NavigationMenu>
@@ -65,10 +68,12 @@ function MobileBaseLink({
 	href,
 	title,
 	onOpenChange,
+	icon,
 }: {
 	href: string;
 	title: string;
 	onOpenChange: (open: boolean) => void;
+	icon?: JSX.Element;
 }) {
 	return (
 		<MobileLink onOpenChange={onOpenChange}>
@@ -80,7 +85,7 @@ function MobileBaseLink({
 						"p-0 text-lg text-foreground"
 					)}
 				>
-					{title}
+					{icon} {title}
 				</Link>
 			</NavigationMenuItem>
 		</MobileLink>

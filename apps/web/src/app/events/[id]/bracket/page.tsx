@@ -29,7 +29,7 @@ export default async function BracketPage({
 		const status = getEventStatus(event);
 		console.log("Event status: ", status);
 		if (status == "LIVE") {
-			redirect(router.events(eventId).bracket.live);
+			redirect(router.event(eventId).bracket.live);
 		}
 		return <p>This event does not have results.</p>;
 	}

@@ -1,13 +1,12 @@
 import { Filter } from "./filter";
 
-export default function EventsLayout({
+export default function CompetitionsLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	console.log("rendering layout");
 	return (
-		<main className="mx-auto px-6">
+		<main className="mx-auto p-6">
 			<div className="md:grid md:grid-cols-3 lg:grid-cols-2 gap-6">
 				<div className="col-span-1 flex flex-row md:flex-col justify-between md:justify-start items-center gap-6">
 					<h1 className="text-2xl lg:text-3xl font-bold m-0 self-start">

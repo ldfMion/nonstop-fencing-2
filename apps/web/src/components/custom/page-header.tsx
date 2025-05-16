@@ -20,7 +20,7 @@ export function PageHeader({
 	children?: ReactNode;
 }) {
 	return (
-		<div className="md:px-6">
+		<div className="md:p-6 md:pb-0">
 			<Card className="rounded-none md:rounded-3xl  !p-6">
 				<div className="flex flex-row gap-2 items-start">
 					<Flag

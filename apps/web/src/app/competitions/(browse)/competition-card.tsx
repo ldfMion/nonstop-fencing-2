@@ -10,10 +10,11 @@ import { getDateRange } from "~/lib/utils";
 import Link from "next/link";
 import { Flag } from "~/components/custom/flag";
 import { Competition } from "~/lib/models";
+import { router } from "~/lib/router";
 
 export function CompetitionCard({ competition }: { competition: Competition }) {
 	return (
-		<Link href={`/competitions/${competition.id}`}>
+		<Link href={router.competition(competition.id)}>
 			<Card
 				key={competition.id}
 				className="mb-2 shadow-none rounded-3xl flex flex-col gap-2"

@@ -12,6 +12,7 @@ import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Fragment } from "react";
+import { router } from "~/lib/router";
 
 export default async function CompetitionPage({
 	params,
@@ -63,7 +64,11 @@ export default async function CompetitionPage({
 										variant="link"
 										asChild
 									>
-										<Link href={`/events/${e.id}`}>
+										<Link
+											href={
+												router.event(e.id).bracket.past
+											}
+										>
 											<h4>{formatEventDescription(e)}</h4>
 											<ChevronRight />
 										</Link>

@@ -7,10 +7,12 @@ import {
 } from "~/components/ui/navigation-menu";
 import { MobileNavbar } from "./mobile";
 import { router } from "~/lib/router";
+import { BarChart3, Info, Trophy } from "lucide-react";
+import { ReactNode } from "react";
 
 export default function Navbar() {
 	return (
-		<div className="sticky top-0 z-20 px-6 backdrop-blur-xl">
+		<div className="sticky top-0 z-20 px-6 backdrop-blur-xl bg-card border-b-1">
 			<DesktopNavbar />
 			<MobileNavbar />
 		</div>
@@ -46,7 +48,7 @@ function DesktopBaseLink({
 	children,
 }: {
 	href: string;
-	children: string;
+	children: ReactNode;
 }) {
 	return (
 		<NavigationMenuItem>

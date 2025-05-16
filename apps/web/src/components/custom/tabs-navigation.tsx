@@ -1,18 +1,17 @@
 "use client";
-import { useSelectedLayoutSegment } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { usePathname } from "next/navigation";
 
-const subpages: { url: string; title: string }[] = [
-	{ url: "bracket", title: "Bracket" },
-	{ url: "results", title: "Results" },
-];
-
-export function TabsNavigation() {
-	const segment = useSelectedLayoutSegment();
-	const active = segment ?? "";
+export function TabsNavigation({
+	subpages,
+}: {
+	subpages: { url: string; title: string }[];
+}) {
+	const path = usePathname();
+	console.log("path", path);
 	return (
-		<Tabs value={active} className="">
+		<Tabs value={path} className="">
 			<TabsList className="">
 				{subpages.map(page => (
 					<Tab
