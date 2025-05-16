@@ -5,7 +5,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import { JSX } from "react";
+import { ReactNode } from "react";
 import { Flag } from "./flag";
 
 export function PageHeader({
@@ -16,8 +16,8 @@ export function PageHeader({
 }: {
 	flagCode?: string;
 	title: string;
-	description: string;
-	children?: JSX.Element;
+	description: ReactNode;
+	children?: ReactNode;
 }) {
 	return (
 		<div className="md:px-6">
@@ -31,7 +31,7 @@ export function PageHeader({
 						<CardTitle className="text-xl md:text-3xl">
 							{title}
 						</CardTitle>
-						<CardDescription className="capitalize text-base md:text-xl">
+						<CardDescription className="capitalize text-base font-medium md:text-xl">
 							{description}
 						</CardDescription>
 					</CardHeader>

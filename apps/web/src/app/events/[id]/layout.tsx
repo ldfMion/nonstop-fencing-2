@@ -1,7 +1,8 @@
 import { QUERIES } from "~/server/db/queries";
 import { TabsNavigation } from "./tabs-navigation";
 import { PageHeader } from "~/components/custom/page-header";
-import { formatEventDescription } from "~/lib/utils";
+import { formatEventDescription, formatRelativeDate } from "~/lib/utils";
+import { Calendar } from "lucide-react";
 
 export default async function EventLayout({
 	children,
@@ -19,7 +20,13 @@ export default async function EventLayout({
 				title={event.name}
 				description={formatEventDescription(event)}
 			>
-				<TabsNavigation />
+				<div className="flex flex-row justify-between w-full">
+					<TabsNavigation />
+					<p className="text-sm font-semibold flex flex-row gap-2 items-center">
+						<Calendar size={20} />
+						{formatRelativeDate(event.date)}
+					</p>
+				</div>
 			</PageHeader>
 			{children}
 		</>
