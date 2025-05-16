@@ -1,4 +1,3 @@
-import { Card } from "~/components/ui/card";
 import { Filter } from "./filter";
 
 export default function EventsLayout({

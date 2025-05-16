@@ -48,7 +48,7 @@ export function BracketCarousel({
 				</Button>
 			</div>
 			<div className="p-0 md:p-6">
-				<Card className="p-6 bg-transparent md:bg-card rounded-none md:rounded-2xl border-none md:border">
+				<Card className="p-6 bg-transparent md:bg-card rounded-none md:rounded-2xl border-none md:border-solid">
 					{/* Shadcn Carousel */}
 					{/* Custom positioned navigation - absolute to parent Carousel, then flexbox */}
 

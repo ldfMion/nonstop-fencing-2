@@ -5,7 +5,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import Image from "next/image";
 import { JSX } from "react";
 import { Flag } from "./flag";
 
@@ -22,7 +21,7 @@ export function PageHeader({
 }) {
 	return (
 		<div className="md:px-6">
-			<Card className="rounded-none md:rounded-3xl  !p-6 ">
+			<Card className="rounded-none md:rounded-3xl  !p-6">
 				<div className="flex flex-row gap-2 items-start">
 					<Flag
 						flagCode={flagCode}

@@ -11,7 +11,6 @@ import { ChevronRight } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
-import { format, formatRelative } from "date-fns";
 import { Fragment } from "react";
 
 export default async function CompetitionPage({
