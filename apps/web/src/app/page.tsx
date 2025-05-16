@@ -33,7 +33,7 @@ export default function Home() {
 										className="rounded-full"
 										asChild
 									>
-										<Link href="/events">
+										<Link href="/competitions">
 											Explore Events{" "}
 											<ChevronRight className="ml-2 h-4 w-4" />
 										</Link>
@@ -75,7 +75,7 @@ export default function Home() {
 
 						<div className="mt-16 flex justify-center">
 							<Button size="lg" className="rounded-full" asChild>
-								<Link href="/events">
+								<Link href="/competitions">
 									Explore Events{" "}
 									<ChevronRight className="ml-2 h-4 w-4" />
 								</Link>
