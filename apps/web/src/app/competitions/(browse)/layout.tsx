@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Filter } from "./filter";
 import { StatusTabs } from "./status-tabs";
 
@@ -19,7 +20,9 @@ export default function CompetitionsLayout({
 				</div>
 				<div className="flex flex-col col-span-2 lg:col-span-1 items-center">
 					<div className="max-w-lg w-full">
-						<StatusTabs />
+						<Suspense>
+							<StatusTabs />
+						</Suspense>
 						{children}
 					</div>
 				</div>

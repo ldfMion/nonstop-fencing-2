@@ -7,7 +7,6 @@ import {
 } from "~/components/ui/navigation-menu";
 import { MobileNavbar } from "./mobile";
 import { router } from "~/lib/router";
-import { BarChart3, Info, Trophy } from "lucide-react";
 import { ReactNode } from "react";
 
 export default function Navbar() {
