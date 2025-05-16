@@ -59,16 +59,15 @@ export function FeatureCards() {
 					key={index}
 					className="bg-background/50 backdrop-blur-sm border-primary/10 overflow-hidden relative group hover:shadow-md transition-all duration-300 rounded-xl"
 				>
-					<CardHeader className="relative">
-						{feature.comingSoon && (
-							<Badge
-								className="absolute right-5 top-0 rounded-full px-2"
-								variant="default"
-							>
-								Coming Soon
-							</Badge>
-						)}
-						<feature.icon className="h-8 w-8 text-primary mb-2" />
+					<CardHeader className="">
+						<div className="flex flex-row justify-between">
+							<feature.icon className="h-8 w-8 text-primary" />
+							{feature.comingSoon && (
+								<Badge className="" variant="outline">
+									Coming Soon
+								</Badge>
+							)}
+						</div>
 						<CardTitle>{feature.title}</CardTitle>
 					</CardHeader>
 					<CardContent>

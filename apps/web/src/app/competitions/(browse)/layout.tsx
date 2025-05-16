@@ -1,5 +1,4 @@
 import { Filter } from "./filter";
-import Link from "next/link";
 import { StatusTabs } from "./status-tabs";
 
 export default function CompetitionsLayout({
