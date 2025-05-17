@@ -7,7 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDateRange(date: { start: Date; end: Date }) {
-	return `${format(date.start, "MMM d")} - ${format(date.end, "MMM d, yyyy")}`;
+	return `${format(date.start, "MMM d")} - ${format(
+		date.end,
+		"MMM d, yyyy"
+	)}`;
 }
 
 export function formatEventDescription(event: {
@@ -16,7 +19,9 @@ export function formatEventDescription(event: {
 	gender: "MEN" | "WOMEN";
 }) {
 	return toTitleCase(
-		`${event.gender == "MEN" ? "Men's" : "Women's"} ${event.weapon} ${event.type}`
+		`${event.gender == "MEN" ? "Men's" : "Women's"} ${event.weapon} ${
+			event.type
+		}`
 	);
 }
 
