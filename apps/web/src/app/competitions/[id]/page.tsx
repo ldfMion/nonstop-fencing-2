@@ -18,7 +18,7 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
 	const competitions = await QUERIES.getCompetitions(2025);
-	return competitions.map(c => c.id);
+	return competitions.map(c => ({ id: c.id.toString() }));
 }
 
 export default async function CompetitionPage({
