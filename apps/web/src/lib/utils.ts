@@ -34,9 +34,7 @@ export function toTitleCase(s: string) {
 }
 
 export function formatRelativeDate(date: Date) {
-	console.log("date", date);
 	const today = new Date(new Date().toISOString().split("T")[0]);
-	console.log("today", today);
 	const difference = Math.abs(differenceInCalendarDays(date, today));
 	return toTitleCase(
 		difference > 6

@@ -9,7 +9,6 @@ export default async function EventsPage({
 }: {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-	console.log("rendering page");
 	const parsed = parseCompetitionSearchParams(await searchParams);
 
 	return (
@@ -27,7 +26,6 @@ async function InnerPage({
 }: {
 	parsed: ReturnType<typeof parseCompetitionSearchParams>;
 }) {
-	console.log("in inner page");
 	const filters = {
 		season: 2025,
 		gender: parsed?.gender?.toUpperCase() as "MEN" | "WOMEN" | undefined,
