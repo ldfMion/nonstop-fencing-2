@@ -37,6 +37,6 @@ async function InnerPage({
 		type: parsed?.type?.toUpperCase() as "INDIVIDUAL" | "TEAM" | undefined,
 		upcoming: parsed?.status == "upcoming",
 	};
-	const c = await QUERIES.getCompetitions(filters);
+	const c = await QUERIES.filterCompetitions(filters);
 	return <EventsList competitions={c} />;
 }

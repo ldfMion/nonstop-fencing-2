@@ -24,6 +24,7 @@ import {
 	SQL,
 	asc,
 	not,
+	lte,
 } from "drizzle-orm";
 import assert from "assert";
 import {
@@ -39,7 +40,7 @@ import { getIsoCodeFromIocCode } from "../countries";
 import { arrayAgg } from "./utils";
 
 export const QUERIES = {
-	async getCompetitions(
+	async filterCompetitions(
 		filters: {
 			season: number;
 			gender?: "MEN" | "WOMEN";
@@ -316,7 +317,7 @@ export const QUERIES = {
 						lastName: b.fencerA.lastName!,
 						score: b.fencerA.score ?? undefined,
 						flag: b.fencerA.flag ?? undefined,
-					}
+				  }
 				: undefined,
 			fencerB: b.fencerB.firstName
 				? {
@@ -324,7 +325,7 @@ export const QUERIES = {
 						lastName: b.fencerB.lastName!,
 						score: b.fencerB.score ?? undefined,
 						flag: b.fencerB.flag ?? undefined,
-					}
+				  }
 				: undefined,
 			round: b.round,
 			order: b.order,
@@ -404,6 +405,22 @@ export const QUERIES = {
 				)
 			);
 	},
+	async getEventsWithMissingResults() {
+		let yesterday = new Date();
+		yesterday.setDate(yesterday.getDate() - 1);
+		yesterday = new Date(yesterday.toISOString().split("T")[0]);
+
+		return db
+			.select({ id: events.id })
+			.from(events)
+			.where(
+				and(
+					eq(events.type, "INDIVIDUAL"),
+					eq(events.hasFieResults, false),
+					lte(events.date, yesterday)
+				)
+			);
+	},
 	async insertEvents(newEvents: NewEventModel[]) {
 		console.log("inserting events");
 		console.log(
@@ -428,5 +445,11 @@ export const QUERIES = {
 				target: [competitions.id],
 				set: { name: sql`EXCLUDED.name`, host: sql`EXCLUDED.host` },
 			});
+	},
+	async getCompetitions(season: number) {
+		return db
+			.select({ id: competitions.id })
+			.from(competitions)
+			.where(eq(competitions.season, season));
 	},
 };

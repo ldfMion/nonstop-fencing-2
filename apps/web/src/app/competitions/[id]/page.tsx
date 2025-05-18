@@ -14,6 +14,11 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { router } from "~/lib/router";
 
+export async function generateStaticParams() {
+	const competitions = await QUERIES.getCompetitions(2025);
+	return competitions.map(c => c.id);
+}
+
 export default async function CompetitionPage({
 	params,
 }: {
@@ -25,17 +30,14 @@ export default async function CompetitionPage({
 		notFound();
 	}
 
-	const eventsByDate = competition.events.reduce(
-		(acc, event) => {
-			const date = event.date.toISOString().split("T")[0]!;
-			if (!acc[date]) {
-				acc[date] = [];
-			}
-			acc[date].push(event);
-			return acc;
-		},
-		{} as Record<string, typeof competition.events>
-	);
+	const eventsByDate = competition.events.reduce((acc, event) => {
+		const date = event.date.toISOString().split("T")[0]!;
+		if (!acc[date]) {
+			acc[date] = [];
+		}
+		acc[date].push(event);
+		return acc;
+	}, {} as Record<string, typeof competition.events>);
 
 	return (
 		<>

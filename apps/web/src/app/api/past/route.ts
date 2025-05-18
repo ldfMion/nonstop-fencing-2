@@ -3,7 +3,7 @@ import { withBrowserless } from "~/server/scraping/browserless";
 import { scrapePastEvent } from "~/server/scraping/past-events";
 
 export async function POST() {
-	const events = await QUERIES.getEventsWithFieResults();
+	const events = await QUERIES.getEventsWithMissingResults();
 	if (events.length == 0) {
 		console.log("No missing events.");
 		return new Response("No missing events.");
@@ -11,6 +11,7 @@ export async function POST() {
 	console.log(
 		`Added ${events.length} to queue: ${events.map(e => e.id).join(", ")}.`
 	);
+	return new Response();
 	withBrowserless(
 		events.map(event => browser => scrapePastEvent(event.id, browser))
 	);
