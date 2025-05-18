@@ -11,11 +11,13 @@ export const env = createEnv({
 		DATABASE_URL: z.string().url(),
 		MODE: z.enum(["DEV", "PROD"]),
 		BLESS_TOKEN: z.string(),
+		CRON_SECRET: z.string(),
 	},
 
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		MODE: process.env.MODE,
 		BLESS_TOKEN: process.env.BLESS_TOKEN,
+		CRON_SECRET: process.env.CRON_SECRET,
 	},
 });

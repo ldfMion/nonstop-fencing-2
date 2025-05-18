@@ -14,7 +14,6 @@ export async function withBrowserless(
 			browserWSEndpoint: `wss://chrome.browserless.io?token=${env.BLESS_TOKEN}`,
 		});
 	} catch (connectionError) {
-		console.error("Failed to connect to browserless:", connectionError);
 		close(browser, "error in connection");
 		throw new Error("Browserless connection failed: " + connectionError);
 	}
@@ -26,7 +25,6 @@ export async function withBrowserless(
 		);
 		close(browser, "finished scripts");
 	} catch (scriptError) {
-		console.error("Error during script execution:", scriptError);
 		close(browser, "error in script" + scriptError);
 		throw new Error("Script execution failed: " + scriptError);
 	}

@@ -6,12 +6,13 @@ import {
 	mapFieEventToDBEvent,
 } from "~/server/scraping/fie/mappers";
 
-export async function POST() {
+export async function seedCompetitions() {
 	const fieEvents = await fetchCompetitions(2025);
 	const newCompetitions = mapFieEventsToDBCompetitions(fieEvents);
 	console.log(newCompetitions);
-	const uploadedCompetitions =
-		await QUERIES.insertCompetitions(newCompetitions);
+	const uploadedCompetitions = await QUERIES.insertCompetitions(
+		newCompetitions
+	);
 	console.log(uploadedCompetitions);
 	const eventsWithCompetitions = fieEvents.map(event =>
 		mapFieEventToDBEvent(
@@ -21,5 +22,4 @@ export async function POST() {
 	);
 	console.log(eventsWithCompetitions);
 	QUERIES.insertEvents(eventsWithCompetitions);
-	return Response.json({});
 }

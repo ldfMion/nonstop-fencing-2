@@ -409,7 +409,6 @@ export const QUERIES = {
 		let yesterday = new Date();
 		yesterday.setDate(yesterday.getDate() - 1);
 		yesterday = new Date(yesterday.toISOString().split("T")[0]);
-
 		return db
 			.select({ id: events.id })
 			.from(events)
