@@ -14,6 +14,8 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { router } from "~/lib/router";
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
 	const competitions = await QUERIES.getCompetitions(2025);
 	return competitions.map(c => c.id);
