@@ -1,6 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Trophy, Star } from "lucide-react-native";
+import { Trophy } from "@/lib/icons/Trophy";
+import { Star } from "@/lib/icons/Star";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 

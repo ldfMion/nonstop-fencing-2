@@ -1,47 +1,51 @@
-import { FlatList, ScrollView } from "react-native";
+import { FlatList, ScrollView, View, Image, Modal } from "react-native";
 
-import { Heading } from "@/components/ui/heading";
-import { Card } from "@/components/ui/card";
-import { Image } from "react-native";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { HStack } from "@/components/ui/hstack";
-import { Badge, BadgeText } from "@/components/ui/badge";
-import { Button, ButtonText } from "@/components/ui/button";
 import { useState } from "react";
-import {
-	Drawer,
-	DrawerBackdrop,
-	DrawerBody,
-	DrawerContent,
-	DrawerFooter,
-	DrawerHeader,
-} from "@/components/ui/drawer";
+import { H2, H3 } from "@/components/ui/typography";
+import { Button } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Text } from "@/components/ui/text";
+import { Badge } from "@/components/ui/badge";
 
 export default function TabOneScreen() {
-	const [showDrawer, setShowDrawer] = useState(false);
+	const [showFilters, setShowFilters] = useState(false);
 	return (
 		<>
 			<ScrollView
 				contentInsetAdjustmentBehavior="automatic"
 				className="p-6"
 			>
-				<HStack className="flex flex-row justify-between items-center mb-4">
-					<Heading>Upcoming</Heading>
+				<View className="flex flex-row justify-between mb-4">
+					<H2 className="border-b-0">Upcoming</H2>
 					<Button
-						size="sm"
 						onPress={() => {
-							setShowDrawer(true);
+							setShowFilters(true);
 						}}
 					>
-						<ButtonText>Filter</ButtonText>
+						<Text>Filter</Text>
 					</Button>
-				</HStack>
-				{COMPETITIONS.map((c, index) => (
-					<CompetitionCard competition={c} key={c.title + index} />
-				))}
+				</View>
+				<View className="flex flex-col gap-2 mb-4">
+					{COMPETITIONS.map((c, index) => (
+						<CompetitionCard
+							competition={c}
+							key={c.title + index}
+						/>
+					))}
+				</View>
 			</ScrollView>
-			<Drawer
+			<Modal
+				animationType="slide"
+				visible={showFilters}
+				presentationStyle="pageSheet"
+				onRequestClose={() => setShowFilters(false)}
+				onDismiss={() => setShowFilters(false)}
+			>
+				<View className="p-6">
+					<H3>Filter</H3>
+				</View>
+			</Modal>
+			{/* <Drawer
 				isOpen={showDrawer}
 				onClose={() => {
 					setShowDrawer(false);
@@ -70,7 +74,7 @@ export default function TabOneScreen() {
 						</Button>
 					</DrawerFooter>
 				</DrawerContent>
-			</Drawer>
+			</Drawer> */}
 		</>
 	);
 }
@@ -93,23 +97,21 @@ function CompetitionCard({
 	competition: (typeof COMPETITIONS)[0];
 }) {
 	return (
-		<Card className="mb-2 flex flex-row gap-4 rounded-3xl p-4">
-			<VStack space="sm">
-				<HStack space="sm">
-					<Flag code={competition.flag} />
-					<VStack>
-						<Heading className="">{competition.title}</Heading>
-						<Text>{competition.date}</Text>
-					</VStack>
-				</HStack>
-				<HStack space="sm">
-					{competition.tags.map(tag => (
-						<Badge key={tag}>
-							<BadgeText>{tag}</BadgeText>
-						</Badge>
-					))}
-				</HStack>
-			</VStack>
+		<Card className="">
+			<CardHeader className="flex flex-row gap-2">
+				<Flag code={competition.flag} />
+				<View>
+					<H3 className="">{competition.title}</H3>
+					<Text>{competition.date}</Text>
+				</View>
+			</CardHeader>
+			<CardFooter className="gap-1">
+				{competition.tags.map(tag => (
+					<Badge key={tag}>
+						<Text>{tag}</Text>
+					</Badge>
+				))}
+			</CardFooter>
 		</Card>
 	);
 }
