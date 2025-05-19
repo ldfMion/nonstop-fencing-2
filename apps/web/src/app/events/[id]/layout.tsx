@@ -4,6 +4,33 @@ import { formatEventDescription, formatRelativeDate } from "~/lib/utils";
 import { Calendar } from "lucide-react";
 import assert from "assert";
 import { EventTabs } from "./event-tabs";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+	const { id } = await params;
+	const eventId = Number(id);
+	assert(!isNaN(eventId));
+	const event = await QUERIES.getEvent(eventId);
+	const title = `${formatEventDescription(event)} | ${event.name}`;
+	const description = `Results for ${title} happening on ${formatRelativeDate(
+		event.date
+	)}`;
+	return {
+		title: title,
+		description: description,
+		openGraph: {
+			title: title,
+			description: description,
+			images: event.flag && [
+				`https://flagcdn.com/w1280/${event.flag.toLowerCase()}.png`,
+			],
+		},
+	};
+}
 
 export default async function EventLayout({
 	children,

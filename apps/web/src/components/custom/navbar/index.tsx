@@ -29,9 +29,9 @@ function DesktopNavbar() {
 			</Link>
 			<NavigationMenu>
 				<NavigationMenuList className="flex flex-row gap-2">
-					<DesktopBaseLink href={router.home}>
+					{/* <DesktopBaseLink href={router.home}>
 						Rankings
-					</DesktopBaseLink>
+					</DesktopBaseLink> */}
 					<DesktopBaseLink href={router.competitions()}>
 						Competitions
 					</DesktopBaseLink>

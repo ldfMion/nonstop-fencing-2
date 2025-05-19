@@ -86,3 +86,30 @@ export default async function CompetitionPage({
 		</>
 	);
 }
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
+	const { id: competitionId } = await params;
+	const competition = await QUERIES.getCompetition(Number(competitionId));
+	if (!competition) {
+		return {};
+	}
+	const title = competition.name + " | Nonstop Fencing";
+	const description = `Results for ${
+		competition.name
+	} happening ${getDateRange(competition.date)}`;
+	return {
+		title: title,
+		description: description,
+		openGraph: {
+			title: title,
+			description: description,
+			images: competition.flag && [
+				`https://flagcdn.com/w1280/${competition.flag.toLowerCase()}.png`,
+			],
+		},
+	};
+}

@@ -49,12 +49,12 @@ export function MobileNavbar() {
 									onOpenChange={setOpen}
 									icon={<Trophy />}
 								/>
-								<MobileBaseLink
+								{/* <MobileBaseLink
 									href={router.home}
 									title="Rankings"
 									onOpenChange={setOpen}
 									icon={<BarChart3 />}
-								/>
+								/> */}
 							</NavigationMenuList>
 						</NavigationMenu>
 					</SheetContent>

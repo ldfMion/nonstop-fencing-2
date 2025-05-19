@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import { Filter } from "./filter";
 import { StatusTabs } from "./status-tabs";
-import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Competitions | Nonstop Fencing",
+	description: "Search International Fencing Competitions",
+};
 
 export default function CompetitionsLayout({
 	children,
