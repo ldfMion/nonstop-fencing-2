@@ -9,6 +9,12 @@ export async function GET(req: NextRequest) {
 			status: 401,
 		});
 	}
-	updatePastResults();
-	return new Response("Cron job ran");
+	try {
+		await updatePastResults();
+		return new Response("Cron job ran");
+	} catch (e) {
+		return new Response(`Error: ${e}`, {
+			status: 500,
+		});
+	}
 }
