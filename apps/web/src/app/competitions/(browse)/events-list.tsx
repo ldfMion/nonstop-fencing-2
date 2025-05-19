@@ -39,9 +39,9 @@ export function EventsList({ competitions }: { competitions: Competition[] }) {
 			{groupCompetitionsByMonth(competitions).map(
 				([month, monthCompetitions]) => (
 					<Fragment key={month}>
-						<h2 className="text-xl font-semibold px-4 mt-4 mb-2">
+						<h3 className="text-xl font-semibold px-4 mt-4 mb-2">
 							{month}
-						</h2>
+						</h3>
 						{monthCompetitions.map(competition => (
 							<CompetitionCard
 								key={competition.id}

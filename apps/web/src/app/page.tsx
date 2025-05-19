@@ -8,7 +8,7 @@ export default function Home() {
 		<div className="">
 			<main className="flex-1">
 				{/* Hero Section */}
-				<section className="w-full relative overflow-hidden grid grid-cols-1 md:grid-cols-2">
+				<section className="w-full relative overflow-hidden grid grid-cols-1 md:grid-cols-2 md:h-[60vh]">
 					<div className="flex flex-col justify-center space-y-4 p-20 md:py-40">
 						<h1 className="text-3xl font-extrabold sm:text-5xl xl:text-6xl/none uppercase">
 							Follow Fencing Like{" "}

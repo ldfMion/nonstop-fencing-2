@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Filter } from "./filter";
 import { StatusTabs } from "./status-tabs";
+import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 
 export default function CompetitionsLayout({
 	children,
@@ -8,18 +9,18 @@ export default function CompetitionsLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<main className="mx-auto p-6">
-			<div className="md:grid md:grid-cols-3 lg:grid-cols-2 gap-6">
-				<div className="col-span-1 flex flex-row md:flex-col justify-between md:justify-start items-center gap-6">
+		<main className="p-6 lg:p-12">
+			<div className="md:flex md:flex-row md:items-start gap-6">
+				<div className="flex flex-row md:flex-col md:items-start  justify-between  items-center gap-6">
 					<h1 className="text-2xl lg:text-3xl font-bold m-0 self-start">
 						Competitions
 					</h1>
-					<div className="max-w-md md:w-full">
+					<div className="max-w-md">
 						<Filter />
 					</div>
 				</div>
-				<div className="flex flex-col col-span-2 lg:col-span-1 items-center">
-					<div className="max-w-lg w-full">
+				<div className="flex flex-col items-center md:w-full self-stretch ">
+					<div className="max-w-lg w-full ">
 						<Suspense>
 							<StatusTabs />
 						</Suspense>

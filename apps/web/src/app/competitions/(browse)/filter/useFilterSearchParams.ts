@@ -81,12 +81,10 @@ export function useFilterSearchParams() {
 	const currentGender = searchParams.get("gender") || "";
 	const currentWeapon = searchParams.get("weapon") || "";
 	const currentType = searchParams.get("type") || "";
-	const currentStatus = searchParams.get("status") || "";
+	const currentStatus = searchParams.get("status") || "previous";
 
 	// Determine if any filters are active
-	const active = Boolean(
-		currentGender || currentWeapon || currentType || currentStatus
-	);
+	const active = Boolean(currentGender || currentWeapon || currentType);
 
 	return {
 		// Current values

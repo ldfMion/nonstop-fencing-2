@@ -12,12 +12,17 @@ export default async function EventsPage({
 	const parsed = parseCompetitionSearchParams(await searchParams);
 
 	return (
-		<Suspense
-			fallback={<LoadingCompetitions />}
-			key={JSON.stringify(parsed)}
-		>
-			<InnerPage parsed={parsed} />;
-		</Suspense>
+		<>
+			<h2 className="text-xl font-semibold hidden md:block px-4">
+				{parsed?.status == "upcoming" ? "Upcoming" : "Past"}
+			</h2>
+			<Suspense
+				fallback={<LoadingCompetitions />}
+				key={JSON.stringify(parsed)}
+			>
+				<InnerPage parsed={parsed} />
+			</Suspense>
+		</>
 	);
 }
 
