@@ -4,6 +4,7 @@ import { fontSans, anton } from "~/lib/fonts";
 import { cn } from "~/lib/utils";
 import Navbar from "~/components/custom/navbar";
 import { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
 	title: "Nonstop Fencing | About",
@@ -39,6 +40,7 @@ export default function RootLayout({
 			>
 				<Navbar />
 				{children}
+				<Analytics />
 			</body>
 		</html>
 	);
