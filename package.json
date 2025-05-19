@@ -10,5 +10,9 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"packageManager": "pnpm@10.10.0"
+	"packageManager": "pnpm@10.10.0",
+	"dependencies": {
+		"drizzle-kit": "^0.31.1",
+		"drizzle-orm": "^0.43.1"
+	}
 }

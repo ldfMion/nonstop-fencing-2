@@ -1,5 +1,6 @@
-import { relations, sql } from "drizzle-orm";
+import { max, min, relations, sql, eq } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
+import { arrayAgg } from "./utils";
 
 export const weaponsEnum = t.pgEnum("weapons", ["FOIL", "EPEE", "SABER"]);
 export const gendersEnum = t.pgEnum("genders", ["MEN", "WOMEN"]);
@@ -21,28 +22,35 @@ export const competitions = t.pgTable(
 			.references(() => seasons.id)
 			.notNull(),
 	},
-	table => [t.unique().on(table.name, table.season)]
+	table => [
+		t.unique().on(table.name, table.season),
+		t.index("filter_index").on(table.season),
+	]
 );
 
-export const events = t.pgTable("events_0", {
-	id: t.serial("id").primaryKey(),
-	competition: t
-		.integer("competition")
-		.references(() => competitions.id)
-		.notNull(),
-	date: t.date("date", { mode: "date" }).notNull(),
-	weapon: weaponsEnum("weapon").notNull(),
-	type: typeEnum("type").notNull(),
-	gender: gendersEnum("gender").notNull(),
-	hasFieResults: t.boolean("has_fie_results").notNull(),
-	fieCompetitionId: t.integer("fie_competition_id").unique().notNull(),
-	hasResults: t.boolean("has_results").notNull().default(false),
-	lastLiveUpdate: t.timestamp("last_live_update", {
-		withTimezone: true,
-		mode: "date",
-	}),
-	liveResultsTableauUrl: t.text("live_results_tableau_url"),
-});
+export const events = t.pgTable(
+	"events_0",
+	{
+		id: t.serial("id").primaryKey(),
+		competition: t
+			.integer("competition")
+			.references(() => competitions.id)
+			.notNull(),
+		date: t.date("date", { mode: "date" }).notNull(),
+		weapon: weaponsEnum("weapon").notNull(),
+		type: typeEnum("type").notNull(),
+		gender: gendersEnum("gender").notNull(),
+		hasFieResults: t.boolean("has_fie_results").notNull(),
+		fieCompetitionId: t.integer("fie_competition_id").unique().notNull(),
+		hasResults: t.boolean("has_results").notNull().default(false),
+		lastLiveUpdate: t.timestamp("last_live_update", {
+			withTimezone: true,
+			mode: "date",
+		}),
+		liveResultsTableauUrl: t.text("live_results_tableau_url"),
+	},
+	table => [t.index("filer_index").on(table.competition, table.date)]
+);
 
 export const countries = t.pgTable("countries_0", {
 	iocCode: t.char("ioc_code", { length: 3 }).primaryKey(),
@@ -86,6 +94,7 @@ export const liveBouts = t.pgTable(
 			sql`${table.fencerA} IS NOT NULL OR ${table.fencerB} IS NOT NULL`
 		),
 		t.unique().on(table.event, table.order, table.round),
+		t.index("live_bouts_event_index").on(table.event),
 	]
 );
 
@@ -111,8 +120,15 @@ export const pastBouts = t.pgTable(
 			.references(() => events.id)
 			.notNull(),
 	},
-	table => [t.unique().on(table.event, table.order, table.round)]
+	table => [
+		t.unique().on(table.event, table.order, table.round),
+		t.index("past_bouts_event_index").on(table.event),
+	]
 );
+
+/**
+ * RELATIONS
+ */
 
 export const competitionsRelations = relations(
 	competitions,
@@ -154,3 +170,7 @@ export const fencersRelations = relations(fencers, ({ many }) => ({
 	liveBouts: many(liveBouts),
 	pastBouts: many(pastBouts),
 }));
+
+/**
+ * VIEWS
+ */
