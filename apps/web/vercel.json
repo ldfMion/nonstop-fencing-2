@@ -1,7 +1,7 @@
 {
 	"crons": [
 		{
-			"path": "/api/past",
+			"path": "/api/cron/past-results",
 			"schedule": "0 0 * * *"
 		}
 	]
