@@ -1,5 +1,4 @@
 "use client";
-import { BracketBout } from "./bracket";
 import { Bout } from "./bout";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
@@ -13,8 +12,9 @@ import {
 	CarouselNext,
 } from "~/components/ui/carousel"; // Import Shadcn Carousel components
 import { useEffect, useState } from "react";
-import { Round } from "~/lib/models";
+import { BracketBout, Round } from "~/lib/models";
 import { Button } from "~/components/ui/button";
+import { RoundBadge } from "./round-badge";
 
 export function BracketCarousel({
 	sortedRoundKeys,
@@ -62,12 +62,7 @@ export function BracketCarousel({
 									key={roundKey}
 									className="!flex-shrink-1 min-w-60 flex flex-col gap-2"
 								>
-									<Badge
-										className="text-base font-semibold"
-										variant="secondary"
-									>
-										{getRoundDisplayName(roundKey)}
-									</Badge>
+									<RoundBadge roundKey={roundKey} />
 									<div
 										className={cn(
 											"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in"
@@ -95,15 +90,4 @@ export function BracketCarousel({
 			</div>
 		</Carousel>
 	);
-}
-
-function getRoundDisplayName(round: Round) {
-	switch (round) {
-		case "2":
-			return "Final";
-		case "4":
-			return "Semi-Final";
-		default:
-			return `T${round}`;
-	}
 }

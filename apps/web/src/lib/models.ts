@@ -25,14 +25,16 @@ export type NewPastBoutModel = typeof pastBouts.$inferInsert;
 
 export type Round = "2" | "4" | "8" | "16" | "32" | "64";
 
-export type LiveBoutModel = {
+export type BracketBout = {
 	fencerA?: {
+		id: number;
 		firstName: string;
 		lastName: string;
 		score?: number;
 		flag?: string;
 	};
 	fencerB?: {
+		id: number;
 		firstName: string;
 		lastName: string;
 		score?: number;
@@ -41,17 +43,21 @@ export type LiveBoutModel = {
 	round: Round;
 	order: number;
 	winnerIsA?: boolean;
-	id: number;
+	id?: number;
 };
+
+export type LiveBoutModel = BracketBout & { id: number };
 
 export type PastBoutModel = {
 	fencerA: {
+		id: number;
 		firstName: string;
 		lastName: string;
 		score: number;
 		flag?: string;
 	};
 	fencerB: {
+		id: number;
 		firstName: string;
 		lastName: string;
 		score: number;

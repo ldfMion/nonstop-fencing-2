@@ -1,8 +1,6 @@
-import { LiveBoutModel, Round } from "~/lib/models";
+import { BracketBout, LiveBoutModel, Round } from "~/lib/models";
 import { BracketCarousel } from "./bracket-carousel";
 import { PageMessage } from "./page-message";
-
-export type BracketBout = Omit<LiveBoutModel, "id">;
 
 export function Bracket({
 	bouts,
