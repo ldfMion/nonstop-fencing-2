@@ -1,5 +1,6 @@
 import { LiveBoutModel, Round } from "~/lib/models";
 import { BracketCarousel } from "./bracket-carousel";
+import { PageMessage } from "./page-message";
 
 export type BracketBout = Omit<LiveBoutModel, "id">;
 
@@ -13,16 +14,13 @@ export function Bracket({
 		return "Bracket not available";
 	}
 	const bracketBouts = createTableauBouts(64, bouts);
-	const rounds = bracketBouts.reduce(
-		(acc, bout) => {
-			if (!acc[bout.round]) {
-				acc[bout.round] = [];
-			}
-			acc[bout.round]!.push(bout);
-			return acc;
-		},
-		{} as Record<BracketBout["round"], BracketBout[]>
-	);
+	const rounds = bracketBouts.reduce((acc, bout) => {
+		if (!acc[bout.round]) {
+			acc[bout.round] = [];
+		}
+		acc[bout.round]!.push(bout);
+		return acc;
+	}, {} as Record<BracketBout["round"], BracketBout[]>);
 
 	// Sort bouts within each round by their order
 	Object.keys(rounds).forEach(roundKey => {
@@ -44,11 +42,7 @@ export function Bracket({
 			rounds[roundKey as Round] && rounds[roundKey as Round].length > 0
 	) as Round[];
 	if (sortedRoundKeys.length === 0) {
-		return (
-			<div className="text-center text-muted-foreground">
-				No bracket data available.
-			</div>
-		);
+		return <PageMessage>Results not available.</PageMessage>;
 	}
 	return (
 		<BracketCarousel sortedRoundKeys={sortedRoundKeys} rounds={rounds} />

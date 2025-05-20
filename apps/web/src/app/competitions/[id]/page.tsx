@@ -69,9 +69,7 @@ export default async function CompetitionPage({
 										asChild
 									>
 										<Link
-											href={
-												router.event(e.id).bracket.past
-											}
+											href={router.event(e.id).overview}
 										>
 											<h4>{formatEventDescription(e)}</h4>
 											<ChevronRight />

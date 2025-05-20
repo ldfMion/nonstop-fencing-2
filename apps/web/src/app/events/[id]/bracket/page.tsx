@@ -4,6 +4,8 @@ import { Bracket } from "./bracket";
 import { getEventStatus } from "../getEventStatus";
 import { redirect } from "next/navigation";
 import { router } from "~/lib/router";
+import { PageMessage } from "./page-message";
+import { Clock, Construction } from "lucide-react";
 
 export const revalidate = false;
 
@@ -23,7 +25,11 @@ export default async function BracketPage({
 	assert(!isNaN(eventId), "Event ID must be a number");
 	const event = await QUERIES.getEvent(eventId);
 	if (event.type == "TEAM") {
-		return <p>{"Team results aren't supported yet."}</p>;
+		return (
+			<PageMessage icon={<Construction size={24} />}>
+				Results for team events are coming soon!
+			</PageMessage>
+		);
 	}
 	if (!event.hasResults) {
 		const status = getEventStatus(event);
@@ -31,7 +37,15 @@ export default async function BracketPage({
 		if (status == "LIVE") {
 			redirect(router.event(eventId).bracket.live);
 		}
-		return <p>This event does not have results.</p>;
+		if (status == "FUTURE") {
+			return (
+				<PageMessage icon={<Clock size={24} />}>
+					Results will be available as soon as the event starts. Come
+					back later!
+				</PageMessage>
+			);
+		}
+		return <PageMessage>This event does not have results.</PageMessage>;
 	}
 	const bouts = await QUERIES.getPastTableau(event.id);
 	return <Bracket bouts={bouts} />;

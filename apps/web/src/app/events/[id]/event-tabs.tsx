@@ -19,11 +19,11 @@ export function EventTabs({
 	return (
 		<Tabs value={active}>
 			<TabsList>
-				<TabsTrigger value="overview">
+				{/* <TabsTrigger value="overview">
 					<Link href={router.competition(competitionId)}>
 						Overview
 					</Link>
-				</TabsTrigger>
+				</TabsTrigger> */}
 				<TabsTrigger value="bracket">
 					<Link href={router.event(eventId).bracket.past}>
 						Bracket

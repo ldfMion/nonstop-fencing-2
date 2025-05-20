@@ -39,7 +39,6 @@ export function BracketCarousel({
 			setApi={setApi}
 		>
 			<div className="absolute top-0 right-0 z-10 flex space-x-2 p-4">
-				{/* Override default button positioning */}
 				<Button asChild variant="default">
 					<CarouselPrevious className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
 				</Button>
@@ -49,9 +48,6 @@ export function BracketCarousel({
 			</div>
 			<div className="p-0 md:p-6">
 				<Card className="p-6 bg-transparent md:bg-card rounded-none md:rounded-2xl border-none md:border-solid">
-					{/* Shadcn Carousel */}
-					{/* Custom positioned navigation - absolute to parent Carousel, then flexbox */}
-
 					<CarouselContent className="">
 						{" "}
 						{/* Negative margin for item spacing */}
