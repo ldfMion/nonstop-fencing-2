@@ -4,7 +4,6 @@ import {
 	formatRelativeDate,
 	getDateRange,
 } from "~/lib/utils";
-import { QUERIES } from "~/server/db/queries";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { ChevronRight } from "lucide-react";
@@ -13,11 +12,12 @@ import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Fragment } from "react";
 import { router } from "~/lib/router";
+import { getCompetition, getCompetitions } from "../queries";
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-	const competitions = await QUERIES.getCompetitions(2025);
+	const competitions = await getCompetitions(2025);
 	return competitions.map(c => ({ id: c.id.toString() }));
 }
 
@@ -27,7 +27,7 @@ export default async function CompetitionPage({
 	params: Promise<{ id: string }>;
 }) {
 	const { id: competitionId } = await params;
-	const competition = await QUERIES.getCompetition(Number(competitionId));
+	const competition = await getCompetition(Number(competitionId));
 	if (!competition) {
 		notFound();
 	}
@@ -91,7 +91,7 @@ export async function generateMetadata({
 	params: Promise<{ id: string }>;
 }) {
 	const { id: competitionId } = await params;
-	const competition = await QUERIES.getCompetition(Number(competitionId));
+	const competition = await getCompetition(Number(competitionId));
 	if (!competition) {
 		return {};
 	}

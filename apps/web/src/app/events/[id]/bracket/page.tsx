@@ -1,16 +1,17 @@
 import assert from "assert";
-import { QUERIES } from "~/server/db/queries";
 import { Bracket } from "./bracket";
 import { getEventStatus } from "../getEventStatus";
 import { redirect } from "next/navigation";
 import { router } from "~/lib/router";
 import { PageMessage } from "./page-message";
 import { Clock, Construction } from "lucide-react";
+import { getEvent, getEventsWithResults } from "~/app/events/queries";
+import { getPastTableau } from "./queries";
 
 export const revalidate = false;
 
 export async function generateStaticParams() {
-	return (await QUERIES.getEventsWithResults()).map(e => ({
+	return (await getEventsWithResults()).map(e => ({
 		id: e.id.toString(),
 	}));
 }
@@ -23,7 +24,7 @@ export default async function BracketPage({
 	const { id } = await params;
 	const eventId = Number(id);
 	assert(!isNaN(eventId), "Event ID must be a number");
-	const event = await QUERIES.getEvent(eventId);
+	const event = await getEvent(eventId);
 	if (event.type == "TEAM") {
 		return (
 			<PageMessage icon={<Construction size={24} />}>
@@ -47,6 +48,6 @@ export default async function BracketPage({
 		}
 		return <PageMessage>This event does not have results.</PageMessage>;
 	}
-	const bouts = await QUERIES.getPastTableau(event.id);
+	const bouts = await getPastTableau(event.id);
 	return <Bracket bouts={bouts} />;
 }

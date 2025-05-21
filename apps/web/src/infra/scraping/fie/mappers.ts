@@ -6,6 +6,7 @@ import {
 	NewPastBoutModel,
 	NewFencerModel,
 	NewEventModel,
+	EventModel,
 } from "~/lib/models";
 import assert from "assert";
 
@@ -78,7 +79,9 @@ export function createName(event: Fie.Event) {
 		eventType.toLowerCase().includes("grand prix")
 	) {
 		return toTitleCase(
-			`${event.location} ${parseFieWeapon(event.weapon)} ${parseFieEventTypeInName(event.name)}`
+			`${event.location} ${parseFieWeapon(
+				event.weapon
+			)} ${parseFieEventTypeInName(event.name)}`
 		);
 	}
 	return toTitleCase(
@@ -108,11 +111,11 @@ function parseFieGender(gender: string) {
 
 export function mapFieTableauToFencers(
 	tableau: Fie.Tableau,
-	gender: "MEN" | "WOMEN"
+	event: EventModel
 ): NewFencerModel[] {
 	return tableau[1]!.rounds["B64"]!.flatMap(bout => [
-		mapFieFencerToModel(bout.fencer1, gender),
-		mapFieFencerToModel(bout.fencer2, gender),
+		mapFieFencerToModel(bout.fencer1, event.gender),
+		mapFieFencerToModel(bout.fencer2, event.gender),
 	]);
 }
 
@@ -156,14 +159,14 @@ function parseFieName(name: string): [string, string] {
 export function mapFieTableauToBouts(
 	tableau: Fie.Tableau,
 	fencers: FencerModel[],
-	eventId: number
+	event: EventModel
 ): NewPastBoutModel[] {
 	return Object.entries(tableau[1]!.rounds).flatMap(([round, bouts]) =>
 		bouts.map((bout, index) =>
 			mapFieBoutToModel(
 				bout,
 				fencers,
-				eventId,
+				event.id,
 				index,
 				round.replace("B", "") as "2" | "4" | "8" | "16" | "32" | "64"
 			)

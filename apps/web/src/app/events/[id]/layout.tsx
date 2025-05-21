@@ -1,10 +1,10 @@
-import { QUERIES } from "~/server/db/queries";
 import { PageHeader } from "~/components/custom/page-header";
 import { formatEventDescription, formatRelativeDate } from "~/lib/utils";
 import { Calendar } from "lucide-react";
 import assert from "assert";
 import { EventTabs } from "./event-tabs";
 import { Metadata } from "next";
+import { getEvent } from "../queries";
 
 export async function generateMetadata({
 	params,
@@ -14,7 +14,7 @@ export async function generateMetadata({
 	const { id } = await params;
 	const eventId = Number(id);
 	assert(!isNaN(eventId));
-	const event = await QUERIES.getEvent(eventId);
+	const event = await getEvent(eventId);
 	const title = `${formatEventDescription(event)} | ${event.name}`;
 	const description = `Results for ${title} happening on ${formatRelativeDate(
 		event.date
@@ -42,7 +42,7 @@ export default async function EventLayout({
 	const { id } = await params;
 	const eventId = Number(id);
 	assert(!isNaN(eventId));
-	const event = await QUERIES.getEvent(eventId);
+	const event = await getEvent(eventId);
 	return (
 		<main>
 			<PageHeader

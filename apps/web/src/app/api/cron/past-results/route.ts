@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { updatePastResults } from "~/server/past-results";
+import { updatePastResults } from "~/services/past-results";
 
 export async function GET(req: NextRequest) {
 	if (

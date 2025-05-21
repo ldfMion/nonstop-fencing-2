@@ -174,3 +174,62 @@ export const fencersRelations = relations(fencers, ({ many }) => ({
 /**
  * VIEWS
  */
+
+export const competitionsWithFlag = t
+	.pgMaterializedView("competitions_with_countries")
+	.as(qb =>
+		qb
+			.select({
+				competitionId: competitions.id,
+				name: competitions.name,
+				season: competitions.season,
+				flag: countries.isoCode,
+			})
+			.from(competitions)
+			.innerJoin(countries, eq(competitions.host, countries.iocCode))
+	);
+
+export const eventsAlias = t.pgView("events_alias").as(qb =>
+	qb
+		.select({
+			eventId: events.id,
+			date: events.date,
+			weapon: events.weapon,
+			type: events.type,
+			gender: events.gender,
+			hasFieResults: events.hasFieResults,
+			fieCompetitionId: events.fieCompetitionId,
+			hasResults: events.hasResults,
+			lastLiveUpdate: events.lastLiveUpdate,
+			liveResultsTableauUrl: events.liveResultsTableauUrl,
+			competition: events.competition,
+		})
+		.from(events)
+);
+
+export const competitionsWithFlagsAndEvents = t
+	.pgMaterializedView("competitions_with_flags_and_events_0")
+	.as(qb =>
+		qb
+			.select({
+				competitionId: competitionsWithFlag.competitionId,
+				flag: competitionsWithFlag.flag,
+				season: competitionsWithFlag.season,
+				name: competitionsWithFlag.name,
+				eventId: sql<number>`events_0.id`.as("event_id"),
+				date: events.date,
+				weapon: events.weapon,
+				type: events.type,
+				gender: events.gender,
+				hasFieResults: events.hasFieResults,
+				fieCompetitionId: events.fieCompetitionId,
+				hasResults: events.hasResults,
+				lastLiveUpdate: events.lastLiveUpdate,
+				liveResultsTableauUrl: events.liveResultsTableauUrl,
+			})
+			.from(competitionsWithFlag)
+			.innerJoin(
+				events,
+				eq(events.competition, competitionsWithFlag.competitionId)
+			)
+	);

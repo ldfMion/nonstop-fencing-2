@@ -4,7 +4,7 @@ import {
 	fencers,
 	liveBouts,
 	pastBouts,
-} from "~/server/db/schema";
+} from "../infra/db/schema";
 export type EventModel = typeof events.$inferSelect & {
 	season: number;
 	name: string;

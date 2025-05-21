@@ -1,8 +1,8 @@
 import { EventsList } from "~/app/competitions/(browse)/events-list";
-import { QUERIES } from "~/server/db/queries";
 import { parseCompetitionSearchParams } from "~/lib/router";
 import { Suspense } from "react";
 import LoadingCompetitions from "./loading";
+import { getFilteredCompetitions } from "../queries";
 
 export default async function EventsPage({
 	searchParams,
@@ -42,6 +42,6 @@ async function InnerPage({
 		type: parsed?.type?.toUpperCase() as "INDIVIDUAL" | "TEAM" | undefined,
 		upcoming: parsed?.status == "upcoming",
 	};
-	const c = await QUERIES.filterCompetitions(filters);
+	const c = await getFilteredCompetitions(filters);
 	return <EventsList competitions={c} />;
 }

@@ -1,11 +1,12 @@
-import { QUERIES } from "~/server/db/queries";
 import { Bracket } from "../bracket";
 import assert from "assert";
-import { updateLiveEvent } from "~/server/live";
+import { updateLiveEvent } from "../../../../../services/live";
 import { JSX } from "react";
 import { env } from "~/../env";
 import { EventModel } from "~/lib/models";
 import { getEventStatus } from "../../getEventStatus";
+import { getEvent } from "~/app/events/queries";
+import { getLiveTableau } from "../queries";
 
 //NEXT SETTINGS
 export const revalidate = 300;
@@ -26,7 +27,7 @@ export default async function BracketPage({
 	const { id } = await params;
 	const eventId = Number(id);
 	assert(!isNaN(eventId), "Event ID must be a number");
-	const event = await QUERIES.getEvent(eventId);
+	const event = await getEvent(eventId);
 	const status = getEventStatus(event);
 	if (event.hasResults || status != "LIVE") {
 		return <p>Should not be on this page</p>;
@@ -49,13 +50,13 @@ async function handleLiveBouts(event: EventModel) {
 		console.log("Time since last update: ", timeSinceLastUpdate);
 		if (timeSinceLastUpdate < MINUTES_TO_SCRAPE_AGAIN) {
 			console.log("Rendering with the existing data");
-			const tableau = await QUERIES.getLiveTableau(event.id);
+			const tableau = await getLiveTableau(event.id);
 			return tableau;
 		}
 	}
 	console.log("Updating live event data");
 	await updateLiveEvent(event.id);
-	const tableau = await QUERIES.getLiveTableau(event.id);
+	const tableau = await getLiveTableau(event.id);
 	console.log("Rendering with the updated data");
 	return tableau;
 }

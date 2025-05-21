@@ -1,22 +1,24 @@
 import { NewFencerModel } from "~/lib/models";
-import { QUERIES } from "./db/queries";
-import { getLiveResults } from "./scraping/live-results";
+import { getLiveResults } from "../../infra/scraping/live-results";
 import {
 	mapFTLBoutsToBoutModel,
 	mapFTLFencerToFencerModel,
-} from "./scraping/fencing-time-live/mappers";
-import type * as LiveResults from "./scraping/fencing-time-live/types";
-import { withBrowserless } from "./scraping/browserless";
+} from "../../infra/scraping/fencing-time-live/mappers";
+import type * as LiveResults from "../../infra/scraping/fencing-time-live/types";
+import { withBrowserless } from "../../infra/scraping/browserless";
+import {
+	getFencers,
+	insertFencers,
+	insertLiveBouts,
+	updateEvent,
+} from "../bouts/queries";
+import { getEvent } from "../queries";
+import { saveCountries } from "../countries";
 
-export async function updateLiveEvents() {
-	//TODO find events that are live today
-	throw new Error("Check before use");
-	const eventId = 9;
-	updateLiveEvent(eventId);
-}
+// TODO REFACTOR USE THE BOUTS SERVICE HERE
 
 export async function updateLiveEvent(eventId: number) {
-	const event = await QUERIES.getEvent(eventId);
+	const event = await getEvent(eventId);
 	await withBrowserless([
 		async browser => {
 			const results = await getLiveResults(event, browser);
@@ -35,9 +37,9 @@ export async function updateLiveEvent(eventId: number) {
 				return fencers;
 			});
 			const countries = newFencers.map(f => ({ iocCode: f.country }));
-			await QUERIES.insertCountries(countries);
-			await QUERIES.insertFencers(newFencers);
-			const uploadedFencers = await QUERIES.getFencers({
+			await saveCountries(countries);
+			await insertFencers(newFencers);
+			const uploadedFencers = await getFencers({
 				firstName: newFencers.map(f => f.firstName),
 				lastName: newFencers.map(f => f.lastName),
 			});
@@ -51,11 +53,12 @@ export async function updateLiveEvent(eventId: number) {
 					)
 				)
 				.filter(b => b.fencerA || b.fencerB);
-			await QUERIES.insertLiveBouts(bouts);
+			await insertLiveBouts(bouts);
 
 			console.log("updating lastLiveUpdate");
-			QUERIES.updateEvent(event, {
-				lastLiveUpdate: new Date(),
+			updateEvent(event, {
+				hasFieResults: true,
+				hasResults: true,
 			});
 		},
 	]);

@@ -8,7 +8,7 @@ import {
 	DialogTrigger,
 } from "~/components/ui/dialog";
 import { Fragment, useEffect, useState } from "react";
-import { getHeadToHeadBouts } from "~/server/actions";
+import { getBoutsBetweenFencers } from "./queries";
 import assert from "assert";
 import type { BracketBout, PastBoutModel } from "~/lib/models";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -96,12 +96,12 @@ function HeadToHead({
 	fencerB: NonNullable<BracketBout["fencerB"]>;
 }) {
 	const [bouts, setBouts] = useState<
-		Awaited<ReturnType<typeof getHeadToHeadBouts>> | undefined
+		Awaited<ReturnType<typeof getBoutsBetweenFencers>> | undefined
 	>(undefined);
 	useEffect(() => {
 		const updateBouts = async () => {
 			const pastBouts = (
-				await getHeadToHeadBouts(fencerA.id, fencerB.id)
+				await getBoutsBetweenFencers(fencerA.id, fencerB.id)
 			).filter(b => b.id != boutId);
 			setBouts(pastBouts);
 		};
