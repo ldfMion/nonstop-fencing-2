@@ -5,6 +5,7 @@ import { cn } from "~/lib/utils";
 import Navbar from "~/components/custom/navbar";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { ReactQueryClientProvider } from "./rq-provider";
 
 export const metadata: Metadata = {
 	title: "Nonstop Fencing | About",
@@ -30,18 +31,20 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body
-				className={cn(
-					"min-h-screen bg-gray-100 font-sans antialiased font-",
-					fontSans.variable,
-					anton.variable
-				)}
-			>
-				<Navbar />
-				{children}
-				<Analytics />
-			</body>
-		</html>
+		<ReactQueryClientProvider>
+			<html lang="en">
+				<body
+					className={cn(
+						"min-h-screen bg-gray-100 font-sans antialiased font-",
+						fontSans.variable,
+						anton.variable
+					)}
+				>
+					<Navbar />
+					{children}
+					<Analytics />
+				</body>
+			</html>
+		</ReactQueryClientProvider>
 	);
 }

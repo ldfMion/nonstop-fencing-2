@@ -1,7 +1,7 @@
 import assert from "assert";
 import type * as Fie from "./types";
 import { EventModel } from "~/lib/models";
-import { Browser, withBrowserless } from "../browserless";
+import { Browser } from "../browserless";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";

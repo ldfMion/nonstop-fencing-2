@@ -12,6 +12,7 @@ export const env = createEnv({
 		MODE: z.enum(["DEV", "PROD"]),
 		BLESS_TOKEN: z.string(),
 		CRON_SECRET: z.string(),
+		TEST_ROUTES_SECRET: z.string(),
 	},
 
 	runtimeEnv: {
@@ -19,5 +20,6 @@ export const env = createEnv({
 		MODE: process.env.MODE,
 		BLESS_TOKEN: process.env.BLESS_TOKEN,
 		CRON_SECRET: process.env.CRON_SECRET,
+		TEST_ROUTES_SECRET: process.env.TEST_ROUTES_SECRET,
 	},
 });
