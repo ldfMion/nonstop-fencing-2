@@ -38,7 +38,11 @@ export function formatRelativeDate(date: Date) {
 	const difference = Math.abs(differenceInCalendarDays(date, today));
 	return toTitleCase(
 		difference > 6
-			? format(date, "EEEE MMM dd")
+			? formatFullDate(date)
 			: intlFormatDistance(date, today, { unit: "day" })
 	);
+}
+
+export function formatFullDate(date: Date) {
+	return format(date, "EEEE MMM dd");
 }

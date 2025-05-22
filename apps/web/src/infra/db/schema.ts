@@ -1,4 +1,4 @@
-import { max, min, relations, sql, eq } from "drizzle-orm";
+import { max, min, relations, sql, eq, ColumnBaseConfig } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 import { arrayAgg } from "./utils";
 

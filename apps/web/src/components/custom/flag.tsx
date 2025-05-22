@@ -6,7 +6,12 @@ export function Flag({
 	className,
 }: { flagCode?: string } & React.ComponentProps<"div">) {
 	return flagCode && flagCode != "--" ? (
-		<div className={cn("overflow-hidden rounded-sm border", className)}>
+		<div
+			className={cn(
+				"overflow-hidden rounded-sm border flex-shrink-0",
+				className
+			)}
+		>
 			<Image
 				src={`https://flagcdn.com/w1280/${flagCode.toLowerCase()}.png`}
 				alt={`${flagCode} flag`}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { FeatureCards } from "./feature-cards";
+import { FeatureCards } from "../feature-cards";
 
 export default function Home() {
 	return (
