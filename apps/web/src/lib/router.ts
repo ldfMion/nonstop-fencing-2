@@ -16,6 +16,7 @@ export const router = {
 		},
 		overview: `/events/${id}`,
 	}),
+	about: "/about",
 	home: `/`,
 };
 

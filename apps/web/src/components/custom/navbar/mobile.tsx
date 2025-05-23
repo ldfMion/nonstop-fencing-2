@@ -41,20 +41,20 @@ export function MobileNavbar() {
 									href={router.home}
 									title="About"
 									onOpenChange={setOpen}
-									icon={<Info />}
+									// icon={<Info />}
 								/>
 								<MobileBaseLink
 									href={router.competitions()}
 									title="Competitions"
 									onOpenChange={setOpen}
-									icon={<Trophy />}
+									// icon={<Trophy />}
 								/>
-								{/* <MobileBaseLink
+								<MobileBaseLink
 									href={router.home}
-									title="Rankings"
+									title="Home"
 									onOpenChange={setOpen}
-									icon={<BarChart3 />}
-								/> */}
+									// icon={<BarChart3 />}
+								/>
 							</NavigationMenuList>
 						</NavigationMenu>
 					</SheetContent>

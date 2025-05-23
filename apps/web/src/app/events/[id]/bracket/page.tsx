@@ -8,7 +8,9 @@ import { Clock, Construction } from "lucide-react";
 import { getEvent, getEventsWithResults } from "~/app/events/queries";
 import { getPastTableau } from "./queries";
 
-export const revalidate = false;
+export const dynamicParams = true;
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
 	return (await getEventsWithResults()).map(e => ({

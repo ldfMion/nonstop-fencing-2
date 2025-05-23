@@ -1,6 +1,7 @@
 import { lte, gte, sql, desc, asc, min, max, SQL, and, eq } from "drizzle-orm";
 import { db } from "~/infra/db";
 import { competitionsWithFlagsAndEvents, events } from "~/infra/db/schema";
+import { withoutTime } from "~/lib/utils";
 
 export async function getFirstCompetition(
 	next: boolean,
@@ -47,6 +48,9 @@ export async function getFirstCompetition(
 		id: competition.id,
 		name: competition.name,
 		flag: competition.flag ?? undefined,
-		events: eventRows,
+		events: eventRows.map(e => ({
+			...e,
+			date: withoutTime(e.date),
+		})),
 	};
 }

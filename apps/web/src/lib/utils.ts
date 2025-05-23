@@ -34,7 +34,7 @@ export function toTitleCase(s: string) {
 }
 
 export function formatRelativeDate(date: Date) {
-	const today = new Date(new Date().toISOString().split("T")[0]);
+	const today = getToday();
 	const difference = Math.abs(differenceInCalendarDays(date, today));
 	return toTitleCase(
 		difference > 6
@@ -44,5 +44,13 @@ export function formatRelativeDate(date: Date) {
 }
 
 export function formatFullDate(date: Date) {
-	return format(date, "EEEE MMM dd");
+	return format(date.toISOString().split("T")[0], "EEEE MMM dd");
+}
+
+export function withoutTime(date: Date) {
+	return new Date(date.toISOString().split("T")[0]);
+}
+
+export function getToday() {
+	return new Date(new Date().toISOString().split("T")[0]);
 }

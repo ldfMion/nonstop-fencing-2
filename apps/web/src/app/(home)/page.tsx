@@ -13,6 +13,7 @@ import {
 	formatEventDescription,
 	formatFullDate,
 	formatRelativeDate,
+	getToday,
 } from "~/lib/utils";
 import { Calendar, ChevronRight } from "lucide-react";
 import { getFirstCompetition } from "./queries";
@@ -23,6 +24,7 @@ import { differenceInCalendarDays } from "date-fns";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import assert from "assert";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Badge } from "~/components/ui/badge";
 
 export default async function HomePage({
 	searchParams,
@@ -55,8 +57,14 @@ export default async function HomePage({
 				</ToggleGroup>
 			</Card>
 			<Card className=" p-6">
-				<CardHeader className="flex flex-row justify-between">
-					<CardTitle className="text-2xl">Up Next</CardTitle>
+				<CardTitle className="text-2xl">Up Next</CardTitle>
+				<Suspense fallback={<Skeleton className="h-20" />} key={weapon}>
+					<UpNext weapon={parsed} />
+				</Suspense>
+			</Card>
+			<Card className="  p-6">
+				<CardHeader className="flex flex-row justify-between items-center">
+					<CardTitle>Completed</CardTitle>
 					<Button asChild variant="default">
 						<Link href={router.competitions()}>
 							All Competitions
@@ -64,12 +72,6 @@ export default async function HomePage({
 						</Link>
 					</Button>
 				</CardHeader>
-				<Suspense fallback={<Skeleton className="h-20" />} key={weapon}>
-					<UpNext weapon={parsed} />
-				</Suspense>
-			</Card>
-			<Card className="  p-6">
-				<CardTitle>Completed</CardTitle>
 				<Suspense fallback={<Skeleton className="h-20" />} key={weapon}>
 					<Completed weapon={parsed} />
 				</Suspense>
@@ -84,24 +86,32 @@ async function UpNext({
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
 	const nextCompetition = await getFirstCompetition(true, weapon);
+	console.log(nextCompetition);
 	const daysUntilNext = nextCompetition
-		? differenceInCalendarDays(nextCompetition.events[0].date, new Date())
+		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;
 
 	return nextCompetition ? (
 		<>
 			<div className="items-center flex flex-col md:flex-row gap-6">
-				<p className=" text-xl font-semibold text-nowrap px-8">
-					In <span className="text-8xl">{daysUntilNext}</span>{" "}
-					{daysUntilNext == 1 ? "day" : "days"}
-				</p>
+				{daysUntilNext != 0 && (
+					<p className=" text-xl font-semibold text-nowrap px-8">
+						<>
+							In <span className="text-8xl">{daysUntilNext}</span>{" "}
+							{daysUntilNext == 1 ? "day" : "days"}
+						</>
+					</p>
+				)}
 				<div className="w-full">
 					<CompetitionCard
 						competitionId={nextCompetition.id}
 						events={nextCompetition.events.map(e => ({
 							name: formatEventDescription(e),
-							date: formatFullDate(e.date),
+							date: formatRelativeDate(e.date),
 							id: e.id,
+							live:
+								differenceInCalendarDays(e.date, getToday()) ==
+								0,
 						}))}
 						name={nextCompetition.name}
 						flag={nextCompetition.flag}
@@ -140,7 +150,7 @@ function CompetitionCard({
 }: {
 	name: string;
 	flag?: string;
-	events: { name: string; date: string; id: number }[];
+	events: { name: string; date: string; id: number; live?: boolean }[];
 	competitionId: number;
 }) {
 	return (
@@ -179,7 +189,19 @@ function CompetitionCard({
 							>
 								<Link href={router.event(e.id).overview}>
 									<div className="flex flex-col gap-1">
-										<p className="text-primary">{e.name}</p>
+										<div className="flex flex-row gap-2">
+											<p className="text-primary">
+												{e.name}
+											</p>
+											{e.live && (
+												<Badge className="bg-gradient-to-r from-red-400 to-red-500 text-white uppercase">
+													<div className="flex items-center gap-1.5">
+														<div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+														Live
+													</div>
+												</Badge>
+											)}
+										</div>
 										<p className="font-semibold text-xs text-muted-foreground">
 											{e.date}
 										</p>

@@ -14,7 +14,9 @@ import { Fragment } from "react";
 import { router } from "~/lib/router";
 import { getCompetition, getCompetitions } from "../queries";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
 	const competitions = await getCompetitions(2025);
