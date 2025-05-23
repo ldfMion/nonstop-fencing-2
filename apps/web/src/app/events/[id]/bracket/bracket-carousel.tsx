@@ -38,7 +38,7 @@ export function BracketCarousel({
 			className="w-full"
 			setApi={setApi}
 		>
-			<div className="absolute top-0 right-0 z-10 flex space-x-2 p-4">
+			<div className="fixed bottom-0 right-0 z-10 flex space-x-2 p-10">
 				<Button asChild variant="default">
 					<CarouselPrevious className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
 				</Button>

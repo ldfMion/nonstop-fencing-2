@@ -7,7 +7,6 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import { Flag } from "~/components/custom/flag";
-import { EventModel } from "~/lib/models";
 import { router } from "~/lib/router";
 import {
 	formatEventDescription,
@@ -15,11 +14,10 @@ import {
 	formatRelativeDate,
 	getToday,
 } from "~/lib/utils";
-import { Calendar, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { getFirstCompetition } from "./queries";
 import { Fragment, Suspense } from "react";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
 import { differenceInCalendarDays } from "date-fns";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import assert from "assert";
@@ -86,7 +84,6 @@ async function UpNext({
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
 	const nextCompetition = await getFirstCompetition(true, weapon);
-	console.log(nextCompetition);
 	const daysUntilNext = nextCompetition
 		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;

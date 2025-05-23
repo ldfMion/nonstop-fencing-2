@@ -42,13 +42,6 @@ const features: Feature[] = [
 			"Official world rankings for individuals and teams with historical data and filtering options.",
 		comingSoon: true,
 	},
-	{
-		icon: Globe,
-		title: "Mobile App",
-		description:
-			"Take fencing with you everywhere with our dedicated mobile application",
-		comingSoon: true,
-	},
 ];
 
 export function FeatureCards() {

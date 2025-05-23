@@ -6,6 +6,7 @@ import Navbar from "~/components/custom/navbar";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ReactQueryClientProvider } from "./rq-provider";
+import { Footer } from "./footer";
 
 export const metadata: Metadata = {
 	title: "Nonstop Fencing | About",
@@ -42,6 +43,7 @@ export default function RootLayout({
 				>
 					<Navbar />
 					{children}
+					<Footer />
 					<Analytics />
 				</body>
 			</html>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { FeatureCards } from "../feature-cards";
+import { FeatureCards } from "./feature-cards";
+import { router } from "~/lib/router";
 
 export default function Home() {
 	return (
@@ -23,11 +24,52 @@ export default function Home() {
 						</p>
 						<div className="flex flex-col gap-2">
 							<Button size="lg" variant="secondary" asChild>
-								<Link href="/competitions">
-									Explore Events{" "}
+								<Link href={router.home}>
+									Explore{" "}
 									<ChevronRight className="ml-2 h-4 w-4" />
 								</Link>
 							</Button>
+						</div>
+					</div>
+				</section>
+
+				{/* Why Section */}
+				<section className="w-full py-12 md:py-24 lg:py-32">
+					<div className="container px-4 md:px-6 mx-auto">
+						<div className="flex flex-col items-center justify-center space-y-8">
+							<div className="space-y-4 max-w-[800px]">
+								<h2 className="text-3xl font-extrabold sm:text-4xl uppercase">
+									Why?
+								</h2>
+								<p className="text-lg md:text-xl text-muted-foreground">
+									Other sports have dedicated score apps for
+									results and live scores like OneFootball,
+									FotMob, SofaScore, TNNS Live, Flashscore,
+									and others. I wanted to bring the same
+									experience to fencing, focusing more on the
+									fan perspective.
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* Current Features Section */}
+				<section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+					<div className="container px-4 md:px-6 mx-auto">
+						<div className="flex flex-col items-center justify-center space-y-8">
+							<div className="space-y-4 max-w-[800px]">
+								<h2 className="text-3xl font-extrabold sm:text-4xl uppercase">
+									What's Currently Available
+								</h2>
+								<p className="text-lg md:text-xl text-muted-foreground">
+									The platform currently supports live and
+									past results for the second day of
+									individual events, as well as having all
+									events for the 2024-25 season. More features
+									and coverage are being added regularly.
+								</p>
+							</div>
 						</div>
 					</div>
 				</section>

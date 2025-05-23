@@ -38,7 +38,7 @@ export function MobileNavbar() {
 						<NavigationMenu>
 							<NavigationMenuList className="flex flex-col items-start">
 								<MobileBaseLink
-									href={router.home}
+									href={router.about}
 									title="About"
 									onOpenChange={setOpen}
 									// icon={<Info />}
