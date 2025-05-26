@@ -133,14 +133,13 @@ function mapFieFencerToModel(
 }
 
 function parseFieCountry(nationality: string) {
-	switch (nationality) {
-		case "_AIN":
-			return "AIN";
-		case "TÜR":
-			return "TUR";
-		default:
-			return nationality;
+	if (nationality.includes("AIN")) {
+		return "AIN";
 	}
+	if (nationality.includes("TÜR")) {
+		return "TUR";
+	}
+	return nationality;
 }
 
 function parseFieName(name: string): [string, string] {
