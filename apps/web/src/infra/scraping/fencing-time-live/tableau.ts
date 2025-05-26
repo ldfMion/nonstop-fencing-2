@@ -1,6 +1,7 @@
 import assert from "assert";
 import type * as LiveResults from "./types";
 import { Browser } from "../browserless";
+import { filterEven, filterOdd, splitArray } from "../utils";
 
 export async function scrapeTableauPage(
 	url: string,
@@ -25,7 +26,7 @@ export async function scrapeTableauPage(
 							.replace(")", "")
 							.trim(),
 						index: index,
-					}
+				  }
 		)
 	);
 	const scoreTextNodes = (
@@ -126,7 +127,7 @@ function processBoutsInRound(
 							seed: fencerNode1.seed,
 							winner: hasWinner ? fencer1IsWinner : undefined,
 							score: fencer1Score,
-						},
+					  },
 			fencer2:
 				fencerNode2 == "future"
 					? undefined
@@ -137,7 +138,7 @@ function processBoutsInRound(
 							seed: fencerNode2.seed,
 							winner: hasWinner ? fencer2IsWinner : undefined,
 							score: fencer2Score,
-						},
+					  },
 		};
 		bouts[i / 2] = bout;
 	}
@@ -207,20 +208,4 @@ function partitionRound<T>(nodes: T[]): [T[], T[]] {
 	];
 	// idk why this is different from [filterEven(nodes), filterOdd(nodes)]
 	return result;
-}
-
-function filterEven<T>(nodes: T[]): T[] {
-	return nodes.filter((_, index) => index % 2 == 0);
-}
-function filterOdd<T>(nodes: T[]): T[] {
-	return nodes.filter((_, index) => index % 2 == 1);
-}
-
-function splitArray<T>(yourArray: T[]): [T[], T[]] {
-	const halfwayThrough = Math.floor(yourArray.length / 2);
-	// or instead of floor you can use ceil depending on what side gets the extra data
-
-	const arrayFirstHalf = yourArray.slice(0, halfwayThrough);
-	const arraySecondHalf = yourArray.slice(halfwayThrough, yourArray.length);
-	return [arrayFirstHalf, arraySecondHalf];
 }

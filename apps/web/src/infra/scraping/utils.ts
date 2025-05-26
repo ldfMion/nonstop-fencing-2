@@ -20,3 +20,19 @@ export function createWeaponParser<K extends string>({
 		}
 	};
 }
+
+export function filterEven<T>(nodes: T[]): T[] {
+	return nodes.filter((_, index) => index % 2 == 0);
+}
+export function filterOdd<T>(nodes: T[]): T[] {
+	return nodes.filter((_, index) => index % 2 == 1);
+}
+
+export function splitArray<T>(yourArray: T[]): [T[], T[]] {
+	const halfwayThrough = Math.floor(yourArray.length / 2);
+	// or instead of floor you can use ceil depending on what side gets the extra data
+
+	const arrayFirstHalf = yourArray.slice(0, halfwayThrough);
+	const arraySecondHalf = yourArray.slice(halfwayThrough, yourArray.length);
+	return [arrayFirstHalf, arraySecondHalf];
+}
