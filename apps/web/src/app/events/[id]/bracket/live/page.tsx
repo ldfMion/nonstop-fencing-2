@@ -7,6 +7,7 @@ import { EventModel } from "~/lib/models";
 import { getEventStatus } from "../../getEventStatus";
 import { getEvent } from "~/app/events/queries";
 import { getLiveTableau } from "../queries";
+import { PageMessage } from "../page-message";
 
 //NEXT SETTINGS
 export const revalidate = 300;
@@ -36,7 +37,7 @@ export default async function BracketPage({
 		return <Bracket bouts={await handleLiveBouts(event)} />;
 	} catch (e) {
 		console.error(e);
-		return <p>Bracket not yet available.</p>;
+		return <PageMessage>Bracket not yet available.</PageMessage>;
 	}
 }
 
