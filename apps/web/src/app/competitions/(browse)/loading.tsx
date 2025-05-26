@@ -25,6 +25,7 @@ function LoadingCard() {
 export default function LoadingCompetitions() {
 	return (
 		<>
+			<div className="mt-2"></div>
 			{[...Array(6)].map((_, index) => (
 				<LoadingCard key={index} />
 			))}

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Card } from "~/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 export function StatusTabs() {
 	const searchParams = useSearchParams();
@@ -13,19 +14,19 @@ export function StatusTabs() {
 		return `${pathname}?${current.toString()}`;
 	}
 	return (
-		<Tabs value={active} className="md:hidden w-full">
-			<TabsList className="w-full">
-				<Link href={linkTo("previous")} className="w-full">
-					<TabsTrigger value="previous" className="w-full">
+		<Card className="md:hidden p-2 mt-2">
+			<ToggleGroup value={active} className=" w-full" type="single">
+				<Link href={linkTo("previous")} className="w-full" passHref>
+					<ToggleGroupItem value="previous" className="w-full">
 						Past
-					</TabsTrigger>
+					</ToggleGroupItem>
 				</Link>
-				<Link href={linkTo("upcoming")} className="w-full">
-					<TabsTrigger value="upcoming" className="w-full">
+				<Link href={linkTo("upcoming")} className="w-full" passHref>
+					<ToggleGroupItem value="upcoming" className="w-full">
 						Upcoming
-					</TabsTrigger>
+					</ToggleGroupItem>
 				</Link>
-			</TabsList>
-		</Tabs>
+			</ToggleGroup>
+		</Card>
 	);
 }

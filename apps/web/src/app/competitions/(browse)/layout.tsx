@@ -25,7 +25,7 @@ export default function CompetitionsLayout({
 					</div>
 				</div>
 				<div className="flex flex-col items-center md:w-full self-stretch ">
-					<div className="max-w-lg w-full ">
+					<div className="max-w-lg w-full flex flex-col gap-0">
 						<Suspense>
 							<StatusTabs />
 						</Suspense>

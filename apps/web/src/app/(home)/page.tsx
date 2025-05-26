@@ -14,7 +14,7 @@ import {
 	formatRelativeDate,
 	getToday,
 } from "~/lib/utils";
-import { ChevronRight, Clock } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
 import { Fragment, Suspense } from "react";
 import { Button } from "~/components/ui/button";

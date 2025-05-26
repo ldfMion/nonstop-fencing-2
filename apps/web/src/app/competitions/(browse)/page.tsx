@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import LoadingCompetitions from "./loading";
 import { getFilteredCompetitions } from "../queries";
 
-export default async function EventsPage({
+export default async function BrowseCompetitionsPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
