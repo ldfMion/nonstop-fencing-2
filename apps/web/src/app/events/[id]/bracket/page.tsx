@@ -27,6 +27,7 @@ export default async function BracketPage({
 	const eventId = Number(id);
 	assert(!isNaN(eventId), "Event ID must be a number");
 	const event = await getEvent(eventId);
+	console.log(event);
 	if (event.type == "TEAM") {
 		return (
 			<PageMessage icon={<Construction size={24} />}>

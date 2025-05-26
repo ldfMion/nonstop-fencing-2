@@ -176,7 +176,7 @@ export const fencersRelations = relations(fencers, ({ many }) => ({
  */
 
 export const competitionsWithFlag = t
-	.pgMaterializedView("competitions_with_countries")
+	.pgMaterializedView("competitions_with_flag_0")
 	.as(qb =>
 		qb
 			.select({

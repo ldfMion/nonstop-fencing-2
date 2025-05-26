@@ -1,4 +1,5 @@
 import {
+	competitionsWithFlag,
 	competitionsWithFlagsAndEvents,
 	events,
 	fencers,
@@ -56,7 +57,9 @@ export async function updateEvent(event: EventModel, set: Partial<EventModel>) {
 	console.log(
 		await db.update(events).set(set).where(eq(events.id, event.id))
 	);
-	db.refreshMaterializedView(competitionsWithFlagsAndEvents);
+	console.log("updating materialized views");
+	await db.refreshMaterializedView(competitionsWithFlag);
+	await db.refreshMaterializedView(competitionsWithFlagsAndEvents);
 }
 
 export async function insertLiveBouts(bouts: NewLiveBoutModel[]) {
