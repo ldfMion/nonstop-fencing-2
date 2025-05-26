@@ -9,7 +9,7 @@ import { ReactQueryClientProvider } from "./rq-provider";
 import { Footer } from "./footer";
 
 export const metadata: Metadata = {
-	title: "Nonstop Fencing | About",
+	title: "Home | Nonstop Fencing",
 	description:
 		"Follow fencing like never before with Nonstop Fencing. Access all international results in one place, live brackets, and personalized updates for fencing fans and athletes around the world. Upgrading the fencing fan experience.",
 	robots: "index, follow",

@@ -5,7 +5,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Competitions | Nonstop Fencing",
-	description: "Search International Fencing Competitions",
+	description: "Browser International Fencing Competitions",
 };
 
 export default function CompetitionsLayout({

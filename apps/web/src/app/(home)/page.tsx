@@ -14,8 +14,8 @@ import {
 	formatRelativeDate,
 	getToday,
 } from "~/lib/utils";
-import { ChevronRight } from "lucide-react";
-import { getFirstCompetition } from "./queries";
+import { ChevronRight, Clock } from "lucide-react";
+import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
 import { Fragment, Suspense } from "react";
 import { Button } from "~/components/ui/button";
 import { differenceInCalendarDays } from "date-fns";
@@ -23,6 +23,7 @@ import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import assert from "assert";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
 
 export default async function HomePage({
 	searchParams,
@@ -54,27 +55,107 @@ export default async function HomePage({
 					</Link>
 				</ToggleGroup>
 			</Card>
-			<Card className=" p-6">
-				<CardTitle className="text-2xl">Up Next</CardTitle>
-				<Suspense fallback={<Skeleton className="h-20" />} key={weapon}>
-					<UpNext weapon={parsed} />
-				</Suspense>
-			</Card>
-			<Card className="  p-6">
-				<CardHeader className="flex flex-row justify-between items-center">
+			<TodayOrUpNext weapon={parsed} />
+
+			<Card className="p-0 gap-0">
+				<CardHeader className="p-6 flex flex-row justify-between items-center gap-0">
 					<CardTitle>Completed</CardTitle>
 					<Button asChild variant="default">
 						<Link href={router.competitions()}>
 							All Competitions
-							<ChevronRight size={24} />
+							<ChevronRight size={18} />
 						</Link>
 					</Button>
 				</CardHeader>
-				<Suspense fallback={<Skeleton className="h-20" />} key={weapon}>
+				<Separator />
+				<Suspense
+					fallback={<Skeleton className="h-20 m-6" />}
+					key={weapon}
+				>
 					<Completed weapon={parsed} />
 				</Suspense>
 			</Card>
 		</main>
+	);
+}
+
+async function TodayOrUpNextLoading() {
+	return (
+		<Card className="p-0 gap-0">
+			<CardHeader className="p-6 gap-2 flex flex-row items-center">
+				<CardTitle className="">Today</CardTitle>
+			</CardHeader>
+			<Separator />
+			{new Array(3).fill(0).map((_, index) => (
+				<Skeleton className="h-15 my-4 mx-6" key={index} />
+			))}
+		</Card>
+	);
+}
+
+async function TodayOrUpNext({
+	weapon,
+}: {
+	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
+}) {
+	const todaysEvents = await getTodaysEvents();
+	const filtered = todaysEvents.filter(
+		e => weapon == undefined || e.weapon === weapon
+	);
+	if (filtered.length == 0) {
+		return (
+			<Suspense fallback={<Skeleton className="h-15" />} key={weapon}>
+				<UpNext weapon={weapon} />
+			</Suspense>
+		);
+	}
+	return <Today events={filtered} />;
+}
+
+async function Today({
+	events,
+}: {
+	events: {
+		description: string;
+		competitionName: string;
+		id: number;
+		flag: string | undefined;
+	}[];
+}) {
+	return (
+		<Card className="p-0 gap-0">
+			<CardHeader className="p-6 gap-2 flex flex-row items-center">
+				<Badge className="bg-gradient-to-r from-red-400 to-red-500 text-white p-1.5 animate-pulse" />
+				<CardTitle className="">Today</CardTitle>
+			</CardHeader>
+			{events.map(e => (
+				<Fragment key={e.id}>
+					<Separator />
+					<Link
+						href={router.event(e.id).overview}
+						className="w-full min-w-0"
+					>
+						<Card className="rounded-none items-center bg-transparent border-none flex flex-row px-6 py-4 hover:bg-accent">
+							<Flag
+								flagCode={e.flag}
+								className="w-12 h-8 rounded-[8px] gap-2"
+							/>
+							<div className="flex flex-row items-center justify-between w-full">
+								<div className="flex flex-col">
+									<CardTitle className="text-md font-semibold">
+										{e.description}
+									</CardTitle>
+									<CardDescription className="">
+										{e.competitionName}
+									</CardDescription>
+								</div>
+								<ChevronRight size={24} />
+							</div>
+						</Card>
+					</Link>
+				</Fragment>
+			))}
+		</Card>
 	);
 }
 
@@ -83,15 +164,18 @@ async function UpNext({
 }: {
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
-	const nextCompetition = await getFirstCompetition(true, weapon);
+	const nextCompetition = (
+		await getCompetitionsWithEvents(true, 1, weapon)
+	)[0];
 	const daysUntilNext = nextCompetition
 		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;
 
 	return nextCompetition ? (
-		<>
+		<div className="">
+			<p className="text-2xl font-bold">Up Next</p>
 			<div className="items-center flex flex-col md:flex-row gap-6">
-				{daysUntilNext != 0 && (
+				{daysUntilNext != null && daysUntilNext > 0 && (
 					<p className=" text-xl font-semibold text-nowrap px-8">
 						<>
 							In <span className="text-8xl">{daysUntilNext}</span>{" "}
@@ -115,7 +199,7 @@ async function UpNext({
 					/>
 				</div>
 			</div>
-		</>
+		</div>
 	) : null;
 }
 
@@ -124,19 +208,25 @@ async function Completed({
 }: {
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
-	const previousCompetition = await getFirstCompetition(false, weapon);
-	return previousCompetition ? (
+	const previousCompetitions = await getCompetitionsWithEvents(
+		false,
+		2,
+		weapon
+	);
+	return previousCompetitions.map(c => (
 		<CompetitionCard
-			competitionId={previousCompetition.id}
-			events={previousCompetition.events.map(e => ({
+			competitionId={c.id}
+			events={c.events.map(e => ({
 				name: formatEventDescription(e),
 				date: formatFullDate(e.date),
 				id: e.id,
 			}))}
-			name={previousCompetition.name}
-			flag={previousCompetition.flag}
+			name={c.name}
+			flag={c.flag}
+			innerCard={true}
+			key={c.id}
 		/>
-	) : null;
+	));
 }
 
 function CompetitionCard({
@@ -144,14 +234,20 @@ function CompetitionCard({
 	flag,
 	events,
 	competitionId,
+	innerCard = false,
 }: {
 	name: string;
 	flag?: string;
 	events: { name: string; date: string; id: number; live?: boolean }[];
 	competitionId: number;
+	innerCard?: boolean;
 }) {
 	return (
-		<Card className="">
+		<Card
+			className={
+				innerCard ? "rounded-none bg-transparent border-none" : ""
+			}
+		>
 			<CardHeader className="flex flex-row items-center w-full">
 				<Flag
 					flagCode={flag}

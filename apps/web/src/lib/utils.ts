@@ -53,4 +53,7 @@ export function withoutTime(date: Date) {
 
 export function getToday() {
 	return new Date(new Date().toISOString().split("T")[0]);
+	// const yesterday = new Date();
+	// yesterday.setDate(yesterday.getDate() - 2);
+	// return withoutTime(yesterday);
 }
