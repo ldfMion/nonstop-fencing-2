@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ReactQueryClientProvider } from "./rq-provider";
 import { Footer } from "./footer";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
 	title: "Home | Nonstop Fencing",
@@ -45,6 +46,7 @@ export default function RootLayout({
 					{children}
 					<Footer />
 					<Analytics />
+					<SpeedInsights />
 				</body>
 			</html>
 		</ReactQueryClientProvider>
