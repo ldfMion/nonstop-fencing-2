@@ -14,7 +14,7 @@ import {
 	formatRelativeDate,
 	getToday,
 } from "~/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Network } from "lucide-react";
 import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
 import { Fragment, Suspense } from "react";
 import { Button } from "~/components/ui/button";
@@ -24,6 +24,7 @@ import assert from "assert";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
+import { BracketIndicator } from "~/components/custom/indicator-badges";
 
 export default async function HomePage({
 	searchParams,
@@ -192,6 +193,7 @@ async function UpNext({
 							live:
 								differenceInCalendarDays(e.date, getToday()) ==
 								0,
+							hasResults: false,
 						}))}
 						name={nextCompetition.name}
 						flag={nextCompetition.flag}
@@ -209,7 +211,7 @@ async function Completed({
 }) {
 	const previousCompetitions = await getCompetitionsWithEvents(
 		false,
-		2,
+		3,
 		weapon
 	);
 	return previousCompetitions.map(c => (
@@ -221,6 +223,7 @@ async function Completed({
 					name: formatEventDescription(e),
 					date: formatFullDate(e.date),
 					id: e.id,
+					hasResults: e.hasResults,
 				}))}
 				name={c.name}
 				flag={c.flag}
@@ -239,7 +242,7 @@ function CompetitionCard({
 }: {
 	name: string;
 	flag?: string;
-	events: { name: string; date: string; id: number; live?: boolean }[];
+	events: { name: string; date: string; id: number; hasResults: boolean }[];
 	competitionId: number;
 	innerCard?: boolean;
 }) {
@@ -282,23 +285,16 @@ function CompetitionCard({
 								asChild
 							>
 								<Link href={router.event(e.id).overview}>
-									<div className="flex flex-col gap-1">
-										<div className="flex flex-row gap-2">
+									<div className="flex flex-row gap-4">
+										<div className="flex flex-col gap-2">
 											<p className="text-primary">
 												{e.name}
 											</p>
-											{e.live && (
-												<Badge className="bg-gradient-to-r from-red-400 to-red-500 text-white uppercase">
-													<div className="flex items-center gap-1.5">
-														<div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-														Live
-													</div>
-												</Badge>
-											)}
+											<p className="font-semibold text-xs text-muted-foreground">
+												{e.date}
+											</p>
 										</div>
-										<p className="font-semibold text-xs text-muted-foreground">
-											{e.date}
-										</p>
+										{e.hasResults && <BracketIndicator />}
 									</div>
 									<ChevronRight />
 								</Link>

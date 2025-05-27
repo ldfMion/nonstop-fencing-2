@@ -3,16 +3,19 @@ import {
 	formatEventDescription,
 	formatRelativeDate,
 	getDateRange,
+	isToday,
 } from "~/lib/utils";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Network } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Fragment } from "react";
 import { router } from "~/lib/router";
 import { getCompetition, getCompetitions } from "../queries";
+import { BracketIndicator } from "~/components/custom/indicator-badges";
+import { Badge } from "~/components/ui/badge";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -73,7 +76,15 @@ export default async function CompetitionPage({
 										<Link
 											href={router.event(e.id).overview}
 										>
-											<h4>{formatEventDescription(e)}</h4>
+											<div className="flex flex-row items-center gap-2">
+												<h4>
+													{formatEventDescription(e)}
+												</h4>
+												{(e.hasResults ||
+													isToday(e.date)) && (
+													<BracketIndicator />
+												)}
+											</div>
 											<ChevronRight />
 										</Link>
 									</Button>
