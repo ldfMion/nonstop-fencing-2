@@ -16,7 +16,7 @@ export async function generateMetadata({
 	assert(!isNaN(eventId));
 	const event = await getEvent(eventId);
 	const title = `${formatEventDescription(event)} | ${event.name}`;
-	const description = `Results for ${title} happening on ${formatRelativeDate(
+	const description = `Results for ${title} • ${formatRelativeDate(
 		event.date
 	)}`;
 	return {

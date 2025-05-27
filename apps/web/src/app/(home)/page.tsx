@@ -67,7 +67,6 @@ export default async function HomePage({
 						</Link>
 					</Button>
 				</CardHeader>
-				<Separator />
 				<Suspense
 					fallback={<Skeleton className="h-20 m-6" />}
 					key={weapon}
@@ -214,18 +213,21 @@ async function Completed({
 		weapon
 	);
 	return previousCompetitions.map(c => (
-		<CompetitionCard
-			competitionId={c.id}
-			events={c.events.map(e => ({
-				name: formatEventDescription(e),
-				date: formatFullDate(e.date),
-				id: e.id,
-			}))}
-			name={c.name}
-			flag={c.flag}
-			innerCard={true}
-			key={c.id}
-		/>
+		<>
+			<Separator />
+			<CompetitionCard
+				competitionId={c.id}
+				events={c.events.map(e => ({
+					name: formatEventDescription(e),
+					date: formatFullDate(e.date),
+					id: e.id,
+				}))}
+				name={c.name}
+				flag={c.flag}
+				innerCard={true}
+				key={c.id}
+			/>
+		</>
 	));
 }
 
