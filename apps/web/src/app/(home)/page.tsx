@@ -213,7 +213,7 @@ async function Completed({
 		weapon
 	);
 	return previousCompetitions.map(c => (
-		<>
+		<Fragment key={c.id}>
 			<Separator />
 			<CompetitionCard
 				competitionId={c.id}
@@ -225,9 +225,8 @@ async function Completed({
 				name={c.name}
 				flag={c.flag}
 				innerCard={true}
-				key={c.id}
 			/>
-		</>
+		</Fragment>
 	));
 }
 
