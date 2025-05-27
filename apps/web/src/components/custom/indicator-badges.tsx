@@ -10,16 +10,22 @@ import {
 } from "../ui/tooltip";
 
 const createIndicatorBadge =
-	(color: string, Icon: FC<{ className: string }>, tooltip?: string): FC =>
+	(
+		bgColor: string,
+		textColor: string,
+		Icon: FC<{ className: string }>,
+		tooltip?: string
+	): FC =>
 	(): JSX.Element => {
 		const badge = (
 			<Badge
-				className={`self-center rounded-sm p-1.5 bg-${color}-400/70`}
+				className={cn("self-center rounded-sm p-1.5", bgColor)}
 				variant="secondary"
 			>
-				{<Icon className={`text-${color}-800`} />}
+				<Icon className={textColor} />
 			</Badge>
 		);
+
 		if (tooltip) {
 			return (
 				<TooltipProvider>
@@ -34,7 +40,8 @@ const createIndicatorBadge =
 	};
 
 export const BracketIndicator = createIndicatorBadge(
-	"purple",
+	"bg-purple-400/70",
+	"text-purple-800",
 	Network,
 	"The tableau for this event is available."
 );
