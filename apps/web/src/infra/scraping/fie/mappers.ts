@@ -232,8 +232,8 @@ export function mapFieTeamEventResultsToDto(
 						return null;
 					}
 					return {
-						teamACode: bout.fencer1.nationality,
-						teamBCode: bout.fencer2.nationality,
+						teamACode: parseFieCountry(bout.fencer1.nationality),
+						teamBCode: parseFieCountry(bout.fencer2.nationality),
 						teamAScore: bout.fencer1.score,
 						teamBScore: bout.fencer2.score,
 						winnerIsA: bout.fencer1.isWinner,

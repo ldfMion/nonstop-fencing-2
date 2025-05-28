@@ -1,38 +1,51 @@
 import axios from "axios";
 import {
-	getCountriesWithMissingIsoCode,
+	getCountriesWithMissingIsoCodeOrName,
 	insertCountriesWithIocCode,
-	updateIsoCode,
+	updateCountryData,
 } from "./queries";
 
 const getUrl = (iocCode: string) =>
 	`https://restcountries.com/v3.1/alpha?codes=${iocCode.toLowerCase()}`;
 
-export async function getIsoCodeFromIocCode(iocCode: string): Promise<string> {
-	console.log("getting iso code for: " + iocCode);
+async function requestCountryInfo(iocCode: string) {
 	const url = getUrl(iocCode);
-	console.log(url);
+	const response = await axios.get(url);
+	return response.data[0];
+}
+
+export async function getCountryData(
+	iocCode: string
+): Promise<{ isoCode: string; name: string }> {
+	console.log("getting data for: " + iocCode);
 	try {
-		const response = await axios.get(url);
-		return response.data[0].cca2;
+		const data = await requestCountryInfo(iocCode);
+		return { isoCode: data.cca2, name: data.name.common };
 	} catch (e) {
-		console.error(`Error getting flag for '${iocCode}'. Error: ${e}`);
-		return "--";
+		throw new Error(`Error getting flag for '${iocCode}'. Error: ${e}`);
 	}
 }
 
 export async function saveCountries(newCountries: { iocCode: string }[]) {
 	await insertCountriesWithIocCode(newCountries);
-	const missingIsoCode = await getCountriesWithMissingIsoCode();
+	await updateCountries();
+}
+
+export async function updateCountries() {
+	const missingIsoCode = await getCountriesWithMissingIsoCodeOrName();
 	if (missingIsoCode.length == 0) {
 		return;
 	}
 	const updated = await Promise.all(
-		missingIsoCode.map(async row => ({
-			isoCode: await getIsoCodeFromIocCode(row.iocCode),
-			iocCode: row.iocCode,
-		}))
+		missingIsoCode.map(async row => {
+			const data = await getCountryData(row.iocCode);
+			return {
+				isoCode: data.isoCode,
+				iocCode: row.iocCode,
+				name: data.name,
+			};
+		})
 	);
 	console.log("update countries");
-	await updateIsoCode(updated);
+	await updateCountryData(updated);
 }

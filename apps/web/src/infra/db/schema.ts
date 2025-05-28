@@ -1,6 +1,5 @@
-import { max, min, relations, sql, eq, ColumnBaseConfig } from "drizzle-orm";
+import { relations, sql, eq } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
-import { arrayAgg } from "./utils";
 
 export const weaponsEnum = t.pgEnum("weapons", ["FOIL", "EPEE", "SABER"]);
 export const gendersEnum = t.pgEnum("genders", ["MEN", "WOMEN"]);
@@ -55,6 +54,7 @@ export const events = t.pgTable(
 export const countries = t.pgTable("countries_0", {
 	iocCode: t.char("ioc_code", { length: 3 }).primaryKey(),
 	isoCode: t.char("iso_code", { length: 2 }).unique(),
+	name: t.text("name").unique(),
 });
 
 export const fencers = t.pgTable(

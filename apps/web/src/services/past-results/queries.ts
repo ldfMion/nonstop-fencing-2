@@ -63,8 +63,9 @@ export async function savePastTeamRelays(relays: NewRelayDto[]) {
 export type NewRelayDto = typeof pastTeamRelays.$inferInsert;
 
 export async function updateEventsResultsInformation(eventIds: number[]) {
-	return await db
+	await db
 		.update(events)
 		.set({ hasResults: true, hasFieResults: true })
 		.where(inArray(events.id, eventIds));
+	db.refreshMaterializedView(competitionsWithFlagsAndEvents);
 }
