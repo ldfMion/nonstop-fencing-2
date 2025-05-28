@@ -9,6 +9,9 @@ import {
 	EventModel,
 } from "~/lib/models";
 import assert from "assert";
+import { FieTeamResults } from "./validation";
+import { ScrapedPastTeamRelayDto } from "../dtos";
+import { z } from "zod";
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 	const withName = events.map(event => ({
@@ -208,3 +211,63 @@ function findFieFencer(
 	assert(result, `Unable to find fencer ${firstName} ${lastName}`);
 	return result;
 }
+
+/*
+ * TEAM MAPPERS
+ */
+
+export function mapFieTeamEventResultsToDto(
+	results: FieTeamResults
+): ScrapedPastTeamRelayDto[] {
+	return results.flatMap(bracket => {
+		const bracketId = getBracketId(bracket);
+		return Object.entries(bracket.rounds).flatMap(([round, bouts]) => {
+			const roundId = getRoundId(round);
+			return bouts
+				.map((bout, index) => {
+					if (
+						bout.fencer1.name == null ||
+						bout.fencer2.name == null
+					) {
+						return null;
+					}
+					return {
+						teamACode: bout.fencer1.nationality,
+						teamBCode: bout.fencer2.nationality,
+						teamAScore: bout.fencer1.score,
+						teamBScore: bout.fencer2.score,
+						winnerIsA: bout.fencer1.isWinner,
+						bracket: bracketId,
+						round: roundId,
+						order: index,
+					};
+				})
+				.filter(b => b != null);
+		});
+	});
+}
+
+function getRoundId(round: keyof FieTeamResults[0]["rounds"]) {
+	const roundStr = round.slice(1);
+	const roundId = roundSchema.parse(roundStr);
+	return roundId;
+}
+
+const roundSchema = z.enum(["64", "32", "16", "8", "4", "2"]);
+
+function getBracketId(bracket: FieTeamResults[0]) {
+	const lastLetter = bracket.suiteTableId.at(-1)!;
+	const brackedId = bracketMap[lastLetter];
+	return brackedId;
+}
+
+const bracketMap: Record<string, ScrapedPastTeamRelayDto["bracket"]> = {
+	A: "MAIN",
+	B: "9TH_PLACE",
+	C: "13TH_PLACE",
+	D: "15TH_PLACE",
+	E: "11TH_PLACE",
+	F: "5TH_PLACE",
+	G: "7TH_PLACE",
+	H: "BRONZE",
+};

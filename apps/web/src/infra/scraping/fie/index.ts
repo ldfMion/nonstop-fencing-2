@@ -2,6 +2,8 @@ import assert from "assert";
 import type * as Fie from "./types";
 import { EventModel } from "~/lib/models";
 import { Browser } from "../browserless";
+import { validateTeamResults } from "./validation";
+import { mapFieTeamEventResultsToDto } from "./mappers";
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
@@ -69,8 +71,22 @@ export function getFieEventUrl(
 	return `https://fie.org/competitions/${season}/${fieCompetitionId}`;
 }
 
-export async function getEventData(event: EventModel, browser: Browser) {
-	assert(event.type == "INDIVIDUAL");
+export async function getTeamEventData(
+	event: { fieCompetitionId: number; season: number },
+	browser: Browser
+) {
+	const data = await scrapeResultsFromFieWebsite(event, browser);
+	const validated = validateTeamResults(data);
+	return mapFieTeamEventResultsToDto(validated);
+}
+
+async function scrapeResultsFromFieWebsite(
+	event: {
+		fieCompetitionId: number;
+		season: number;
+	},
+	browser: Browser
+): Promise<unknown> {
 	const url = getFieEventUrl(event.fieCompetitionId, event.season);
 	console.log("url", url);
 
@@ -104,10 +120,21 @@ export async function getEventData(event: EventModel, browser: Browser) {
 		waitUntil: "domcontentloaded",
 	});
 
-	const data = (await page.evaluate(() => {
+	const data = await page.evaluate(() => {
 		// @ts-expect-error puppeteer window property
 		return window.__captureData.tableau;
-	})) as Fie.Tableau;
+	});
+	return data;
+}
+
+export async function getIndividualEventData(
+	event: { fieCompetitionId: number; season: number },
+	browser: Browser
+) {
+	const data = (await scrapeResultsFromFieWebsite(
+		event,
+		browser
+	)) as Fie.Tableau;
 	console.log("data in getEventData", data);
 	return data;
 }

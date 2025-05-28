@@ -13,6 +13,7 @@ export const env = createEnv({
 		BLESS_TOKEN: z.string(),
 		CRON_SECRET: z.string(),
 		TEST_ROUTES_SECRET: z.string(),
+		DATABASE_URL_CONFIG: z.string(),
 	},
 
 	runtimeEnv: {
@@ -21,5 +22,6 @@ export const env = createEnv({
 		BLESS_TOKEN: process.env.BLESS_TOKEN,
 		CRON_SECRET: process.env.CRON_SECRET,
 		TEST_ROUTES_SECRET: process.env.TEST_ROUTES_SECRET,
+		DATABASE_URL_CONFIG: process.env.DATABASE_URL_CONFIG,
 	},
 });

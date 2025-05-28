@@ -126,6 +126,47 @@ export const pastBouts = t.pgTable(
 	]
 );
 
+export const teamBracket = t.pgEnum("team_bracket", [
+	"MAIN",
+	"BRONZE",
+	"5TH_PLACE",
+	"7TH_PLACE",
+	"9TH_PLACE",
+	"11TH_PLACE",
+	"15TH_PLACE",
+	"13TH_PLACE",
+]);
+
+export const pastTeamRelays = t.pgTable(
+	"past_team_relays_0",
+	{
+		id: t.serial("id").primaryKey(),
+		event: t
+			.integer("event")
+			.references(() => events.id)
+			.notNull(),
+		teamA: t
+			.char("team_a", { length: 3 })
+			.references(() => countries.iocCode)
+			.notNull(),
+		teamB: t
+			.char("team_b", { length: 3 })
+			.references(() => countries.iocCode)
+			.notNull(),
+		bracket: teamBracket("bracket").notNull(),
+		order: t.integer("order").notNull(),
+		round: roundEnum("round").notNull(),
+		scoreA: t.integer("score_a").notNull(),
+		scoreB: t.integer("score_b").notNull(),
+		winnerIsA: t.boolean("winner_is_a").notNull(),
+	},
+	table => [
+		t.unique().on(table.event, table.order, table.round, table.bracket),
+		t.unique().on(table.event, table.teamA, table.teamB),
+		t.index("past_team_relays_event_index").on(table.event),
+	]
+);
+
 /**
  * RELATIONS
  */
