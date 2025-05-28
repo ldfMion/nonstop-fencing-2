@@ -7,7 +7,11 @@ import {
 	mapFieTableauToFencers,
 } from "~/infra/scraping/fie/mappers";
 import { savePastBouts } from "../bouts";
-import { getEventsWithMissingResults, savePastTeamRelays } from "./queries";
+import {
+	getEventsWithMissingResults,
+	savePastTeamRelays,
+	updateEventsResultsInformation,
+} from "./queries";
 import { EventModel } from "~/lib/models";
 import {
 	getCountriesFromRelays,
@@ -54,6 +58,7 @@ async function updateTeamEvents(events: Event[], browser: Browser) {
 	const countries = getCountriesFromRelays(preparedRelays);
 	await saveCountries(countries);
 	await savePastTeamRelays(preparedRelays);
+	await updateEventsResultsInformation(events.map(e => e.id));
 }
 
 async function updateIndividualEvents(events: Event[], browser: Browser) {

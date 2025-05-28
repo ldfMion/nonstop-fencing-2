@@ -4,7 +4,7 @@ import {
 	pastTeamRelays,
 } from "~/infra/db/schema";
 import { db } from "~/infra/db";
-import { eq, and, lte } from "drizzle-orm";
+import { eq, and, lte, inArray } from "drizzle-orm";
 
 export async function getEventsWithMissingResults() {
 	let yesterday = new Date();
@@ -62,9 +62,9 @@ export async function savePastTeamRelays(relays: NewRelayDto[]) {
 
 export type NewRelayDto = typeof pastTeamRelays.$inferInsert;
 
-export async function updateEventAfterScrape(eventId: number) {
+export async function updateEventsResultsInformation(eventIds: number[]) {
 	return await db
 		.update(events)
 		.set({ hasResults: true, hasFieResults: true })
-		.where(eq(events.id, eventId));
+		.where(inArray(events.id, eventIds));
 }
