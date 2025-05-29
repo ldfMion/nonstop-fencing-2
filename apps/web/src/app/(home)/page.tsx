@@ -286,7 +286,7 @@ function CompetitionCard({
 							>
 								<Link href={router.event(e.id).overview}>
 									<div className="flex flex-row gap-4">
-										<div className="flex flex-col gap-2">
+										<div className="flex flex-col gap-1">
 											<p className="text-primary">
 												{e.name}
 											</p>

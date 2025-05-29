@@ -42,6 +42,6 @@ const createIndicatorBadge =
 export const BracketIndicator = createIndicatorBadge(
 	"bg-purple-400/70",
 	"text-purple-800",
-	Network,
+	({ className }) => <Network className={cn("rotate-90", className)} />,
 	"The tableau for this event is available."
 );
