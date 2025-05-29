@@ -18,13 +18,14 @@ export function Bout({
 }) {
 	const fencerA = "fencerA" in bout ? bout.fencerA : undefined;
 	const fencerB = "fencerB" in bout ? bout.fencerB : undefined;
+	// console.log(fencerA, fencerB, hidden);
 	if (!fencerA || !fencerB) {
 		return <BoutCard bout={bout} hidden={hidden} info={false} />;
 	}
 	assert(bout.id);
 	return (
 		<Dialog>
-			<DialogTrigger>
+			<DialogTrigger className="transition-all duration-100 ease-in">
 				<BoutCard bout={bout} hidden={hidden} info={true} />
 			</DialogTrigger>
 			<DialogContent>

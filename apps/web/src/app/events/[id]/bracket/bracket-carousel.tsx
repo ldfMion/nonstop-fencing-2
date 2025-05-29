@@ -27,7 +27,7 @@ export function BracketCarousel({
 	useEffect(() => {
 		api?.on("slidesInView", () => setSlidesInView(api.slidesInView()));
 	}, [api]);
-
+	console.log("slicdesInView: ", slidesInView);
 	return (
 		<Carousel
 			opts={{
@@ -96,8 +96,8 @@ export function BracketCarousel({
 										)}
 										<div
 											className={cn(
-												"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in col-span-20 ",
-												index != 0 && "col-span-19"
+												"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in col-span-20 pl-0.5 ",
+												index != 0 && "col-span-19 pl-0"
 											)}
 										>
 											{boutsInRound.map(bout => (
