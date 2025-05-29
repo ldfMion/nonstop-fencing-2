@@ -3,15 +3,7 @@
 import { motion } from "motion/react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import {
-	ChevronRight,
-	Trophy,
-	Users,
-	Zap,
-	Eye,
-	Calendar,
-	Globe,
-} from "lucide-react";
+import { ChevronRight, Trophy, Users, Zap, Eye, Calendar } from "lucide-react";
 import Link from "next/link";
 import { router } from "~/lib/router";
 

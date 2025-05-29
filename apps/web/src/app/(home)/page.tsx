@@ -69,7 +69,7 @@ export default async function HomePage({
 					</Button>
 				</CardHeader>
 				<Suspense
-					fallback={<Skeleton className="h-20 m-6" />}
+					fallback={<Skeleton className="h-100 m-6" />}
 					key={weapon}
 				>
 					<Completed weapon={parsed} />
@@ -104,7 +104,7 @@ async function TodayOrUpNext({
 	);
 	if (filtered.length == 0) {
 		return (
-			<Suspense fallback={<Skeleton className="h-15" />} key={weapon}>
+			<Suspense fallback={<Skeleton className="h-50" />} key={weapon}>
 				<UpNext weapon={weapon} />
 			</Suspense>
 		);
