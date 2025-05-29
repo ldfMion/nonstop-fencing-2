@@ -6,10 +6,11 @@ import {
 	fencers,
 	liveBouts,
 	pastBouts,
+	pastTeamRelays,
 } from "~/infra/db/schema";
 import { db } from "~/infra/db";
 import { eq, and, desc, aliasedTable, or } from "drizzle-orm";
-import { LiveBoutModel, PastBoutModel } from "~/lib/models";
+import { LiveBoutModel, PastBoutModel, Round } from "~/lib/models";
 
 export async function getBoutsBetweenFencers(fencerA: number, fencerB: number) {
 	const fencers2 = aliasedTable(fencers, "fencers2");
@@ -76,7 +77,7 @@ export async function getBoutsBetweenFencers(fencerA: number, fencerB: number) {
 			score: b.fencerB.score ?? undefined,
 			flag: b.fencerB.flag ?? undefined,
 		},
-		round: b.round,
+		round: Number(b.round) as Round,
 		order: b.order,
 		winnerIsA: b.winnerIsA,
 		id: b.id,
@@ -88,9 +89,7 @@ export async function getBoutsBetweenFencers(fencerA: number, fencerB: number) {
 	}));
 }
 
-export async function getPastTableau(
-	eventId: number
-): Promise<PastBoutModel[]> {
+export async function getPastBouts(eventId: number): Promise<PastBoutModel[]> {
 	const fencers2 = aliasedTable(fencers, "fencers2");
 	const countries2 = aliasedTable(countries, "countries2");
 	return (
@@ -137,10 +136,61 @@ export async function getPastTableau(
 			score: b.fencerB.score ?? undefined,
 			flag: b.fencerB.flag ?? undefined,
 		},
-		round: b.round,
+		round: Number(b.round) as Round,
 		order: b.order,
 		winnerIsA: b.winnerIsA,
 		id: b.id,
+	}));
+}
+
+export async function getPastRelaysMainBracket(eventId: number) {
+	const countries2 = aliasedTable(countries, "countries2");
+	return (
+		await db
+			.select({
+				id: pastTeamRelays.id,
+				teamA: {
+					id: pastTeamRelays.teamA,
+					name: countries.name,
+					flag: countries.isoCode,
+					score: pastTeamRelays.scoreA,
+				},
+				teamB: {
+					id: pastTeamRelays.teamB,
+					name: countries2.name,
+					flag: countries2.isoCode,
+					score: pastTeamRelays.scoreB,
+				},
+				round: pastTeamRelays.round,
+				order: pastTeamRelays.order,
+				winnerIsA: pastTeamRelays.winnerIsA,
+			})
+			.from(pastTeamRelays)
+			.where(
+				and(
+					eq(pastTeamRelays.event, eventId),
+					eq(pastTeamRelays.bracket, "MAIN")
+				)
+			)
+			.leftJoin(countries, eq(pastTeamRelays.teamA, countries.iocCode))
+			.leftJoin(countries2, eq(pastTeamRelays.teamB, countries2.iocCode))
+	).map(r => ({
+		teamA: {
+			id: r.teamA.id,
+			name: r.teamA.name!,
+			score: r.teamA.score ?? undefined,
+			flag: r.teamA.flag ?? undefined,
+		},
+		teamB: {
+			id: r.teamB.id!,
+			name: r.teamB.name!,
+			score: r.teamB.score ?? undefined,
+			flag: r.teamB.flag ?? undefined,
+		},
+		round: Number(r.round) as Round,
+		order: r.order,
+		winnerIsA: r.winnerIsA,
+		id: r.id,
 	}));
 }
 
@@ -197,7 +247,7 @@ export async function getLiveTableau(
 					flag: b.fencerB.flag ?? undefined,
 			  }
 			: undefined,
-		round: b.round,
+		round: Number(b.round) as Round,
 		order: b.order,
 		winnerIsA: b.winnerIsA ?? undefined,
 		id: b.id,

@@ -6,7 +6,7 @@ import { router } from "~/lib/router";
 import { PageMessage } from "./page-message";
 import { Clock, Construction } from "lucide-react";
 import { getEvent, getEventsWithResults } from "~/app/events/queries";
-import { getPastTableau } from "./queries";
+import { getPastBouts, getPastRelaysMainBracket } from "./queries";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -27,19 +27,18 @@ export default async function BracketPage({
 	const eventId = Number(id);
 	assert(!isNaN(eventId), "Event ID must be a number");
 	const event = await getEvent(eventId);
-	console.log(event);
-	if (event.type == "TEAM") {
-		return (
-			<PageMessage icon={<Construction size={24} />}>
-				Results for team events are coming soon!
-			</PageMessage>
-		);
-	}
 	if (!event.hasResults) {
 		const status = getEventStatus(event);
 		console.log("Event status: ", status);
 		if (status == "LIVE") {
-			redirect(router.event(eventId).bracket.live);
+			if (event.type == "TEAM") {
+				redirect(router.event(eventId).bracket.live);
+			}
+			return (
+				<PageMessage icon={<Construction size={24} />}>
+					Live results for team events aren't supported yet.
+				</PageMessage>
+			);
 		}
 		if (status == "FUTURE") {
 			return (
@@ -51,6 +50,35 @@ export default async function BracketPage({
 		}
 		return <PageMessage>This event does not have results.</PageMessage>;
 	}
-	const bouts = await getPastTableau(event.id);
-	return <Bracket bouts={bouts} />;
+	if (event.type == "INDIVIDUAL") {
+		const bouts = await getPastBouts(event.id);
+		console.log("individual bouts", bouts);
+		return <Bracket bouts={bouts} />;
+	}
+	const relays = await getPastRelaysMainBracket(event.id);
+	return (
+		<Bracket
+			startingRound={32}
+			bouts={relays.map(r => ({
+				fencerA: {
+					id: 1,
+					lastName: r.teamA.name,
+					firstName: "",
+					score: r.teamA.score,
+					flag: r.teamA.flag,
+				},
+				fencerB: {
+					id: 1,
+					lastName: r.teamB.name,
+					firstName: "",
+					score: r.teamB.score,
+					flag: r.teamB.flag,
+				},
+				round: r.round,
+				order: r.order,
+				winnerIsA: r.winnerIsA,
+				id: r.id,
+			}))}
+		/>
+	);
 }

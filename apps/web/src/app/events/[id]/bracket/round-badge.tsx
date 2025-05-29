@@ -19,11 +19,11 @@ export function RoundBadge({
 	);
 }
 
-function getRoundDisplayName(round: Round) {
+function getRoundDisplayName(round: Round): string {
 	switch (round) {
-		case "2":
+		case 2:
 			return "Final";
-		case "4":
+		case 2:
 			return "Semi-Final";
 		default:
 			return `T${round}`;

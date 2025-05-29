@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter } from "~/components/ui/card";
 import { cn, toTitleCase } from "~/lib/utils";
 import { Flag } from "~/components/custom/flag";
-import type { BracketBout } from "~/lib/models";
+import type { BracketMatch } from "~/lib/models";
 import { ChevronRight, Info } from "lucide-react";
 
 export function BoutCard({
@@ -9,7 +9,7 @@ export function BoutCard({
 	hidden,
 	info,
 }: {
-	bout: BracketBout;
+	bout: BracketMatch;
 	hidden: boolean;
 	info: boolean;
 }) {
@@ -37,12 +37,15 @@ export function BoutCard({
 					}
 				/>
 			</CardContent>
-			{info && (
-				<CardFooter className="text-[10px] text-muted-foreground p-0 font-semibold items-center justify-end flex-row">
-					<p>Head-to-head</p>
-					<ChevronRight size={12} />
-				</CardFooter>
-			)}
+			<CardFooter
+				className={cn(
+					"text-[10px] text-muted-foreground p-0 font-semibold items-center justify-end flex-row",
+					!info && "text-card"
+				)}
+			>
+				<p>Head-to-head</p>
+				<ChevronRight size={12} />
+			</CardFooter>
 		</Card>
 	);
 }
@@ -90,7 +93,7 @@ function Fencer({
 			<div>{fencer?.score !== undefined ? fencer.score : "-"}</div>
 		</div>
 	) : (
-		<div className="flex justify-between opacity-50">
+		<div className="flex justify-between opacity-50 text-sm">
 			{" "}
 			{/* Grey out if fencerB is missing */}
 			<div className="truncate">TBD</div>

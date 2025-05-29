@@ -5,11 +5,17 @@ import {
 	DialogTrigger,
 } from "~/components/ui/dialog";
 import assert from "assert";
-import type { BracketBout } from "~/lib/models";
+import type { BracketMatch } from "~/lib/models";
 import { HeadToHead } from "./head-to-head";
 import { BoutCard } from "./bout-card";
 
-export function Bout({ bout, hidden }: { bout: BracketBout; hidden: boolean }) {
+export function Bout({
+	bout,
+	hidden,
+}: {
+	bout: BracketMatch;
+	hidden: boolean;
+}) {
 	const fencerA = "fencerA" in bout ? bout.fencerA : undefined;
 	const fencerB = "fencerB" in bout ? bout.fencerB : undefined;
 	if (!fencerA || !fencerB) {

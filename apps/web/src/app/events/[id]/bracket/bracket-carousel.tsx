@@ -12,16 +12,14 @@ import {
 	CarouselNext,
 } from "~/components/ui/carousel"; // Import Shadcn Carousel components
 import { useEffect, useState } from "react";
-import { BracketBout, Round } from "~/lib/models";
+import { BracketMatch, Round } from "~/lib/models";
 import { Button } from "~/components/ui/button";
 import { RoundBadge } from "./round-badge";
 
 export function BracketCarousel({
-	sortedRoundKeys,
-	rounds,
+	bracketData,
 }: {
-	sortedRoundKeys: BracketBout["round"][];
-	rounds: Record<BracketBout["round"], BracketBout[]>;
+	bracketData: { id: Round; matches: BracketMatch[] }[];
 }) {
 	const [api, setApi] = useState<CarouselApi>();
 	const [slidesInView, setSlidesInView] = useState<number[]>();
@@ -49,20 +47,18 @@ export function BracketCarousel({
 			<div className="p-0 md:p-6">
 				<Card className="p-6 bg-transparent md:bg-card rounded-none md:rounded-2xl border-none md:border-solid">
 					<CarouselContent className="">
-						{" "}
-						{/* Negative margin for item spacing */}
-						{sortedRoundKeys.map((roundKey, index) => {
-							const boutsInRound = rounds[roundKey];
+						{bracketData.map((round, index) => {
+							const boutsInRound = round.matches;
 							if (!boutsInRound || boutsInRound.length === 0) {
 								return null; // Should not happen based on sortedRoundKeys filter, but good practice
 							}
 
 							return (
 								<CarouselItem
-									key={roundKey}
+									key={round.id}
 									className="!flex-shrink-1 min-w-60 flex flex-col gap-2"
 								>
-									<RoundBadge roundKey={roundKey} />
+									<RoundBadge roundKey={round.id} />
 									<div
 										className={cn(
 											"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in"

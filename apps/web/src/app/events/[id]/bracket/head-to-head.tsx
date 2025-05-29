@@ -1,7 +1,7 @@
 import { cn, formatRelativeDate, toTitleCase } from "~/lib/utils";
 import { Fragment, useEffect, useState } from "react";
 import { getBoutsBetweenFencers } from "./queries";
-import type { BracketBout } from "~/lib/models";
+import type { BracketMatch, Round } from "~/lib/models";
 import { Skeleton } from "~/components/ui/skeleton";
 import { RoundBadge } from "./round-badge";
 import Link from "next/link";
@@ -16,8 +16,8 @@ export function HeadToHead({
 	boutId,
 }: {
 	boutId: number;
-	fencerA: NonNullable<BracketBout["fencerA"]>;
-	fencerB: NonNullable<BracketBout["fencerB"]>;
+	fencerA: NonNullable<BracketMatch["fencerA"]>;
+	fencerB: NonNullable<BracketMatch["fencerB"]>;
 }) {
 	const {
 		data: bouts,
@@ -58,7 +58,10 @@ export function HeadToHead({
 					</Link>
 					<p>{formatRelativeDate(b.event.date)}</p>
 				</div>
-				<RoundBadge className="text-sm" roundKey={b.round} />
+				<RoundBadge
+					className="text-sm"
+					roundKey={Number(b.round) as Round}
+				/>
 			</div>
 			<BoutCard bout={b} hidden={false} info={false} />
 		</Fragment>
