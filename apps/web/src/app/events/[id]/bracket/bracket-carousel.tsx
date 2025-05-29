@@ -38,10 +38,10 @@ export function BracketCarousel({
 		>
 			<div className="fixed bottom-0 right-0 z-10 flex space-x-2 p-10">
 				<Button asChild variant="default">
-					<CarouselPrevious className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
+					<CarouselPrevious className="rounded-full !p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-12 w-12 border-none" />
 				</Button>
 				<Button asChild variant="default">
-					<CarouselNext className="!p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-7 w-7 border-none" />
+					<CarouselNext className="rounded-full !p-4 static transform-none left-auto right-auto translate-x-0 translate-y-0 h-12 w-12 border-none" />
 				</Button>
 			</div>
 			<div className="p-0 md:p-6">
