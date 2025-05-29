@@ -59,24 +59,62 @@ export function BracketCarousel({
 									className="!flex-shrink-1 min-w-60 flex flex-col gap-2"
 								>
 									<RoundBadge roundKey={round.id} />
-									<div
-										className={cn(
-											"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in"
+									<div className="h-full grid grid-cols-20">
+										{index != 0 && (
+											<div className="col-span-1 flex flex-col items-stretch transition-all duration-100 ease-in">
+												{new Array(
+													boutsInRound.length * 4
+												)
+													.fill(null)
+													.map((_, index) =>
+														index % 4 == 1 ? (
+															<div
+																key={index}
+																className=" h-full grid grid-cols-3"
+															>
+																<div className="col-span-1 border-t-4 border-muted-foreground/50"></div>
+																<div className="col-span-1 bg-muted-foreground/50 "></div>
+																<div className="col-span-1 border-b-4 border-muted-foreground/50"></div>
+															</div>
+														) : index % 4 == 2 ? (
+															<div
+																key={index}
+																className=" h-full grid grid-cols-3"
+															>
+																<div className="col-span-1 border-b-4 border-muted-foreground/50"></div>
+																<div className="col-span-1 bg-muted-foreground/50  "></div>
+																<div className="col-span-1  "></div>
+															</div>
+														) : (
+															<div
+																key={index}
+																className=" h-full "
+															></div>
+														)
+													)}
+											</div>
 										)}
-									>
-										{boutsInRound.map(bout => (
-											<Bout
-												key={`${bout.round}-${bout.order}`}
-												bout={bout}
-												hidden={
-													!!(
-														slidesInView &&
-														slidesInView[0] &&
-														index < slidesInView[0]
-													)
-												}
-											/>
-										))}
+										<div
+											className={cn(
+												"flex flex-col gap-2 justify-around h-full transition-all duration-100 ease-in col-span-20 ",
+												index != 0 && "col-span-19"
+											)}
+										>
+											{boutsInRound.map(bout => (
+												<Bout
+													key={`${bout.round}-${bout.order}`}
+													bout={bout}
+													hidden={
+														!!(
+															slidesInView &&
+															slidesInView[0] &&
+															index <
+																slidesInView[0]
+														)
+													}
+												/>
+											))}
+										</div>
 									</div>
 								</CarouselItem>
 							);

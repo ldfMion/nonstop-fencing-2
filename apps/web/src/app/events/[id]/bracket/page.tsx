@@ -52,7 +52,6 @@ export default async function BracketPage({
 	}
 	if (event.type == "INDIVIDUAL") {
 		const bouts = await getPastBouts(event.id);
-		console.log("individual bouts", bouts);
 		return <Bracket bouts={bouts} />;
 	}
 	const relays = await getPastRelaysMainBracket(event.id);
