@@ -53,6 +53,9 @@ async function updatePastEvents(events: Event[], browser: Browser) {
 }
 
 async function updateTeamEvents(events: Event[], browser: Browser) {
+	if (events.length == 0) {
+		return;
+	}
 	const preparedRelays = await getPreparedRelaysForAllEvents(events, browser);
 	// console.log(preparedRelays);
 	const countries = getCountriesFromRelays(preparedRelays);
@@ -62,6 +65,9 @@ async function updateTeamEvents(events: Event[], browser: Browser) {
 }
 
 async function updateIndividualEvents(events: Event[], browser: Browser) {
+	if (events.length == 0) {
+		return;
+	}
 	return Promise.all(
 		events.map(event => updateIndividualEvent(event, browser))
 	);

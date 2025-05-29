@@ -8,8 +8,7 @@ import { saveCountries } from "../countries";
 import {
 	getFencers,
 	insertFencers,
-	insertPastBouts,
-	updateEvent,
+	insertPastBoutsAndUpdateEvent,
 } from "./queries";
 
 export async function savePastBouts<ScrapedTableau>(
@@ -35,11 +34,7 @@ export async function savePastBouts<ScrapedTableau>(
 	});
 	try {
 		const newBouts = boutMapper(tableau, uploadedFencers, event);
-		await insertPastBouts(newBouts);
-		updateEvent(event, {
-			hasFieResults: true,
-			hasResults: true,
-		});
+		await insertPastBoutsAndUpdateEvent(newBouts, event.id);
 	} catch (e) {
 		console.error(
 			"There was an error mapping tableau to bouts with fencers: " + e

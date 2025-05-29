@@ -9,6 +9,7 @@ import { sql, eq, isNull, not, type SQL, inArray, and, or } from "drizzle-orm";
 export async function insertCountriesWithIocCode(
 	newCountries: { iocCode: string; isoCode?: string }[]
 ) {
+	console.log("inserting countries", newCountries.length);
 	console.log(
 		await db.insert(countries).values(newCountries).onConflictDoNothing()
 	);

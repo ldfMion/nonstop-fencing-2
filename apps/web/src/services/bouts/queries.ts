@@ -18,6 +18,7 @@ export async function insertFencers(
 		gender: "MEN" | "WOMEN";
 	}[]
 ) {
+	console.log("inserting fencers", newFencers.length);
 	console.log(
 		await db.transaction(tx =>
 			tx
@@ -86,10 +87,20 @@ export async function insertLiveBouts(bouts: NewLiveBoutModel[]) {
 	);
 }
 
-export async function insertPastBouts(bouts: NewPastBoutModel[]) {
+export async function insertPastBoutsAndUpdateEvent(
+	bouts: NewPastBoutModel[],
+	eventId: number
+) {
+	console.log("inserting past bouts", bouts.length);
 	if (bouts.length == 0) {
 		return;
 	}
-	console.log("inserting past bouts");
-	console.log(await db.transaction(tx => tx.insert(pastBouts).values(bouts)));
+	await db.transaction(async tx => {
+		await tx.insert(pastBouts).values(bouts);
+		await db
+			.update(events)
+			.set({ hasResults: true, hasFieResults: true })
+			.where(eq(events.id, eventId));
+		await db.refreshMaterializedView(competitionsWithFlagsAndEvents);
+	});
 }

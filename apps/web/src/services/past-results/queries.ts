@@ -67,5 +67,5 @@ export async function updateEventsResultsInformation(eventIds: number[]) {
 		.update(events)
 		.set({ hasResults: true, hasFieResults: true })
 		.where(inArray(events.id, eventIds));
-	db.refreshMaterializedView(competitionsWithFlagsAndEvents);
+	await db.refreshMaterializedView(competitionsWithFlagsAndEvents);
 }
