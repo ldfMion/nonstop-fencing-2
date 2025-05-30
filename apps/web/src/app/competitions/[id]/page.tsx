@@ -53,39 +53,41 @@ export default async function CompetitionPage({
 				description={getDateRange(competition.date)}
 				flagCode={competition.flag}
 			/>
-			<div className="p-6">
-				<Card className="max-w-2xl mx-auto gap-0 p-0">
-					<CardHeader className="p-6 pb-3">
-						<CardTitle>Events</CardTitle>
+			<div className="p-4">
+				<Card className="max-w-2xl mx-auto gap-0 p-0 rounded-xl overflow-clip">
+					<CardHeader className="p-6 m-0 gap-0">
+						<CardTitle className="">Events</CardTitle>
 					</CardHeader>
 					<Separator />
-					<CardContent className="flex flex-col gap-0 p-6 pt-3">
+					<CardContent className="flex flex-col gap-0">
 						{Object.entries(eventsByDate).map(([date, events]) => (
 							<Fragment key={date}>
-								<h3 className="font-semibold text-sm text-muted-foreground p-2">
+								<h3 className="text-sm bg-muted p-4">
 									{formatRelativeDate(new Date(date))}
 								</h3>
 								<Separator />
 								{events.map(e => (
 									<Button
 										key={e.id}
-										className="flex flex-row justify-between"
-										variant="link"
+										className=" !p-0 rounded-none h-fit w-full"
+										variant="ghost"
 										asChild
 									>
 										<Link
 											href={router.event(e.id).overview}
 										>
-											<div className="flex flex-row items-center gap-2">
-												<h4>
+											<div className="px-4 py-3 flex flex-row justify-between w-full items-center">
+												<h4 className="text-md font-semibold">
 													{formatEventDescription(e)}
 												</h4>
-												{(e.hasResults ||
-													isToday(e.date)) && (
-													<BracketIndicator />
-												)}
+												<div className="flex flex-row items-center gap-2">
+													{(e.hasResults ||
+														isToday(e.date)) && (
+														<BracketIndicator />
+													)}
+													<ChevronRight />
+												</div>
 											</div>
-											<ChevronRight />
 										</Link>
 									</Button>
 								))}

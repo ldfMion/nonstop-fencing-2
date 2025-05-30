@@ -14,7 +14,7 @@ import {
 	formatRelativeDate,
 	getToday,
 } from "~/lib/utils";
-import { ChevronRight, Network } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
 import { Fragment, Suspense } from "react";
 import { Button } from "~/components/ui/button";
@@ -35,7 +35,7 @@ export default async function HomePage({
 	assert(typeof weapon === "string" || weapon === undefined);
 	const parsed = parseWeaponParam(weapon);
 	return (
-		<main className="p-6 max-w-3xl mx-auto flex flex-col gap-4">
+		<main className="p-4 max-w-3xl mx-auto flex flex-col gap-4">
 			<Card className="p-2 items-center self-center">
 				<ToggleGroup
 					type="single"
@@ -58,23 +58,18 @@ export default async function HomePage({
 			</Card>
 			<TodayOrUpNext weapon={parsed} />
 
-			<Card className="p-0 gap-0">
-				<CardHeader className="p-6 flex flex-row justify-between items-center gap-0">
-					<CardTitle>Completed</CardTitle>
-					<Button asChild variant="default">
-						<Link href={router.competitions()}>
-							All Competitions
-							<ChevronRight size={18} />
-						</Link>
-					</Button>
-				</CardHeader>
-				<Suspense
-					fallback={<Skeleton className="h-100 m-6" />}
-					key={weapon}
-				>
-					<Completed weapon={parsed} />
-				</Suspense>
-			</Card>
+			<div className="flex flex-row justify-between items-center gap-0">
+				<h2 className="text-xl font-bold">Completed</h2>
+				<Button asChild variant="default">
+					<Link href={router.competitions()}>
+						All Competitions
+						<ChevronRight size={18} />
+					</Link>
+				</Button>
+			</div>
+			<Suspense fallback={<Skeleton className="h-100" />} key={weapon}>
+				<Completed weapon={parsed} />
+			</Suspense>
 		</main>
 	);
 }
@@ -216,7 +211,6 @@ async function Completed({
 	);
 	return previousCompetitions.map(c => (
 		<Fragment key={c.id}>
-			<Separator />
 			<CompetitionCard
 				competitionId={c.id}
 				events={c.events.map(e => ({
@@ -247,58 +241,41 @@ function CompetitionCard({
 	innerCard?: boolean;
 }) {
 	return (
-		<Card
-			className={
-				innerCard ? "rounded-none bg-transparent border-none" : ""
-			}
-		>
-			<CardHeader className="flex flex-row items-center w-full">
-				<Flag
-					flagCode={flag}
-					className="w-15 h-10 rounded-[8px] gap-2"
-				/>
-				<div className="w-full min-w-0">
-					<Button
-						variant="link"
-						asChild
-						className="w-full p-0 justify-start"
-					>
-						<Link
-							href={router.competition(competitionId)}
-							className="w-full min-w-0"
-						>
-							<CardTitle className="text-lg sm:text-2xl font-semibold break-words text-wrap w-full leading-none">
-								{name}
-							</CardTitle>
-						</Link>
-					</Button>
-				</div>
-			</CardHeader>
+		<Card className={"rounded-xl p-0 gap-0 overflow-clip"}>
+			<Link href={router.competition(competitionId)} className="w-full">
+				<CardHeader className="flex flex-row justify-between w-full p-4 bg-muted hover:bg-accent">
+					<div className="flex flex-row items-center gap-2">
+						<Flag
+							flagCode={flag}
+							className="w-9 h-6 rounded-[8px] gap-2"
+						/>
+						<CardTitle className="text-md sm:text-lg font-semibold break-words text-wrap w-full leading-none">
+							{name}
+						</CardTitle>
+					</div>
+					<ChevronRight />
+				</CardHeader>
+			</Link>
 			<CardContent>
 				<CardDescription className="font-semibold text-sm flex flex-col">
 					{events.map(e => (
 						<Fragment key={e.id}>
-							<Button
-								key={e.id}
-								className="flex items-center flex-row justify-between py-6"
-								variant="ghost"
-								asChild
+							<Separator />
+							<Link
+								href={router.event(e.id).overview}
+								className="flex items-center flex-row justify-between p-4 hover:bg-accent"
 							>
-								<Link href={router.event(e.id).overview}>
-									<div className="flex flex-row gap-4">
-										<div className="flex flex-col gap-1">
-											<p className="text-primary">
-												{e.name}
-											</p>
-											<p className="font-semibold text-xs text-muted-foreground">
-												{e.date}
-											</p>
-										</div>
-										{e.hasResults && <BracketIndicator />}
-									</div>
+								<div className="flex flex-col gap-1">
+									<p className="text-primary">{e.name}</p>
+									<p className="font-semibold text-xs text-muted-foreground">
+										{e.date}
+									</p>
+								</div>
+								<div className="flex flex-row items-center gap-1">
+									{e.hasResults && <BracketIndicator />}
 									<ChevronRight />
-								</Link>
-							</Button>
+								</div>
+							</Link>
 						</Fragment>
 					))}
 				</CardDescription>

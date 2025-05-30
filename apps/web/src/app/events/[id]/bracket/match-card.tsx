@@ -31,7 +31,7 @@ export function MatchCard({
 			className={cn(
 				"p-3 transition-all duration-100 ease-in rounded-md gap-0",
 				hidden && "h-0 p-0 opacity-0",
-				info && "hover:bg-muted"
+				info && "hover:bg-accent"
 			)}
 		>
 			<CardContent className="p-0 flex flex-col gap-1">
