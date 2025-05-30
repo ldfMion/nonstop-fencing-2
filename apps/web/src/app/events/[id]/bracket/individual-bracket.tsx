@@ -108,5 +108,6 @@ function mapFencerToMatchEntity(fencer: {
 		primaryName: fencer.firstName,
 		secondaryName: fencer.lastName,
 		flag: fencer.flag,
+		score: fencer.score,
 	};
 }
