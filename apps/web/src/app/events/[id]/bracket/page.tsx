@@ -56,5 +56,11 @@ export default async function BracketPage({
 		return <IndividualBracket bouts={bouts} />;
 	}
 	const relays = await getPastRelaysMainBracket(event.id);
-	return <TeamBracket relays={relays} />;
+	return (
+		<TeamBracket
+			relays={relays}
+			gender={event.gender}
+			weapon={event.weapon}
+		/>
+	);
 }

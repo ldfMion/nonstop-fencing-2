@@ -25,6 +25,7 @@ export function BracketMatch({
 	if (!details) {
 		return <MatchCard match={match} hidden={hidden} info={false} />;
 	}
+	console.log("match has details");
 	return (
 		<Dialog>
 			<DialogTrigger className="transition-all duration-100 ease-in">

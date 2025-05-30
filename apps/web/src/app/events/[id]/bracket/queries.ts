@@ -251,3 +251,85 @@ export async function getLiveTableau(eventId: number) {
 		id: b.id,
 	}));
 }
+
+export async function getRelaysBetweenTeams(
+	teamA: string,
+	teamB: string,
+	weapon: "FOIL" | "EPEE" | "SABER",
+	gender: "MEN" | "WOMEN"
+) {
+	const fencers2 = aliasedTable(fencers, "fencers2");
+	const countries2 = aliasedTable(countries, "countries2");
+	return (
+		await db
+			.select({
+				id: pastTeamRelays.id,
+				teamA: {
+					id: pastTeamRelays.teamA,
+					name: countries.name,
+					score: pastTeamRelays.scoreA,
+					flag: countries.isoCode,
+				},
+				teamB: {
+					id: pastTeamRelays.teamB,
+					name: countries2.name,
+					score: pastTeamRelays.scoreB,
+					flag: countries2.isoCode,
+				},
+				round: pastTeamRelays.round,
+				order: pastTeamRelays.order,
+				winnerIsA: pastTeamRelays.winnerIsA,
+				competition: competitions.name,
+				event: {
+					id: events.id,
+					date: events.date,
+				},
+				bracket: pastTeamRelays.bracket,
+			})
+			.from(pastTeamRelays)
+			.where(
+				and(
+					eq(events.weapon, weapon),
+					eq(events.gender, gender),
+					or(
+						and(
+							eq(pastTeamRelays.teamA, teamA),
+							eq(pastTeamRelays.teamB, teamB)
+						),
+						and(
+							eq(pastTeamRelays.teamA, teamB),
+							eq(pastTeamRelays.teamB, teamB)
+						)
+					)
+				)
+			)
+			.leftJoin(countries, eq(pastTeamRelays.teamA, countries.iocCode))
+			.leftJoin(countries2, eq(pastTeamRelays.teamB, countries2.iocCode))
+			.leftJoin(events, eq(events.id, pastTeamRelays.event))
+			.leftJoin(competitions, eq(events.competition, competitions.id))
+			.orderBy(desc(events.date))
+	).map(b => ({
+		teamA: {
+			id: b.teamA.id!,
+			name: b.teamA.name!,
+			score: b.teamA.score ?? undefined,
+			flag: b.teamA.flag ?? undefined,
+		},
+		teamB: {
+			id: b.teamB.id!,
+			name: b.teamB.name!,
+			score: b.teamB.score ?? undefined,
+			flag: b.teamB.flag ?? undefined,
+		},
+		round: Number(b.round) as Round,
+		order: b.order,
+		winnerIsA: b.winnerIsA,
+		id: b.id,
+		competition: b.competition!,
+		event: {
+			date: b.event!.date!,
+			id: b.event!.id!,
+		},
+		bracket: b.bracket,
+	}));
+}

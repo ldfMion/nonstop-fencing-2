@@ -84,7 +84,7 @@ function Fencer({ fencer, winner }: { fencer?: Entity; winner?: boolean }) {
 							<span className="">
 								{toTitleCase(fencer.primaryName)}
 							</span>
-							{", "}
+							{fencer.secondaryName != "" && ", "}
 							<span className="text-xs">
 								{toTitleCase(fencer.secondaryName)}
 							</span>
