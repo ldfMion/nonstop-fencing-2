@@ -1,5 +1,5 @@
 "use client";
-import { Bout } from "./bout";
+import { BracketMatch } from "./bracket-match";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import type { CarouselApi } from "~/components/ui/carousel";
@@ -11,15 +11,18 @@ import {
 	CarouselPrevious,
 	CarouselNext,
 } from "~/components/ui/carousel"; // Import Shadcn Carousel components
-import { useEffect, useState } from "react";
-import { BracketMatch, Round } from "~/lib/models";
+import { Fragment, JSX, useEffect, useState } from "react";
+import { Round } from "~/lib/models";
 import { Button } from "~/components/ui/button";
 import { RoundBadge } from "./round-badge";
+import { Match } from "./types";
 
-export function BracketCarousel({
+export function BracketCarousel<T>({
 	bracketData,
+	renderBout,
 }: {
-	bracketData: { id: Round; matches: BracketMatch[] }[];
+	bracketData: { id: Round; matches: Match<T>[] }[];
+	renderBout: (bout: Match<T>, hidden: boolean) => JSX.Element;
 }) {
 	const [api, setApi] = useState<CarouselApi>();
 	const [slidesInView, setSlidesInView] = useState<number[]>();
@@ -101,18 +104,19 @@ export function BracketCarousel({
 											)}
 										>
 											{boutsInRound.map(bout => (
-												<Bout
+												<Fragment
 													key={`${bout.round}-${bout.order}`}
-													bout={bout}
-													hidden={
+												>
+													{renderBout(
+														bout,
 														!!(
 															slidesInView &&
 															slidesInView[0] &&
 															index <
 																slidesInView[0]
 														)
-													}
-												/>
+													)}
+												</Fragment>
 											))}
 										</div>
 									</div>

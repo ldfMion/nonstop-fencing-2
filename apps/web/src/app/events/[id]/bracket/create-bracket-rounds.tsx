@@ -1,30 +1,19 @@
-import { BracketMatch, LiveBoutModel, Round, ROUNDS } from "~/lib/models";
+import { Round, ROUNDS } from "~/lib/models";
 import { BracketCarousel } from "./bracket-carousel";
 import { PageMessage } from "./page-message";
-
-export function Bracket({
-	bouts,
-	startingRound = 64,
-}: {
-	bouts: BracketMatch[];
-	isLive?: boolean;
-	startingRound?: Round;
-}) {
-	if (bouts.length == 0) {
-		return <PageMessage>Results not available.</PageMessage>;
-	}
-	const bracketData = createBracketRounds(startingRound, bouts);
-	// console.log(bracketData);
-	return <BracketCarousel bracketData={bracketData} />;
-}
+import { Match } from "./types";
 
 /**
  * Generates bracket rounds with their respective matches, including
  * any empty matches if necessary, based on the starting round and
  * available bouts.
  */
-function createBracketRounds(startingRound: Round, bouts: BracketMatch[]) {
-	const rounds: { id: Round; matches: BracketMatch[] }[] = [];
+export function createBracketRounds<T>(
+	startingRound: Round,
+	bouts: Match<T>[]
+): { id: Round; matches: Match<T>[] }[] {
+	if (bouts.length == 0) return [];
+	const rounds: { id: Round; matches: Match<T>[] }[] = [];
 	ROUNDS.slice(ROUNDS.indexOf(startingRound)).forEach(currRound => {
 		const existingBoutsForRound = bouts.filter(
 			b => Number(b.round) == currRound
@@ -36,7 +25,7 @@ function createBracketRounds(startingRound: Round, bouts: BracketMatch[]) {
 				matches: existingBoutsForRound,
 			});
 		} else {
-			const matchPlaceholders: BracketMatch[] = new Array(
+			const matchPlaceholders: Match<T>[] = new Array(
 				numberOfBoutsInRound
 			)
 				.fill(null)
@@ -62,6 +51,13 @@ function createBracketRounds(startingRound: Round, bouts: BracketMatch[]) {
 	return rounds;
 }
 
+function createEmptyMatch(round: Round, order: number) {
+	return {
+		round: round,
+		order: order,
+	};
+}
+
 function getPositionsForNumSeeds(round: number) {
 	// can't find the formula/algorithm at the moment
 	return (() => {
@@ -85,14 +81,4 @@ function getPositionsForNumSeeds(round: number) {
 				throw new Error(`Unexpected round: ${round}`);
 		}
 	})();
-}
-
-function createEmptyMatch(round: Round, order: number) {
-	return {
-		round: round,
-		order: order,
-		fencerA: undefined,
-		fencerB: undefined,
-		winnerIsA: undefined,
-	};
 }

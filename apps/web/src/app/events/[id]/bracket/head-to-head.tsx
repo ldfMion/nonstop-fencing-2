@@ -1,23 +1,26 @@
-import { cn, formatRelativeDate, toTitleCase } from "~/lib/utils";
-import { Fragment, useEffect, useState } from "react";
+"use client";
+import { cn, formatRelativeDate } from "~/lib/utils";
+import { Fragment, JSX } from "react";
 import { getBoutsBetweenFencers } from "./queries";
-import type { BracketMatch, Round } from "~/lib/models";
+import type { Round } from "~/lib/models";
 import { Skeleton } from "~/components/ui/skeleton";
 import { RoundBadge } from "./round-badge";
 import Link from "next/link";
 import { router } from "~/lib/router";
 import { buttonVariants } from "~/components/ui/button";
-import { BoutCard } from "./bout-card";
+import { MatchCard } from "./match-card";
 import { useQuery } from "@tanstack/react-query";
+import { DialogTitle } from "~/components/ui/dialog";
+import { mapBoutToMatch } from "./map-bout-to-match";
 
 export function HeadToHead({
-	fencerA,
-	fencerB,
+	entityA,
+	entityB,
 	boutId,
 }: {
 	boutId: number;
-	fencerA: NonNullable<BracketMatch["fencerA"]>;
-	fencerB: NonNullable<BracketMatch["fencerB"]>;
+	entityA: { id: number };
+	entityB: { id: number };
 }) {
 	const {
 		data: bouts,
@@ -26,44 +29,61 @@ export function HeadToHead({
 		isSuccess,
 	} = useQuery({
 		queryKey: ["head-to-head", boutId],
-		queryFn: () => getBoutsBetweenFencers(fencerA.id, fencerB.id),
+		queryFn: () => getBoutsBetweenFencers(entityA.id, entityB.id),
 		select: bouts => bouts.filter(b => b.id != boutId),
 	});
+	let content: JSX.Element;
 	if (isError) {
-		return <p>There was an error</p>;
-	}
-	if (!isSuccess || isLoading) {
-		return (
+		content = <p>There was an error</p>;
+	} else if (!isSuccess || isLoading) {
+		content = (
 			<>
 				<Skeleton className="h-6 w-full" />
 				<Skeleton className="h-6 w-full" />
 			</>
 		);
+	} else if (bouts.length == 0) {
+		content = <p>No bouts found.</p>;
+	} else {
+		content = (
+			<>
+				{bouts.map(b => (
+					<Fragment key={b.id}>
+						<div className="flex flex-row justify-between flex-wrap items-end">
+							<div className="flex flex-col text-sm">
+								<Link
+									href={router.event(b.event.id).bracket.past}
+									className={cn(
+										buttonVariants({ variant: "link" }),
+										"p-0"
+									)}
+								>
+									<p className="font-semibold">
+										{b.competition}
+									</p>
+								</Link>
+								<p>{formatRelativeDate(b.event.date)}</p>
+							</div>
+							<RoundBadge
+								className="text-sm"
+								roundKey={Number(b.round) as Round}
+							/>
+						</div>
+						<MatchCard
+							match={mapBoutToMatch(b)}
+							hidden={false}
+							info={false}
+						/>
+					</Fragment>
+				))}
+			</>
+		);
 	}
-	if (bouts.length == 0) {
-		return <p>No bouts found.</p>;
-	}
-	return bouts.map(b => (
-		<Fragment key={b.id}>
-			<div className="flex flex-row justify-between flex-wrap items-end">
-				<div className="flex flex-col text-sm">
-					<Link
-						href={router.event(b.event.id).bracket.past}
-						className={cn(
-							buttonVariants({ variant: "link" }),
-							"p-0"
-						)}
-					>
-						<p className="font-semibold">{b.competition}</p>
-					</Link>
-					<p>{formatRelativeDate(b.event.date)}</p>
-				</div>
-				<RoundBadge
-					className="text-sm"
-					roundKey={Number(b.round) as Round}
-				/>
-			</div>
-			<BoutCard bout={b} hidden={false} info={false} />
-		</Fragment>
-	));
+	return (
+		<>
+			<DialogTitle>Head-to-head</DialogTitle>
+			{content}
+			<p className="text-xs">Only 24-25 season included.</p>
+		</>
+	);
 }

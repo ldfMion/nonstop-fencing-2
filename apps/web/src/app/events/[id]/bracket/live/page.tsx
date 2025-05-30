@@ -1,4 +1,3 @@
-import { Bracket } from "../bracket";
 import assert from "assert";
 import { updateLiveEvent } from "../../../../../services/live";
 import { JSX } from "react";
@@ -8,6 +7,7 @@ import { getEventStatus } from "../../getEventStatus";
 import { getEvent } from "~/app/events/queries";
 import { getLiveTableau } from "../queries";
 import { PageMessage } from "../page-message";
+import { IndividualBracket } from "../individual-bracket";
 
 //NEXT SETTINGS
 export const revalidate = 300;
@@ -34,7 +34,7 @@ export default async function BracketPage({
 		return <p>Should not be on this page</p>;
 	}
 	try {
-		return <Bracket bouts={await handleLiveBouts(event)} />;
+		return <IndividualBracket bouts={await handleLiveBouts(event)} />;
 	} catch (e) {
 		console.error(e);
 		return <PageMessage>Bracket not yet available.</PageMessage>;

@@ -10,7 +10,7 @@ import {
 } from "~/infra/db/schema";
 import { db } from "~/infra/db";
 import { eq, and, desc, aliasedTable, or } from "drizzle-orm";
-import { LiveBoutModel, PastBoutModel, Round } from "~/lib/models";
+import { PastBoutModel, Round } from "~/lib/models";
 
 export async function getBoutsBetweenFencers(fencerA: number, fencerB: number) {
 	const fencers2 = aliasedTable(fencers, "fencers2");
@@ -194,9 +194,7 @@ export async function getPastRelaysMainBracket(eventId: number) {
 	}));
 }
 
-export async function getLiveTableau(
-	eventId: number
-): Promise<LiveBoutModel[]> {
+export async function getLiveTableau(eventId: number) {
 	const fencers2 = aliasedTable(fencers, "fencers2");
 	const countries2 = aliasedTable(countries, "countries2");
 	return (

@@ -1,5 +1,4 @@
 import assert from "assert";
-import { Bracket } from "./bracket";
 import { getEventStatus } from "../getEventStatus";
 import { redirect } from "next/navigation";
 import { router } from "~/lib/router";
@@ -7,6 +6,8 @@ import { PageMessage } from "./page-message";
 import { Clock, Construction } from "lucide-react";
 import { getEvent, getEventsWithResults } from "~/app/events/queries";
 import { getPastBouts, getPastRelaysMainBracket } from "./queries";
+import { IndividualBracket } from "./individual-bracket";
+import { TeamBracket } from "./team-bracket";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -52,32 +53,8 @@ export default async function BracketPage({
 	}
 	if (event.type == "INDIVIDUAL") {
 		const bouts = await getPastBouts(event.id);
-		return <Bracket bouts={bouts} />;
+		return <IndividualBracket bouts={bouts} />;
 	}
 	const relays = await getPastRelaysMainBracket(event.id);
-	return (
-		<Bracket
-			startingRound={32}
-			bouts={relays.map(r => ({
-				fencerA: {
-					id: 1,
-					lastName: r.teamA.name,
-					firstName: "",
-					score: r.teamA.score,
-					flag: r.teamA.flag,
-				},
-				fencerB: {
-					id: 1,
-					lastName: r.teamB.name,
-					firstName: "",
-					score: r.teamB.score,
-					flag: r.teamB.flag,
-				},
-				round: r.round,
-				order: r.order,
-				winnerIsA: r.winnerIsA,
-				id: r.id,
-			}))}
-		/>
-	);
+	return <TeamBracket relays={relays} />;
 }

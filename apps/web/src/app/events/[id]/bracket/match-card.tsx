@@ -1,20 +1,31 @@
 import { Card, CardContent, CardFooter } from "~/components/ui/card";
 import { cn, toTitleCase } from "~/lib/utils";
 import { Flag } from "~/components/custom/flag";
-import type { BracketMatch } from "~/lib/models";
 import { ChevronRight, Info } from "lucide-react";
 
-export function BoutCard({
-	bout,
+type Entity = {
+	primaryName: string;
+	secondaryName: string;
+	score?: number;
+	flag?: string;
+};
+
+export function MatchCard({
+	match,
 	hidden,
 	info,
 }: {
-	bout: BracketMatch;
+	match:
+		| {
+				top?: Entity;
+				bottom?: Entity;
+		  }
+		| { top: Entity; bottom: Entity; id: number; winnerIsA?: boolean };
 	hidden: boolean;
 	info: boolean;
 }) {
-	const fencerA = "fencerA" in bout ? bout.fencerA : undefined;
-	const fencerB = "fencerB" in bout ? bout.fencerB : undefined;
+	const top = "top" in match ? match.top : undefined;
+	const bottom = "bottom" in match ? match.bottom : undefined;
 	return (
 		<Card
 			className={cn(
@@ -25,15 +36,19 @@ export function BoutCard({
 		>
 			<CardContent className="p-0 flex flex-col gap-1">
 				<Fencer
-					fencer={fencerA}
+					fencer={top}
 					winner={
-						bout.winnerIsA !== undefined && bout.winnerIsA == true
+						"winnerIsA" in match &&
+						match.winnerIsA !== undefined &&
+						match.winnerIsA == true
 					}
 				/>
 				<Fencer
-					fencer={fencerB}
+					fencer={bottom}
 					winner={
-						bout.winnerIsA !== undefined && bout.winnerIsA == false
+						"winnerIsA" in match &&
+						match.winnerIsA !== undefined &&
+						match.winnerIsA == false
 					}
 				/>
 			</CardContent>
@@ -50,18 +65,7 @@ export function BoutCard({
 	);
 }
 
-function Fencer({
-	fencer,
-	winner,
-}: {
-	fencer?: {
-		firstName: string;
-		lastName: string;
-		score?: number;
-		flag?: string;
-	};
-	winner?: boolean;
-}) {
+function Fencer({ fencer, winner }: { fencer?: Entity; winner?: boolean }) {
 	return fencer ? (
 		<div
 			className={cn(
@@ -78,11 +82,11 @@ function Fencer({
 					{fencer ? (
 						<>
 							<span className="">
-								{toTitleCase(fencer.lastName)}
+								{toTitleCase(fencer.primaryName)}
 							</span>
 							{", "}
 							<span className="text-xs">
-								{toTitleCase(fencer.firstName)}
+								{toTitleCase(fencer.secondaryName)}
 							</span>
 						</>
 					) : (
