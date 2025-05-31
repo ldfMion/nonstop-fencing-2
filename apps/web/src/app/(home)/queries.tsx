@@ -10,9 +10,18 @@ import {
 	and,
 	eq,
 	gt,
+	aliasedTable,
+	or,
 } from "drizzle-orm";
 import { db } from "~/infra/db";
-import { competitionsWithFlagsAndEvents, events } from "~/infra/db/schema";
+import {
+	competitionsWithFlagsAndEvents,
+	countries,
+	events,
+	fencers,
+	pastBouts,
+	pastTeamRelays,
+} from "~/infra/db/schema";
 import { toTitleCase, withoutTime } from "~/lib/utils";
 
 function getToday() {
@@ -54,27 +63,101 @@ export async function getCompetitionsWithEvents(
 				: desc(min(competitionsWithFlagsAndEvents.date))
 		)
 		.limit(limit);
-
+	// const fencers2 = aliasedTable(fencers, "fencers2");
+	const countries2 = aliasedTable(countries, "countries2");
 	const withEvents = await Promise.all(
 		rows.map(async competition => {
 			const eventRows = await db
-				.select()
+				.select({
+					id: events.id,
+					weapon: events.weapon,
+					gender: events.gender,
+					type: events.type,
+					date: events.date,
+					hasResults: events.hasResults,
+					individualWinner: {
+						id: fencers.id,
+						firstName: fencers.firstName,
+						lastName: fencers.lastName,
+						flag: countries.isoCode,
+					},
+					teamWinner: {
+						id: countries2.iocCode,
+						name: countries2.name,
+						flag: countries2.isoCode,
+					},
+					winnerIsA: pastBouts.winnerIsA,
+				})
 				.from(events)
 				.where(
 					and(
 						eq(events.competition, competition.id),
+						!next
+							? or(
+									eq(pastBouts.round, "2"),
+									and(
+										eq(pastTeamRelays.round, "2"),
+										eq(pastTeamRelays.bracket, "MAIN")
+									)
+							  )
+							: undefined,
 						weapon ? eq(events.weapon, weapon) : undefined
 					)
 				)
 				.orderBy(next ? asc(events.date) : desc(events.date))
+				.leftJoin(pastBouts, eq(events.id, pastBouts.event))
+				.leftJoin(
+					fencers,
+					or(
+						and(
+							eq(pastBouts.winnerIsA, true),
+							eq(pastBouts.fencerA, fencers.id)
+						),
+						and(
+							eq(pastBouts.winnerIsA, false),
+							eq(pastBouts.fencerB, fencers.id)
+						)
+					)
+				)
+				.leftJoin(countries, eq(fencers.country, countries.iocCode))
+				.leftJoin(pastTeamRelays, eq(events.id, pastTeamRelays.event))
+				.leftJoin(
+					countries2,
+					eq(
+						pastTeamRelays.winnerIsA
+							? pastTeamRelays.teamA
+							: pastTeamRelays.teamB,
+						countries2.iocCode
+					)
+				)
 				.limit(3);
+			console.log(eventRows);
 			return {
 				id: competition.id,
 				name: competition.name,
 				flag: competition.flag ?? undefined,
 				events: eventRows.map(e => ({
-					...e,
+					id: e.id,
+					weapon: e.weapon,
+					gender: e.gender,
+					type: e.type,
+					hasResults: e.hasResults,
 					date: withoutTime(e.date),
+					winnerIsA: e.winnerIsA,
+					winner: e.individualWinner.id
+						? {
+								id: e.individualWinner.id,
+								// firstName: e.individualWinner.firstName!,
+								name: e.individualWinner.lastName!,
+								flag: e.individualWinner.flag!,
+						  }
+						: e.teamWinner
+						? {
+								id: e.teamWinner.id,
+								name: e.teamWinner.name!,
+								flag: e.teamWinner.flag!,
+						  }
+						: undefined,
 				})),
 			};
 		})

@@ -13,6 +13,7 @@ import {
 	formatFullDate,
 	formatRelativeDate,
 	getToday,
+	toTitleCase,
 } from "~/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
@@ -24,7 +25,10 @@ import assert from "assert";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import { BracketIndicator } from "~/components/custom/indicator-badges";
+import {
+	BracketIndicator,
+	WinnerIndicator,
+} from "~/components/custom/indicator-badges";
 
 export default async function HomePage({
 	searchParams,
@@ -162,6 +166,7 @@ async function UpNext({
 	const nextCompetition = (
 		await getCompetitionsWithEvents(true, 1, weapon)
 	)[0];
+	console.log("nextCompetition", nextCompetition);
 	const daysUntilNext = nextCompetition
 		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;
@@ -209,6 +214,7 @@ async function Completed({
 		3,
 		weapon
 	);
+	console.log(previousCompetitions);
 	return previousCompetitions.map(c => (
 		<Fragment key={c.id}>
 			<CompetitionCard
@@ -218,6 +224,7 @@ async function Completed({
 					date: formatFullDate(e.date),
 					id: e.id,
 					hasResults: e.hasResults,
+					winner: e.winner,
 				}))}
 				name={c.name}
 				flag={c.flag}
@@ -236,7 +243,16 @@ function CompetitionCard({
 }: {
 	name: string;
 	flag?: string;
-	events: { name: string; date: string; id: number; hasResults: boolean }[];
+	events: {
+		name: string;
+		date: string;
+		id: number;
+		hasResults: boolean;
+		winner?: {
+			name: string;
+			flag: string;
+		};
+	}[];
 	competitionId: number;
 	innerCard?: boolean;
 }) {
@@ -272,6 +288,12 @@ function CompetitionCard({
 									</p>
 								</div>
 								<div className="flex flex-row items-center gap-1">
+									{e.winner && (
+										<WinnerIndicator
+											text={toTitleCase(e.winner.name)}
+											flagCode={e.winner.flag}
+										/>
+									)}
 									{e.hasResults && <BracketIndicator />}
 									<ChevronRight />
 								</div>

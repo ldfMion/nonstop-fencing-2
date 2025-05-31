@@ -1,28 +1,34 @@
 import { FC, JSX } from "react";
 import { Badge } from "../ui/badge";
 import { cn } from "~/lib/utils";
-import { Network } from "lucide-react";
+import { Network, Trophy } from "lucide-react";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
+import { Flag } from "./flag";
 
 const createIndicatorBadge =
 	(
 		bgColor: string,
 		textColor: string,
-		Icon: FC<{ className: string }>,
+		Icon: FC<{ className?: string }>,
+		text?: string,
 		tooltip?: string
 	): FC =>
 	(): JSX.Element => {
 		const badge = (
 			<Badge
-				className={cn("self-center rounded-sm p-1.5", bgColor)}
+				className={cn(
+					"self-center rounded-sm p-1.5",
+					bgColor,
+					textColor
+				)}
 				variant="secondary"
 			>
-				<Icon className={textColor} />
+				<Icon /> {text}
 			</Badge>
 		);
 
@@ -43,5 +49,27 @@ export const BracketIndicator = createIndicatorBadge(
 	"bg-purple-400/70",
 	"text-purple-800",
 	({ className }) => <Network className={cn("rotate-90", className)} />,
+	"",
 	"The tableau for this event is available."
 );
+
+export const WinnerIndicator = ({
+	text,
+	flagCode,
+}: {
+	text: string;
+	flagCode: string;
+}) => {
+	const element = createIndicatorBadge(
+		"bg-yellow-200",
+		"text-yellow-800",
+		() => (
+			<>
+				<Trophy />
+				<Flag className="h-4 w-5 rounded-[6px]" flagCode={flagCode} />
+			</>
+		),
+		text
+	);
+	return element({});
+};
