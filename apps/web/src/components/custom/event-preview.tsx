@@ -29,33 +29,40 @@ export function EventPreview({
 	showDate?: boolean;
 	showBracketIndicator: boolean;
 }) {
-	console.log("in event preview");
-	console.log(event);
 	return (
 		<Button
-			className="rounded-none h-fit w-full flex flex-row justify-between !p-4"
+			className="rounded-none h-fit w-full flex flex-row justify-between items-center !p-4"
 			variant="ghost"
 			asChild
 		>
 			<Link href={router.event(event.id).overview}>
-				<div className="flex flex-col gap-1">
-					<p className="text-primary text-md font-semibold">
-						{formatEventDescription(event)}
-					</p>
+				<div className="flex sm:flex-row flex-col sm:justify-between items-stretch gap-1 w-full sm:items-center">
+					<div className="flex flex-row sm:flex-col gap-1 justify-between sm:justify-start items-center sm:items-start">
+						<p className="text-primary text-base font-semibold">
+							{formatEventDescription(event)}
+						</p>
+						{showDate && (
+							<p className="font-semibold text-xs text-muted-foreground sm:flex hidden">
+								{formatRelativeDate(event.date)}
+							</p>
+						)}
+					</div>
+					<div className="flex flex-row items-center gap-1">
+						{event.winner && (
+							<WinnerIndicator
+								text={toTitleCase(event.winner.name)}
+								flagCode={event.winner.flag}
+							/>
+						)}
+						{showBracketIndicator && <BracketIndicator />}
+					</div>
+				</div>
+				<div className="flex flex-row items-center gap-2">
 					{showDate && (
-						<p className="font-semibold text-xs text-muted-foreground">
+						<p className="font-semibold text-xs text-muted-foreground sm:hidden flex">
 							{formatRelativeDate(event.date)}
 						</p>
 					)}
-				</div>
-				<div className="flex flex-row items-center gap-1">
-					{event.winner && (
-						<WinnerIndicator
-							text={toTitleCase(event.winner.name)}
-							flagCode={event.winner.flag}
-						/>
-					)}
-					{showBracketIndicator && <BracketIndicator />}
 					<ChevronRight />
 				</div>
 			</Link>
