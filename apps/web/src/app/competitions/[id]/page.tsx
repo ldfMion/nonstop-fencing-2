@@ -1,21 +1,11 @@
 import { PageHeader } from "~/components/custom/page-header";
-import {
-	formatEventDescription,
-	formatRelativeDate,
-	getDateRange,
-	isToday,
-} from "~/lib/utils";
+import { formatRelativeDate, getDateRange, isToday } from "~/lib/utils";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { ChevronRight, Network } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
-import { Button } from "~/components/ui/button";
-import Link from "next/link";
 import { Fragment } from "react";
-import { router } from "~/lib/router";
 import { getCompetition, getCompetitions } from "../queries";
-import { BracketIndicator } from "~/components/custom/indicator-badges";
-import { Badge } from "~/components/ui/badge";
+import { EventPreview } from "~/components/custom/event-preview";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -65,31 +55,16 @@ export default async function CompetitionPage({
 								<h3 className="text-sm bg-muted p-4">
 									{formatRelativeDate(new Date(date))}
 								</h3>
-								<Separator />
 								{events.map(e => (
-									<Button
-										key={e.id}
-										className=" !p-0 rounded-none h-fit w-full"
-										variant="ghost"
-										asChild
-									>
-										<Link
-											href={router.event(e.id).overview}
-										>
-											<div className="px-4 py-3 flex flex-row justify-between w-full items-center">
-												<h4 className="text-md font-semibold">
-													{formatEventDescription(e)}
-												</h4>
-												<div className="flex flex-row items-center gap-2">
-													{(e.hasResults ||
-														isToday(e.date)) && (
-														<BracketIndicator />
-													)}
-													<ChevronRight />
-												</div>
-											</div>
-										</Link>
-									</Button>
+									<Fragment key={e.id}>
+										<Separator />
+										<EventPreview
+											event={e}
+											showBracketIndicator={
+												e.hasResults || isToday(e.date)
+											}
+										/>
+									</Fragment>
 								))}
 							</Fragment>
 						))}

@@ -8,13 +8,7 @@ import {
 } from "~/components/ui/card";
 import { Flag } from "~/components/custom/flag";
 import { router } from "~/lib/router";
-import {
-	formatEventDescription,
-	formatFullDate,
-	formatRelativeDate,
-	getToday,
-	toTitleCase,
-} from "~/lib/utils";
+import { getToday } from "~/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
 import { Fragment, Suspense } from "react";
@@ -25,10 +19,7 @@ import assert from "assert";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import {
-	BracketIndicator,
-	WinnerIndicator,
-} from "~/components/custom/indicator-badges";
+import { EventPreview } from "~/components/custom/event-preview";
 
 export default async function HomePage({
 	searchParams,
@@ -75,20 +66,6 @@ export default async function HomePage({
 				<Completed weapon={parsed} />
 			</Suspense>
 		</main>
-	);
-}
-
-async function TodayOrUpNextLoading() {
-	return (
-		<Card className="p-0 gap-0">
-			<CardHeader className="p-6 gap-2 flex flex-row items-center">
-				<CardTitle className="">Today</CardTitle>
-			</CardHeader>
-			<Separator />
-			{new Array(3).fill(0).map((_, index) => (
-				<Skeleton className="h-15 my-4 mx-6" key={index} />
-			))}
-		</Card>
 	);
 }
 
@@ -166,7 +143,6 @@ async function UpNext({
 	const nextCompetition = (
 		await getCompetitionsWithEvents(true, 1, weapon)
 	)[0];
-	console.log("nextCompetition", nextCompetition);
 	const daysUntilNext = nextCompetition
 		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;
@@ -186,15 +162,7 @@ async function UpNext({
 				<div className="w-full">
 					<CompetitionCard
 						competitionId={nextCompetition.id}
-						events={nextCompetition.events.map(e => ({
-							name: formatEventDescription(e),
-							date: formatRelativeDate(e.date),
-							id: e.id,
-							live:
-								differenceInCalendarDays(e.date, getToday()) ==
-								0,
-							hasResults: false,
-						}))}
+						events={nextCompetition.events}
 						name={nextCompetition.name}
 						flag={nextCompetition.flag}
 					/>
@@ -214,18 +182,12 @@ async function Completed({
 		3,
 		weapon
 	);
-	console.log(previousCompetitions);
+	console.log("previousCompetitions", previousCompetitions);
 	return previousCompetitions.map(c => (
 		<Fragment key={c.id}>
 			<CompetitionCard
 				competitionId={c.id}
-				events={c.events.map(e => ({
-					name: formatEventDescription(e),
-					date: formatFullDate(e.date),
-					id: e.id,
-					hasResults: e.hasResults,
-					winner: e.winner,
-				}))}
+				events={c.events}
 				name={c.name}
 				flag={c.flag}
 				innerCard={true}
@@ -244,8 +206,10 @@ function CompetitionCard({
 	name: string;
 	flag?: string;
 	events: {
-		name: string;
-		date: string;
+		weapon: "FOIL" | "EPEE" | "SABER";
+		type: "INDIVIDUAL" | "TEAM";
+		gender: "MEN" | "WOMEN";
+		date: Date;
 		id: number;
 		hasResults: boolean;
 		winner?: {
@@ -277,27 +241,11 @@ function CompetitionCard({
 					{events.map(e => (
 						<Fragment key={e.id}>
 							<Separator />
-							<Link
-								href={router.event(e.id).overview}
-								className="flex items-center flex-row justify-between p-4 hover:bg-accent"
-							>
-								<div className="flex flex-col gap-1">
-									<p className="text-primary">{e.name}</p>
-									<p className="font-semibold text-xs text-muted-foreground">
-										{e.date}
-									</p>
-								</div>
-								<div className="flex flex-row items-center gap-1">
-									{e.winner && (
-										<WinnerIndicator
-											text={toTitleCase(e.winner.name)}
-											flagCode={e.winner.flag}
-										/>
-									)}
-									{e.hasResults && <BracketIndicator />}
-									<ChevronRight />
-								</div>
-							</Link>
+							<EventPreview
+								event={e}
+								showBracketIndicator={e.hasResults}
+								showDate
+							/>
 						</Fragment>
 					))}
 				</CardDescription>

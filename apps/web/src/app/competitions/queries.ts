@@ -1,55 +1,37 @@
 import {
 	competitionsWithFlagsAndEvents,
 	competitions,
+	competitionsWithFlag,
 } from "~/infra/db/schema";
 import { db } from "~/infra/db";
 import { sql, eq, and, gt, lt, max, min, desc, asc } from "drizzle-orm";
 import { Competition } from "~/lib/models";
 import { arrayAgg } from "~/infra/db/utils";
+import { eventsWithWinners } from "~/infra/db/queries";
+import { mapEventWithWinner } from "~/infra/db/mappers";
 
 export async function getCompetition(id: number) {
-	/*
-		const row = await db
-			.select({
-				id: competitions.id,
-				name: competitions.name,
-				flag: countries.isoCode,
-				date: {
-					startDate: min(events.date),
-					endDate: max(events.date),
-				},
-				events: arrayAgg(events.id),
-			})
-			.from(competitions)
-			.where(eq(competitions.id, id))
-			.leftJoin(countries, eq(competitions.host, countries.iocCode))
-			.leftJoin(events, eq(events.competition, competitions.id))
-			.groupBy(competitions.id, countries.iocCode);
-		return row;
-        */
-	const fromDb = await db.query.competitions.findFirst({
-		where: (competitions, { eq }) => eq(competitions.id, id),
-		with: {
-			events: true,
-			host: true,
-		},
-	});
-	if (fromDb == undefined) {
-		return undefined;
-	}
-	const sortedEvents = fromDb.events.sort(
-		(a, b) => a.date.getTime() - b.date.getTime()
-	);
+	const fromDb = (
+		await db
+			.select()
+			.from(competitionsWithFlag)
+			.where(eq(competitionsWithFlag.competitionId, id))
+			.limit(1)
+	)[0];
+	const events = await db
+		.select()
+		.from(eventsWithWinners)
+		.where(eq(eventsWithWinners.competition, id));
 	return {
-		id: fromDb.id,
+		id: fromDb.competitionId,
 		name: fromDb.name,
 		season: fromDb.season,
-		events: fromDb.events,
+		events: events.map(mapEventWithWinner),
 		date: {
-			start: sortedEvents[0]!.date,
-			end: sortedEvents.at(-1)!.date,
+			start: events[0]!.date,
+			end: events.at(-1)!.date,
 		},
-		flag: fromDb.host.isoCode ?? undefined,
+		flag: fromDb.flag ?? undefined,
 	};
 }
 
