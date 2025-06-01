@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 	keywords:
 		"fencing, live results, fencing competitions, brackets, fencing fans, international fencing, olympic fencing, fencing results, fencing world cup, fencing grand prix, fencing world championships",
 	openGraph: {
-		title: "Nonstop Fencing | About",
+		title: "Nonstop Fencing",
 		description:
 			"Follow fencing like never before with Nonstop Fencing. Access all international results in one place, live brackets, and personalized updates for fencing fans and athletes around the world. Upgrading the fencing fan experience.",
 		url: "https://nonstopfencing.com",
