@@ -271,3 +271,7 @@ const bracketMap: Record<string, ScrapedPastTeamRelayDto["bracket"]> = {
 	G: "7TH_PLACE",
 	H: "BRONZE",
 };
+
+/*
+ * RANKING MAPPERS
+ */

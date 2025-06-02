@@ -4,6 +4,8 @@ import { EventModel } from "~/lib/models";
 import { Browser } from "../browserless";
 import { validateTeamResults } from "./validation";
 import { mapFieTeamEventResultsToDto } from "./mappers";
+import { getIndividualRankings, getTeamRankings } from "./rankings";
+
 export type { Fie };
 
 const COMPETITIONS_ENDPOINT = "https://fie.org/competitions/search";
@@ -155,3 +157,5 @@ export async function getLinkToLiveResults(
 	assert(typeof liveResultsUrl == "string");
 	return liveResultsUrl;
 }
+
+export { getIndividualRankings, getTeamRankings };
