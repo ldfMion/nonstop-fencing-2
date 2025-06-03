@@ -20,6 +20,7 @@ interface ScrapedRankingItemDto {
 	weapon: "FOIL" | "EPEE" | "SABER";
 	gender: "MEN" | "WOMEN";
 	season: number;
+	points: string;
 }
 
 interface ScrapedIndividualRankingItemDto extends ScrapedRankingItemDto {

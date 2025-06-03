@@ -183,6 +183,7 @@ export const individualSeasonRankings = t.pgTable(
 			.integer("fencer")
 			.references(() => fencers.id)
 			.notNull(),
+		points: t.numeric("points", { precision: 6, scale: 3 }).notNull(),
 	},
 	table => [
 		t.primaryKey({
@@ -205,6 +206,7 @@ export const teamSeasonRankings = t.pgTable(
 		position: t.integer("position").notNull(),
 		weapon: weaponsEnum("weapon").notNull(),
 		gender: gendersEnum("gender").notNull(),
+		points: t.numeric("points", { precision: 6, scale: 3 }).notNull(),
 	},
 	table => [
 		t.primaryKey({

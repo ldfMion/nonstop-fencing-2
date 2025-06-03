@@ -120,7 +120,7 @@ const responseSchema = z.object({
 			country: z.string(),
 			// weapon: z.enum(['E', 'F', 'S']),
 			// gender: z.enum(['M', 'F']),
-			points: z.coerce.number(),
+			points: z.string(),
 			hand: z.nullable(z.string()),
 			height: z.nullable(z.string()),
 			rank: z.coerce.number(),

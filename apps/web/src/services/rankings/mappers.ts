@@ -42,6 +42,7 @@ export function mapScrapedIndividualRankingsToDbDto(
 		weapon: ranking.weapon,
 		gender: ranking.gender,
 		season: ranking.season,
+		points: ranking.points,
 	}));
 }
 

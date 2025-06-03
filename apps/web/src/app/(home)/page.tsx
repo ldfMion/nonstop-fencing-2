@@ -182,7 +182,6 @@ async function Completed({
 		3,
 		weapon
 	);
-	console.log("previousCompetitions", previousCompetitions);
 	return previousCompetitions.map(c => (
 		<Fragment key={c.id}>
 			<CompetitionCard

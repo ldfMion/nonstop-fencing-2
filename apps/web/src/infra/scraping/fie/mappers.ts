@@ -300,6 +300,7 @@ export function mapIndividualFieRankingsToDto(
 			weapon: weapon,
 			gender: gender,
 			season: season,
+			points: athlete.points,
 		};
 	});
 }
@@ -317,6 +318,7 @@ export function mapTeamFieRankingsToDto(
 			weapon: weapon,
 			gender: gender,
 			season: season,
+			points: team.points,
 		};
 	});
 }
