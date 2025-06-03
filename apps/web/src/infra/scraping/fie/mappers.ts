@@ -10,8 +10,13 @@ import {
 } from "~/lib/models";
 import assert from "assert";
 import { FieTeamResults } from "./validation";
-import { ScrapedPastTeamRelayDto } from "../dtos";
+import {
+	ScrapedIndividualRankingDto,
+	ScrapedPastTeamRelayDto,
+	ScrapedTeamRankingDto,
+} from "../dtos";
 import { z } from "zod";
+import { FieRankings } from "./rankings";
 
 export function mapFieEventsToDBCompetitions(events: Fie.Event[]) {
 	const withName = events.map(event => ({
@@ -275,3 +280,43 @@ const bracketMap: Record<string, ScrapedPastTeamRelayDto["bracket"]> = {
 /*
  * RANKING MAPPERS
  */
+
+export function mapIndividualFieRankingsToDto(
+	rankings: FieRankings,
+	weapon: "FOIL" | "EPEE" | "SABER",
+	gender: "MEN" | "WOMEN",
+	season: number
+): ScrapedIndividualRankingDto {
+	return rankings.map(athlete => {
+		const [firstName, lastName] = parseFieName(athlete.name);
+		const country = parseFieCountry(athlete.flag);
+		return {
+			fencer: {
+				firstName: firstName,
+				lastName: lastName,
+				country: country,
+			},
+			position: athlete.rank,
+			weapon: weapon,
+			gender: gender,
+			season: season,
+		};
+	});
+}
+
+export function mapTeamFieRankingsToDto(
+	rankings: FieRankings,
+	weapon: "FOIL" | "EPEE" | "SABER",
+	gender: "MEN" | "WOMEN",
+	season: number
+): ScrapedTeamRankingDto {
+	return rankings.map(team => {
+		return {
+			team: parseFieCountry(team.flag),
+			position: team.rank,
+			weapon: weapon,
+			gender: gender,
+			season: season,
+		};
+	});
+}

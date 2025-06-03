@@ -1,21 +1,45 @@
 import axios from "axios";
 import { z } from "zod";
+import {
+	mapIndividualFieRankingsToDto,
+	mapTeamFieRankingsToDto,
+} from "./mappers";
 
 const RANKINGS_ENDPOINT = "https://fie.org/athletes";
 
 export async function getIndividualRankings(options: Omit<Options, "type">) {
-	const body = getRankingsRequestBody({ ...options, type: "INDIVIDUAL" });
-	const data = await fetchRankings(body);
-	console.log(data);
+	const data = await fetchRankings({ ...options, type: "INDIVIDUAL" });
+	return mapIndividualFieRankingsToDto(
+		data,
+		options.weapon,
+		options.gender,
+		options.season
+	);
 }
 
 export async function getTeamRankings(options: Omit<Options, "type">) {
-	const body = getRankingsRequestBody({ ...options, type: "TEAM" });
-	const data = await fetchRankings(body);
-	console.log(data);
+	const data = await fetchRankings({ ...options, type: "TEAM" });
+	return mapTeamFieRankingsToDto(
+		data,
+		options.weapon,
+		options.gender,
+		options.season
+	);
 }
 
-async function fetchRankings(body: unknown) {
+async function fetchRankings(options: Options) {
+	const num_pages = options.type == "INDIVIDUAL" ? 4 : 3;
+	return (
+		await Promise.all(
+			new Array(num_pages).fill(1).map((_, i) => {
+				const body = getRankingsRequestBody(options, i + 1);
+				return makeRankingsRequest(body);
+			})
+		)
+	).flat();
+}
+
+async function makeRankingsRequest(body: unknown) {
 	try {
 		const res = await axios.post(RANKINGS_ENDPOINT, body);
 		return responseSchema.parse(res.data).allAthletes;
@@ -31,7 +55,10 @@ type Options = {
 	type: "INDIVIDUAL" | "TEAM";
 };
 
-function getRankingsRequestBody({ season, gender, weapon, type }: Options) {
+function getRankingsRequestBody(
+	{ season, gender, weapon, type }: Options,
+	page: number
+) {
 	return {
 		weapon: parseWeapon(weapon),
 		level: "s",
@@ -39,7 +66,7 @@ function getRankingsRequestBody({ season, gender, weapon, type }: Options) {
 		gender: parseGender(gender),
 		isSearch: false,
 		season: parseSeason(season),
-		fetchPage: 1,
+		fetchPage: page,
 	};
 }
 
@@ -103,3 +130,5 @@ const responseSchema = z.object({
 		})
 	),
 });
+
+export type FieRankings = z.infer<typeof responseSchema>["allAthletes"];

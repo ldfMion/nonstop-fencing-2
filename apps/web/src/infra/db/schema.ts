@@ -167,6 +167,52 @@ export const pastTeamRelays = t.pgTable(
 	]
 );
 
+// btw, two fencers/teams can be tied at the same position
+
+export const individualSeasonRankings = t.pgTable(
+	"individual_season_rankings_0",
+	{
+		season: t
+			.integer("season")
+			.references(() => seasons.id)
+			.notNull(),
+		position: t.integer("position").notNull(),
+		weapon: weaponsEnum("weapon").notNull(),
+		gender: gendersEnum("gender").notNull(),
+		fencer: t
+			.integer("fencer")
+			.references(() => fencers.id)
+			.notNull(),
+	},
+	table => [
+		t.primaryKey({
+			columns: [table.fencer, table.gender, table.season, table.weapon],
+		}),
+	]
+);
+
+export const teamSeasonRankings = t.pgTable(
+	"team_season_rankings_0",
+	{
+		season: t
+			.integer("season")
+			.references(() => seasons.id)
+			.notNull(),
+		team: t
+			.char("team", { length: 3 })
+			.references(() => countries.iocCode)
+			.notNull(),
+		position: t.integer("position").notNull(),
+		weapon: weaponsEnum("weapon").notNull(),
+		gender: gendersEnum("gender").notNull(),
+	},
+	table => [
+		t.primaryKey({
+			columns: [table.team, table.gender, table.season, table.weapon],
+		}),
+	]
+);
+
 /**
  * RELATIONS
  */

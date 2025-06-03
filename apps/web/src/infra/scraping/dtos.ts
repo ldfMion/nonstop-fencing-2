@@ -15,11 +15,25 @@ type Round = (typeof pastTeamRelays.$inferSelect)["round"];
 
 export type ScrapedPastTeamEventDto = ScrapedPastTeamRelayDto[];
 
-export interface ScrapedIndividualRankingDto {
+interface ScrapedRankingItemDto {
+	position: number;
+	weapon: "FOIL" | "EPEE" | "SABER";
+	gender: "MEN" | "WOMEN";
+	season: number;
+}
+
+interface ScrapedIndividualRankingItemDto extends ScrapedRankingItemDto {
 	fencer: {
 		firstName: string;
 		lastName: string;
 		country: string;
 	};
-	position: string;
 }
+
+export type ScrapedIndividualRankingDto = ScrapedIndividualRankingItemDto[];
+
+interface ScrapedTeamRankingItemDto extends ScrapedRankingItemDto {
+	team: string;
+}
+
+export type ScrapedTeamRankingDto = ScrapedTeamRankingItemDto[];
