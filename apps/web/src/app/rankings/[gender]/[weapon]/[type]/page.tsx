@@ -1,12 +1,26 @@
+import { Metadata } from "next";
 import {
 	getIndividualRankingsForWeaponAndGender,
 	getTeamRankings,
 } from "~/app/rankings/queries";
 import { RankingTable } from "~/app/rankings/ranking-table";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { toTitleCase } from "~/lib/utils";
 
 const NUM_FENCERS_IN_PAGE = 70;
 const NUM_TEAMS_IN_PAGE = 40;
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ weapon: string; gender: string; type: string }>;
+}): Promise<Metadata> {
+	const { weapon, gender, type } = parseParams(await params);
+	return {
+		title: toTitleCase(`${weapon} ${gender}'s ${type}`) + " Rankings",
+		description: `FIE World Rankings for ${weapon} ${gender} ${type}`,
+	};
+}
 
 export const revalidate = 86400;
 

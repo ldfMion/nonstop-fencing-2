@@ -3,8 +3,14 @@ import { getRankingsOverview } from "./queries";
 import { RankingData, RankingTable } from "./ranking-table";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { Metadata } from "next";
 
 export const revalidate = 86400;
+
+export const metadata: Metadata = {
+	title: "Rankings | Nonstop Fencing",
+	description: "FIE World Rankings",
+};
 
 export default async function () {
 	const {
