@@ -8,6 +8,7 @@ import {
 import { MobileNavbar } from "./mobile";
 import { router } from "~/lib/router";
 import { ReactNode } from "react";
+import Image from "next/image";
 
 export default function Navbar() {
 	return (
@@ -21,8 +22,18 @@ export default function Navbar() {
 function DesktopNavbar() {
 	return (
 		<div className="hidden flex-row justify-between py-6 md:flex">
-			<Link href="/">
-				<h1 className="text-2xl font-extrabold hover:opacity-70">
+			<Link
+				href="/"
+				className="flex flex-row items-center hover:opacity-70"
+			>
+				<Image
+					src="/logo.png"
+					width={50}
+					height={50}
+					alt="logo"
+					className="rounded-full aspect-square"
+				/>
+				<h1 className="text-2xl font-extrabold ">
 					<span className="text-primary">nonstop</span>
 					fencing
 				</h1>

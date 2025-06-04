@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 export default function RankingLoading() {
 	return (
-		<main className="p-4 max-w-6xl mx-auto flex flex-col gap-3">
+		<main className="p-4 max-w-5xl mx-auto flex flex-col gap-3">
 			<div className="">
 				<h1 className="text-3xl font-bold mb-2">World Rankings</h1>
 			</div>

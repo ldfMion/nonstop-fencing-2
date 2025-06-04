@@ -16,12 +16,20 @@ import {
 } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
 import { router } from "~/lib/router";
+import Image from "next/image";
 
 export function MobileNavbar() {
 	const [open, setOpen] = useState(false);
 	return (
 		<div className="flex flex-row items-center justify-between py-4 md:hidden">
-			<Link href="/">
+			<Link href="/" className="flex flex-row items-center">
+				<Image
+					src="/logo.png"
+					width={30}
+					height={30}
+					alt="logo"
+					className="rounded-full aspect-square"
+				/>
 				<h1 className="text-xl font-extrabold">
 					<span className="text-primary">nonstop</span>fencing
 				</h1>
