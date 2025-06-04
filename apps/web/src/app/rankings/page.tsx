@@ -72,18 +72,18 @@ export default async function () {
 			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
 				<RankingCard
 					data={mensFoilTeam}
-					title="Men's Foil Team"
+					title="Foil"
 					link="/mens/foil/team"
 				/>
 
 				<RankingCard
 					data={mensEpeeTeam}
-					title="Men's Epee Team"
+					title="Epee"
 					link="/mens/epee/team"
 				/>
 				<RankingCard
 					data={mensSaberTeam}
-					title="Men's Saber Team"
+					title="Saber"
 					link="/mens/saber/team"
 				/>
 			</div>
@@ -91,18 +91,18 @@ export default async function () {
 			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
 				<RankingCard
 					data={womensFoilTeam}
-					title="Women's Foil Team"
+					title="Foil"
 					link="/womens/foil/team"
 				/>
 				<RankingCard
 					data={womensEpeeTeam}
-					title="Women's Epee Team"
+					title="Epee"
 					link="/womens/epee/team"
 				/>
 
 				<RankingCard
 					data={womensSaberTeam}
-					title="Women's Saber Team"
+					title="Saber"
 					link="/womens/saber/team"
 				/>
 			</div>

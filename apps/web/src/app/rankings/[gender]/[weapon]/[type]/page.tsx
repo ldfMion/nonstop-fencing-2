@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
 	const { weapon, gender, type } = parseParams(await params);
 	return {
-		title: toTitleCase(`${weapon} ${gender}'s ${type}`) + " Rankings",
+		title: toTitleCase(`${gender}'s ${weapon} ${type}`) + " Rankings",
 		description: `FIE World Rankings for ${weapon} ${gender} ${type}`,
 	};
 }

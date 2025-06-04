@@ -52,7 +52,7 @@ export function RankingTable({
 		<Table className="table-fixed w-full">
 			{showHeader && (
 				<TableHeader className="bg-muted">
-					<TableRow className="px-3">
+					<TableRow className="">
 						<TableHead className="w-16 text-center font-semibold">
 							Rank
 						</TableHead>
@@ -71,7 +71,7 @@ export function RankingTable({
 						key={ranking.fencer?.id || ranking.team?.id}
 						className=""
 					>
-						<TableCell className="text-center">
+						<TableCell className="text-center w-16">
 							<div className="flex items-center justify-center gap-2">
 								<PositionBadge position={ranking.position} />
 							</div>
