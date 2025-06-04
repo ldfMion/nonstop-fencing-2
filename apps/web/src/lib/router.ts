@@ -18,6 +18,12 @@ export const router = {
 	}),
 	about: "/about",
 	home: `/`,
+	rankings: "/rankings",
+	ranking: (
+		gender: "mens" | "womens",
+		weapon: "foil" | "epee" | "saber",
+		type: "individual" | "team"
+	) => `/rankings/${gender}/${weapon}/${type}`,
 };
 
 export function parseCompetitionSearchParams(

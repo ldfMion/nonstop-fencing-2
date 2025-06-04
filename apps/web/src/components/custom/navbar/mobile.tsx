@@ -50,6 +50,11 @@ export function MobileNavbar() {
 									// icon={<Trophy />}
 								/>
 								<MobileBaseLink
+									href={router.rankings}
+									title="Rankings"
+									onOpenChange={setOpen}
+								/>
+								<MobileBaseLink
 									href={router.home}
 									title="Home"
 									onOpenChange={setOpen}

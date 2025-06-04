@@ -32,6 +32,9 @@ function DesktopNavbar() {
 					<DesktopBaseLink href={router.competitions()}>
 						Competitions
 					</DesktopBaseLink>
+					<DesktopBaseLink href={router.rankings}>
+						Rankings
+					</DesktopBaseLink>
 					<DesktopBaseLink href={router.about}>About</DesktopBaseLink>
 				</NavigationMenuList>
 			</NavigationMenu>
