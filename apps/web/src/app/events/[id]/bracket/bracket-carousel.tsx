@@ -30,7 +30,6 @@ export function BracketCarousel<T>({
 	useEffect(() => {
 		api?.on("slidesInView", () => setSlidesInView(api.slidesInView()));
 	}, [api]);
-	console.log("slicdesInView: ", slidesInView);
 	return (
 		<Carousel
 			opts={{

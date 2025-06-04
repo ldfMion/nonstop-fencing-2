@@ -4,7 +4,6 @@ import { EventModel } from "~/lib/models";
 export function getEventStatus(event: EventModel) {
 	const today = new Date();
 	const diff = differenceInCalendarDays(today, event.date);
-	console.log(diff);
 	if (diff > 1) {
 		return "PAST";
 	}

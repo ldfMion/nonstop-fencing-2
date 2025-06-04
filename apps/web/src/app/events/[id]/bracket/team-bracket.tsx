@@ -38,13 +38,11 @@ export function TeamBracket({
 	gender: "MEN" | "WOMEN";
 	weapon: "FOIL" | "EPEE" | "SABER";
 }) {
-	console.log("rendering team bracket");
 	const bracketData = createBracketRounds(STARTING_ROUND, relays);
 	return (
 		<BracketCarousel
 			bracketData={bracketData}
 			renderBout={(bout, hidden) => {
-				console.log("rendering match");
 				return (
 					<BracketMatch
 						match={{
@@ -83,8 +81,6 @@ function getMatchDetails({
 	weapon: "FOIL" | "EPEE" | "SABER";
 	gender: "MEN" | "WOMEN";
 }) {
-	console.log("rendering match details");
-	console.log("relay: ", bout);
 	if (
 		"id" in bout &&
 		bout.id !== undefined &&

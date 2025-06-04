@@ -9,7 +9,6 @@ export function TabsNavigation({
 	subpages: { url: string; title: string }[];
 }) {
 	const path = usePathname();
-	console.log("path", path);
 	const active = subpages.filter(page => path.includes(page.url))[0]!.url;
 	return (
 		<Tabs value={active} className="">

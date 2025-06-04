@@ -37,7 +37,6 @@ export type BracketBout = {
 const STARTING_ROUND = 64;
 
 export function IndividualBracket({ bouts }: { bouts: BracketBout[] }) {
-	console.log("rendering individual bracket");
 	const bracketData = createBracketRounds(STARTING_ROUND, bouts);
 	return (
 		<BracketCarousel
