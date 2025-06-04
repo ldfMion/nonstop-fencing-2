@@ -49,7 +49,7 @@ export function RankingTable({
 	showPoints: boolean;
 }) {
 	return (
-		<Table>
+		<Table className="table-fixed w-full">
 			{showHeader && (
 				<TableHeader className="bg-muted">
 					<TableRow className="px-3">
@@ -77,25 +77,25 @@ export function RankingTable({
 							</div>
 						</TableCell>
 						<TableCell>
-							<div className="flex items-center gap-3">
+							<div className="flex items-center gap-3 w-full">
 								{ranking.flag && (
 									<Flag
 										flagCode={ranking.flag}
-										className="w-8 h-6 rounded-[4px] flex-shrink-0"
+										className="w-6 h-4 rounded-[6px] flex-shrink-0"
 									/>
 								)}
-								<div className="flex flex-row items-center capitalize">
+								<p className="capitalize !truncate w-full">
 									<span className="font-bold text-foreground">
 										{ranking.fencer &&
 											ranking.fencer.lastName + ","}
 										{ranking.team && ranking.team.name}
-									</span>
+									</span>{" "}
 									{ranking.fencer && (
-										<span className=" text-foreground">
+										<span className="text-foreground">
 											{ranking.fencer.firstName}
 										</span>
 									)}
-								</div>
+								</p>
 							</div>
 						</TableCell>
 						{showPoints && (
