@@ -84,15 +84,15 @@ export function RankingTable({
 										className="w-8 h-6 rounded-[4px] flex-shrink-0"
 									/>
 								)}
-								<div className="flex flex-col sm:flex-row sm:items-center sm:gap-1 capitalize">
+								<div className="flex flex-row items-center capitalize">
 									<span className="font-bold text-foreground">
 										{ranking.fencer &&
-											ranking.fencer.firstName + ","}
+											ranking.fencer.lastName + ","}
 										{ranking.team && ranking.team.name}
 									</span>
 									{ranking.fencer && (
 										<span className=" text-foreground">
-											{ranking.fencer.lastName}
+											{ranking.fencer.firstName}
 										</span>
 									)}
 								</div>
