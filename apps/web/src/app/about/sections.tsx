@@ -3,7 +3,16 @@
 import { motion } from "motion/react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { ChevronRight, Trophy, Users, Zap, Eye, Calendar } from "lucide-react";
+import {
+	ChevronRight,
+	Trophy,
+	Users,
+	Zap,
+	Eye,
+	Calendar,
+	ListOrdered,
+	Radio,
+} from "lucide-react";
 import Link from "next/link";
 import { router } from "~/lib/router";
 
@@ -156,11 +165,11 @@ export function LandingPageSections() {
 									<CardContent className="p-0">
 										<div className="flex items-start space-x-3">
 											<div className="bg-primary/10 p-2 rounded-lg">
-												<Trophy className="w-5 h-5 text-primary" />
+												<Radio className="w-5 h-5 text-primary" />
 											</div>
 											<p className="text-sm  ">
 												Live results from the second day
-												of individual events from
+												of senior individual events from
 												Fencing Time Live.
 											</p>
 										</div>
@@ -176,9 +185,8 @@ export function LandingPageSections() {
 												<Users className="w-5 h-5 text-primary" />
 											</div>
 											<p className="text-sm  ">
-												Head-to-head between two fencers
-												from a bout that is about to
-												happen.
+												Head-to-head between the fencers
+												or teams in a match.
 											</p>
 										</div>
 									</CardContent>
@@ -195,8 +203,24 @@ export function LandingPageSections() {
 											<p className="text-sm  ">
 												Browse competitions and see
 												results for all past individual
-												events in the international
-												circuit from the 24-25 season.
+												and team events in the
+												international circuit from the
+												24-25 season.
+											</p>
+										</div>
+									</CardContent>
+								</Card>
+							</motion.div>
+							<motion.div variants={scaleIn}>
+								<Card className="h-full hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-primary">
+									<CardContent className="p-0">
+										<div className="flex items-start space-x-3">
+											<div className="bg-primary/10 p-2 rounded-lg">
+												<ListOrdered className="w-5 h-5 text-primary" />
+											</div>
+											<p className="text-sm  ">
+												Individual and team senior
+												rankings from the 24-25 season.
 											</p>
 										</div>
 									</CardContent>
@@ -242,7 +266,8 @@ export function LandingPageSections() {
 									icon: Zap,
 								},
 								{
-									description: "Past and live team results.",
+									description:
+										"Live results for team events.",
 									icon: Users,
 								},
 								{
@@ -252,6 +277,10 @@ export function LandingPageSections() {
 								{
 									description:
 										"Follow a particular weapon, fencer, or team.",
+									icon: Trophy,
+								},
+								{
+									description: "Rankings from past seasons.",
 									icon: Trophy,
 								},
 							].map((feature, index) => (

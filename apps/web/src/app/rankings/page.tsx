@@ -30,7 +30,9 @@ export default async function () {
 	return (
 		<main className="p-4 max-w-5xl mx-auto flex flex-col gap-3">
 			<div className="">
-				<h1 className="text-3xl font-bold mb-2">FIE World Rankings</h1>
+				<h1 className="text-3xl font-bold mb-2">
+					FIE Senior World Rankings
+				</h1>
 			</div>
 			<h2 className="text-2xl font-bold">Men's Individual</h2>
 			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
