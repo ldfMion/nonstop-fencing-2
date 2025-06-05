@@ -360,13 +360,13 @@ function RankingRow({
 	link: string;
 }) {
 	return (
-		<div className="flex flex-row justify-between p-2">
+		<div className="flex flex-row justify-between px-4 py-3">
 			<div className="flex flex-row gap-2 items-center">
 				<Flag
 					flagCode={flag}
 					className="w-6 h-4 rounded-[6px] flex-shrink-0"
 				/>
-				<p className="font-bold truncate">{name}</p>
+				<p className="font-bold truncate text-base">{name}</p>
 			</div>
 			<Badge variant="secondary" className="font-semibold" asChild>
 				<Link href={link}>{eventDescription}</Link>
