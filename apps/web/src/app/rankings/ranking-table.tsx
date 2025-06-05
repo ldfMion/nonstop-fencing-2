@@ -68,7 +68,7 @@ export function RankingTable({
 			<TableBody>
 				{data.map(ranking => (
 					<TableRow
-						key={ranking.fencer?.id || ranking.team?.id}
+						key={`${ranking.fencer?.id} ${ranking.team?.id} `}
 						className=""
 					>
 						<TableCell className="text-center w-16">

@@ -21,7 +21,7 @@ export default function Navbar() {
 
 function DesktopNavbar() {
 	return (
-		<div className="hidden flex-row justify-between py-6 md:flex">
+		<div className="hidden flex-row justify-between py-2 md:flex">
 			<Link
 				href="/"
 				className="flex flex-row items-center hover:opacity-70"

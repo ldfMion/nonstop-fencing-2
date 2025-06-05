@@ -1,17 +1,20 @@
 import Link from "next/link";
 import {
 	Card,
-	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
 import { Flag } from "~/components/custom/flag";
 import { router } from "~/lib/router";
-import { getToday } from "~/lib/utils";
-import { ChevronRight } from "lucide-react";
-import { getCompetitionsWithEvents, getTodaysEvents } from "./queries";
-import { Fragment, Suspense } from "react";
+import { formatEventDescription, getToday, toTitleCase } from "~/lib/utils";
+import { ChevronRight, Medal } from "lucide-react";
+import {
+	getCompetitionsWithEvents,
+	getTodaysEvents,
+	getTopRankings,
+} from "./queries";
+import { Fragment, ReactNode, Suspense } from "react";
 import { Button } from "~/components/ui/button";
 import { differenceInCalendarDays } from "date-fns";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
@@ -20,6 +23,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { EventPreview } from "~/components/custom/event-preview";
+import { CustomCard } from "~/components/custom/custom-card";
 
 export default async function HomePage({
 	searchParams,
@@ -30,7 +34,7 @@ export default async function HomePage({
 	assert(typeof weapon === "string" || weapon === undefined);
 	const parsed = parseWeaponParam(weapon);
 	return (
-		<main className="p-4 max-w-3xl mx-auto flex flex-col gap-4">
+		<main className="p-4  flex flex-col gap-4 max-w-6xl mx-auto">
 			<Card className="p-2 items-center self-center">
 				<ToggleGroup
 					type="single"
@@ -51,20 +55,34 @@ export default async function HomePage({
 					</Link>
 				</ToggleGroup>
 			</Card>
-			<TodayOrUpNext weapon={parsed} />
-
-			<div className="flex flex-row justify-between items-center gap-0">
-				<h2 className="text-xl font-bold">Completed</h2>
-				<Button asChild variant="default">
-					<Link href={router.competitions()}>
-						All Competitions
-						<ChevronRight size={18} />
-					</Link>
-				</Button>
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+				<div className="md:grid-cols-2 lg:col-span-4 flex flex-col gap-4">
+					<TodayOrUpNext weapon={parsed} />
+					<div className="flex flex-row justify-between items-center gap-0">
+						<h2 className="text-xl font-bold">Last Competition</h2>
+						<Button asChild variant="default">
+							<Link href={router.competitions()}>
+								View All
+								<ChevronRight size={18} />
+							</Link>
+						</Button>
+					</div>
+					<Suspense
+						fallback={<Skeleton className="h-30" />}
+						key={weapon}
+					>
+						<Completed weapon={parsed} />
+					</Suspense>
+				</div>
+				<div className="md:grid-cols-1 lg:col-span-2">
+					<Suspense
+						fallback={<Skeleton className="h-100" />}
+						key={weapon}
+					>
+						<RankingPreview weapon={parsed} />
+					</Suspense>
+				</div>
 			</div>
-			<Suspense fallback={<Skeleton className="h-100" />} key={weapon}>
-				<Completed weapon={parsed} />
-			</Suspense>
 		</main>
 	);
 }
@@ -80,7 +98,7 @@ async function TodayOrUpNext({
 	);
 	if (filtered.length == 0) {
 		return (
-			<Suspense fallback={<Skeleton className="h-50" />} key={weapon}>
+			<Suspense fallback={<Skeleton className="h-70" />} key={weapon}>
 				<UpNext weapon={weapon} />
 			</Suspense>
 		);
@@ -141,32 +159,42 @@ async function UpNext({
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
 	const nextCompetition = (
-		await getCompetitionsWithEvents(true, 1, weapon)
+		await getCompetitionsWithEvents({
+			next: true,
+			numCompetitions: 1,
+			weapon,
+			numEventsPerCompetition: 3,
+		})
 	)[0];
 	const daysUntilNext = nextCompetition
 		? differenceInCalendarDays(nextCompetition.events[0].date, getToday())
 		: null;
 
 	return nextCompetition ? (
-		<div className="">
-			<p className="text-2xl font-bold">Up Next</p>
-			<div className="items-center flex flex-col md:flex-row gap-6">
-				{daysUntilNext != null && daysUntilNext > 0 && (
-					<p className=" text-xl font-semibold text-nowrap px-8">
-						<>
-							In <span className="text-8xl">{daysUntilNext}</span>{" "}
-							{daysUntilNext == 1 ? "day" : "days"}
-						</>
-					</p>
-				)}
-				<div className="w-full">
-					<CompetitionCard
-						competitionId={nextCompetition.id}
-						events={nextCompetition.events}
-						name={nextCompetition.name}
-						flag={nextCompetition.flag}
-					/>
+		<div className="items-center flex flex-col lg:flex-row gap-6">
+			<div className="flex flex-col items-start h-full">
+				<p className="text-2xl font-bold">Up Next</p>
+				<div className="h-full flex flex-col justify-center">
+					{daysUntilNext != null && daysUntilNext > 0 && (
+						<p className=" text-xl font-semibold text-nowrap px-8">
+							<>
+								In{" "}
+								<span className="text-8xl">
+									{daysUntilNext}
+								</span>{" "}
+								{daysUntilNext == 1 ? "day" : "days"}
+							</>
+						</p>
+					)}
 				</div>
+			</div>
+			<div className="w-full">
+				<CompetitionCard
+					competitionId={nextCompetition.id}
+					events={nextCompetition.events}
+					name={nextCompetition.name}
+					flag={nextCompetition.flag}
+				/>
 			</div>
 		</div>
 	) : null;
@@ -177,11 +205,11 @@ async function Completed({
 }: {
 	weapon: "FOIL" | "EPEE" | "SABER" | undefined;
 }) {
-	const previousCompetitions = await getCompetitionsWithEvents(
-		false,
-		3,
-		weapon
-	);
+	const previousCompetitions = await getCompetitionsWithEvents({
+		next: false,
+		numCompetitions: 1,
+		weapon,
+	});
 	return previousCompetitions.map(c => (
 		<Fragment key={c.id}>
 			<CompetitionCard
@@ -189,7 +217,6 @@ async function Completed({
 				events={c.events}
 				name={c.name}
 				flag={c.flag}
-				innerCard={true}
 			/>
 		</Fragment>
 	));
@@ -200,7 +227,6 @@ function CompetitionCard({
 	flag,
 	events,
 	competitionId,
-	innerCard = false,
 }: {
 	name: string;
 	flag?: string;
@@ -217,29 +243,26 @@ function CompetitionCard({
 		};
 	}[];
 	competitionId: number;
-	innerCard?: boolean;
 }) {
 	return (
-		<Card className={"rounded-xl p-0 gap-0 overflow-clip"}>
-			<Link href={router.competition(competitionId)} className="w-full">
-				<CardHeader className="flex flex-row justify-between w-full p-4 bg-muted hover:bg-accent">
-					<div className="flex flex-row items-center gap-2">
-						<Flag
-							flagCode={flag}
-							className="w-9 h-6 rounded-[8px] gap-2"
-						/>
-						<CardTitle className="text-md sm:text-lg font-semibold break-words text-wrap w-full leading-none">
-							{name}
-						</CardTitle>
-					</div>
-					<ChevronRight />
-				</CardHeader>
-			</Link>
-			<CardContent>
-				<CardDescription className="font-semibold text-sm flex flex-col">
-					{events.map(e => (
+		<CustomCard
+			link={router.competition(competitionId)}
+			headerContent={
+				<div className="flex flex-row items-center gap-2">
+					<Flag
+						flagCode={flag}
+						className="w-9 h-6 rounded-[8px] gap-2"
+					/>
+					<CardTitle className="text-md sm:text-lg font-semibold break-words text-wrap w-full leading-none">
+						{name}
+					</CardTitle>
+				</div>
+			}
+			content={
+				<div className="font-semibold text-sm flex flex-col">
+					{events.map((e, index) => (
 						<Fragment key={e.id}>
-							<Separator />
+							{index > 0 && <Separator />}
 							<EventPreview
 								event={e}
 								showBracketIndicator={e.hasResults}
@@ -247,9 +270,108 @@ function CompetitionCard({
 							/>
 						</Fragment>
 					))}
-				</CardDescription>
-			</CardContent>
-		</Card>
+				</div>
+			}
+		/>
+	);
+}
+
+async function RankingPreview({
+	weapon,
+}: {
+	weapon?: "FOIL" | "EPEE" | "SABER";
+}) {
+	const { individual, teams } = await getTopRankings(weapon);
+	return (
+		<CustomCard
+			link={router.rankings}
+			headerContent={
+				<div className="flex flex-row gap-2 items-center">
+					<Medal />
+					<CardTitle className="text-lg font-bold">
+						Top Rankings
+					</CardTitle>
+				</div>
+			}
+			content={
+				<div className="flex flex-col">
+					{individual.map(f => (
+						<Fragment key={f.fencer.id + "-individual"}>
+							<Separator />
+							<RankingRow
+								flag={f.flag}
+								name={
+									<>
+										{toTitleCase(f.fencer.lastName)}
+										<span className="text-sm font-normal">
+											, {toTitleCase(f.fencer.firstName)}
+										</span>
+									</>
+								}
+								eventDescription={formatEventDescription({
+									weapon: f.weapon,
+									type: "INDIVIDUAL",
+									gender: f.gender,
+								})}
+								link={router.ranking(
+									f.gender == "MEN" ? "mens" : "womens",
+									f.weapon.toLowerCase() as any,
+									"individual"
+								)}
+							/>
+						</Fragment>
+					))}
+					{teams.map(t => (
+						<Fragment
+							key={t.team.id + "-team" + t.weapon + t.gender}
+						>
+							<Separator />
+							<RankingRow
+								flag={t.flag}
+								name={toTitleCase(t.team.name)}
+								eventDescription={formatEventDescription({
+									weapon: t.weapon,
+									type: "TEAM",
+									gender: t.gender,
+								})}
+								link={router.ranking(
+									t.gender == "MEN" ? "mens" : "womens",
+									t.weapon.toLowerCase() as any,
+									"team"
+								)}
+							/>
+						</Fragment>
+					))}
+				</div>
+			}
+		/>
+	);
+}
+
+function RankingRow({
+	name,
+	flag,
+	eventDescription,
+	link,
+}: {
+	name: ReactNode;
+	flag?: string;
+	eventDescription: string;
+	link: string;
+}) {
+	return (
+		<div className="flex flex-row justify-between p-2">
+			<div className="flex flex-row gap-2 items-center">
+				<Flag
+					flagCode={flag}
+					className="w-6 h-4 rounded-[6px] flex-shrink-0"
+				/>
+				<p className="font-bold truncate">{name}</p>
+			</div>
+			<Badge variant="secondary" className="font-semibold" asChild>
+				<Link href={link}>{eventDescription}</Link>
+			</Badge>
+		</div>
 	);
 }
 

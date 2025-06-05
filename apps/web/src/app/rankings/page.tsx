@@ -4,6 +4,8 @@ import { RankingData, RankingTable } from "./ranking-table";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Metadata } from "next";
+import { Separator } from "~/components/ui/separator";
+import { CustomCard } from "~/components/custom/custom-card";
 
 export const revalidate = 86400;
 
@@ -122,27 +124,18 @@ function RankingCard({
 	link: string;
 }) {
 	return (
-		<Card className="p-0 gap-0 overflow-clip max-w-md w-full">
-			<Link href={"/rankings" + link} className="block">
-				<CardHeader className="p-4 bg-muted hover:bg-accent transition-colors gap-0">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<CardTitle className="text-lg font-bold">
-								{title}
-							</CardTitle>
-						</div>
-						<ChevronRight className="w-5 h-5" />
-					</div>
-				</CardHeader>
-			</Link>
-
-			<CardContent className="p-0">
+		<CustomCard
+			link={"/rankings" + link}
+			headerContent={
+				<CardTitle className="text-lg font-bold">{title}</CardTitle>
+			}
+			content={
 				<RankingTable
 					data={data}
 					showHeader={false}
 					showPoints={false}
 				/>
-			</CardContent>
-		</Card>
+			}
+		/>
 	);
 }

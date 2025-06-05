@@ -16,22 +16,27 @@ import { eventsWithWinners } from "~/infra/db/queries";
 import {
 	competitionsWithFlagsAndEvents,
 	countries,
-	events,
 	fencers,
-	pastBouts,
-	pastTeamRelays,
+	individualSeasonRankings,
+	teamSeasonRankings,
 } from "~/infra/db/schema";
-import { toTitleCase, withoutTime } from "~/lib/utils";
+import { shuffle, toTitleCase, withoutTime } from "~/lib/utils";
 
 function getToday() {
 	return sql`CURRENT_DATE`;
 }
 
-export async function getCompetitionsWithEvents(
-	next: boolean,
-	limit: number,
-	weapon?: "FOIL" | "EPEE" | "SABER"
-) {
+export async function getCompetitionsWithEvents({
+	next,
+	numCompetitions,
+	numEventsPerCompetition,
+	weapon,
+}: {
+	next: boolean;
+	numCompetitions: number;
+	numEventsPerCompetition?: number;
+	weapon?: "FOIL" | "EPEE" | "SABER";
+}) {
 	const today = getToday();
 	const rows = await db
 		.select({
@@ -61,7 +66,7 @@ export async function getCompetitionsWithEvents(
 				? asc(min(competitionsWithFlagsAndEvents.date))
 				: desc(min(competitionsWithFlagsAndEvents.date))
 		)
-		.limit(limit);
+		.limit(numCompetitions);
 	const withEvents = await Promise.all(
 		rows.map(async competition => {
 			const eventRows = await db
@@ -80,7 +85,7 @@ export async function getCompetitionsWithEvents(
 						? asc(eventsWithWinners.date)
 						: desc(eventsWithWinners.date)
 				)
-				.limit(3);
+				.limit(numEventsPerCompetition ?? 100);
 			return {
 				id: competition.id,
 				name: competition.name,
@@ -112,4 +117,65 @@ export async function getTodaysEvents() {
 		flag: e.flag ?? undefined,
 		description: toTitleCase(`${e.gender}'s ${e.weapon} ${e.type}`),
 	}));
+}
+
+export async function getTopRankings(weapon?: "FOIL" | "EPEE" | "SABER") {
+	const individual = (
+		await db
+			.select({
+				fencer: {
+					firstName: fencers.firstName,
+					lastName: fencers.lastName,
+					id: fencers.id,
+				},
+				flag: countries.isoCode,
+				position: individualSeasonRankings.position,
+				weapon: individualSeasonRankings.weapon,
+				gender: individualSeasonRankings.gender,
+			})
+			.from(individualSeasonRankings)
+			.where(
+				and(
+					eq(individualSeasonRankings.position, 1),
+					eq(individualSeasonRankings.season, 2025),
+					weapon
+						? eq(individualSeasonRankings.weapon, weapon)
+						: undefined
+				)
+			)
+			.innerJoin(fencers, eq(individualSeasonRankings.fencer, fencers.id))
+			.innerJoin(countries, eq(fencers.country, countries.iocCode))
+	).map(r => ({ ...r, flag: r.flag ?? undefined }));
+	const teams = (
+		await db
+			.select({
+				team: { name: countries.name, id: countries.iocCode },
+				flag: countries.isoCode,
+				position: teamSeasonRankings.position,
+				weapon: teamSeasonRankings.weapon,
+				gender: teamSeasonRankings.gender,
+			})
+			.from(teamSeasonRankings)
+			.where(
+				and(
+					eq(teamSeasonRankings.position, 1),
+					eq(teamSeasonRankings.season, 2025),
+					weapon ? eq(teamSeasonRankings.weapon, weapon) : undefined
+				)
+			)
+			.innerJoin(
+				countries,
+				eq(teamSeasonRankings.team, countries.iocCode)
+			)
+	).map(r => ({
+		...r,
+		flag: r.flag ?? undefined,
+		team: {
+			name: r.team.name!,
+			id: r.team.id,
+		},
+	}));
+	shuffle(individual);
+	shuffle(teams);
+	return { individual, teams };
 }

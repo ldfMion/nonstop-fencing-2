@@ -1,3 +1,4 @@
+"use client";
 import { FC, JSX } from "react";
 import { Badge } from "../ui/badge";
 import { cn } from "~/lib/utils";
