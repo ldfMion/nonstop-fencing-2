@@ -3,7 +3,7 @@ import { cn, formatRelativeDate } from "~/lib/utils";
 import { Fragment, JSX } from "react";
 import type { Round } from "~/lib/models";
 import { Skeleton } from "~/components/ui/skeleton";
-import { RoundBadge } from "./round-badge";
+import { RoundBadge } from "../../../../components/custom/round-badge";
 import Link from "next/link";
 import { router } from "~/lib/router";
 import { buttonVariants } from "~/components/ui/button";

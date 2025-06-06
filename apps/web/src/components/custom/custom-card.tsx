@@ -22,7 +22,7 @@ export function CustomCard({
 					</CardHeader>
 				</Link>
 			) : (
-				<CardHeader className="flex flex-row justify-between w-full p-4 bg-muted hover:bg-accent">
+				<CardHeader className="flex flex-row justify-between w-full p-4 bg-muted">
 					{headerContent}
 				</CardHeader>
 			)}

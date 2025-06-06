@@ -8,7 +8,7 @@ import { getBoutsBetweenFencers } from "./queries";
 import { MatchCard } from "./match-card";
 import { buttonVariants } from "~/components/ui/button";
 import { cn, formatRelativeDate } from "~/lib/utils";
-import { RoundBadge } from "./round-badge";
+import { RoundBadge } from "../../../../components/custom/round-badge";
 import { router } from "~/lib/router";
 import Link from "next/link";
 import { Match } from "./types";

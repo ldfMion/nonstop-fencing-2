@@ -24,6 +24,7 @@ export const router = {
 		weapon: "foil" | "epee" | "saber",
 		type: "individual" | "team"
 	) => `/rankings/${gender}/${weapon}/${type}`,
+	fencer: (id: number) => `/fencers/${id}`,
 };
 
 export function parseCompetitionSearchParams(

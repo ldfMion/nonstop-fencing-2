@@ -81,3 +81,37 @@ export const WinnerIndicator = ({
 	);
 	return element({});
 };
+
+export const WinLossIndicator = ({ win }: { win: boolean }) => {
+	const element = createIndicatorBadge(
+		win ? "bg-green-200" : "bg-red-200",
+		win ? "text-green-800" : "text-red-800",
+		win ? "border-green-500" : "border-red-500",
+		() => (
+			<div className="text-sm leading-none w-3 h-3 flex flex-row items-center justify-center">
+				{win ? "W" : "L"}
+			</div>
+		)
+	);
+	return element({});
+};
+
+export const ScoreIndicator = ({
+	win,
+	score,
+}: {
+	win: boolean;
+	score: string;
+}) => {
+	const element = createIndicatorBadge(
+		win ? "w-full bg-green-200" : "w-full bg-red-200",
+		win ? "text-green-800" : "text-red-800",
+		win ? "border-green-500" : "border-red-500",
+		() => (
+			<p className="text-sm leading-none font-extrabold  w-full text-center">
+				{score}
+			</p>
+		)
+	);
+	return element({});
+};

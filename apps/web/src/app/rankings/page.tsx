@@ -37,7 +37,7 @@ export default async function () {
 				</h1>
 			</div>
 			<h2 className="text-2xl font-bold">Men's Individual</h2>
-			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
+			<div className="flex flex-col gap-4 md:grid items-center md:grid-cols-3">
 				<RankingCard
 					data={mensFoilIndividual}
 					title="Foil"
@@ -55,7 +55,7 @@ export default async function () {
 				/>
 			</div>
 			<h2 className="text-2xl font-bold">Women's Individual</h2>
-			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
+			<div className="flex flex-col gap-4 md:grid items-center md:grid-cols-3">
 				<RankingCard
 					data={womensFoilIndividual}
 					title="Foil"
@@ -73,7 +73,7 @@ export default async function () {
 				/>
 			</div>
 			<h2 className="text-2xl font-bold">Men's Teams</h2>
-			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
+			<div className="flex flex-col gap-4 md:grid items-center md:grid-cols-3">
 				<RankingCard
 					data={mensFoilTeam}
 					title="Foil"
@@ -92,7 +92,7 @@ export default async function () {
 				/>
 			</div>
 			<h2 className="text-2xl font-bold">Women's Teams</h2>
-			<div className="flex flex-col gap-4 md:flex-row items-center md:items-start">
+			<div className="flex flex-col gap-4 md:grid items-center md:grid-cols-3">
 				<RankingCard
 					data={womensFoilTeam}
 					title="Foil"

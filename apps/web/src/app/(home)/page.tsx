@@ -173,7 +173,7 @@ async function UpNext({
 	return nextCompetition ? (
 		<div className="items-center flex flex-col lg:flex-row gap-6">
 			<div className="flex flex-col items-start h-full">
-				<p className="text-2xl font-bold">Up Next</p>
+				<p className="text-2xl font-bold text-center">Up Next</p>
 				<div className="h-full flex flex-col justify-center">
 					{daysUntilNext != null && daysUntilNext > 0 && (
 						<p className=" text-xl font-semibold text-nowrap px-8">
@@ -313,11 +313,12 @@ async function RankingPreview({
 									type: "INDIVIDUAL",
 									gender: f.gender,
 								})}
-								link={router.ranking(
+								rankingsLink={router.ranking(
 									f.gender == "MEN" ? "mens" : "womens",
 									f.weapon.toLowerCase() as any,
 									"individual"
 								)}
+								entityLink={router.fencer(f.fencer.id)}
 							/>
 						</Fragment>
 					))}
@@ -334,7 +335,7 @@ async function RankingPreview({
 									type: "TEAM",
 									gender: t.gender,
 								})}
-								link={router.ranking(
+								rankingsLink={router.ranking(
 									t.gender == "MEN" ? "mens" : "womens",
 									t.weapon.toLowerCase() as any,
 									"team"
@@ -352,24 +353,29 @@ function RankingRow({
 	name,
 	flag,
 	eventDescription,
-	link,
+	rankingsLink,
+	entityLink,
 }: {
 	name: ReactNode;
 	flag?: string;
 	eventDescription: string;
-	link: string;
+	rankingsLink: string;
+	entityLink?: string;
 }) {
 	return (
 		<div className="flex flex-row justify-between px-4 py-3">
-			<div className="flex flex-row gap-2 items-center">
+			<Link
+				className="flex flex-row gap-2 items-center hover:underline"
+				href={entityLink ?? ""}
+			>
 				<Flag
 					flagCode={flag}
 					className="w-6 h-4 rounded-[6px] flex-shrink-0"
 				/>
 				<p className="font-bold truncate text-base">{name}</p>
-			</div>
+			</Link>
 			<Badge variant="secondary" className="font-semibold" asChild>
-				<Link href={link}>{eventDescription}</Link>
+				<Link href={rankingsLink}>{eventDescription}</Link>
 			</Badge>
 		</div>
 	);

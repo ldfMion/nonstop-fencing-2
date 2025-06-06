@@ -9,6 +9,10 @@ import {
 	TableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
+import { router } from "~/lib/router";
+import Link from "next/link";
+import { Fragment } from "react";
+import { Separator } from "~/components/ui/separator";
 
 export type RankingData = {
 	points: string;
@@ -49,69 +53,69 @@ export function RankingTable({
 	showPoints: boolean;
 }) {
 	return (
-		<Table className="table-fixed w-full">
+		<div className="table-fixed w-full">
 			{showHeader && (
-				<TableHeader className="bg-muted">
-					<TableRow className="">
-						<TableHead className="w-16 text-center font-semibold">
-							Rank
-						</TableHead>
-						<TableHead className="font-semibold">Fencer</TableHead>
-						{showPoints && (
-							<TableHead className="text-right font-semibold w-24">
-								Points
-							</TableHead>
-						)}
-					</TableRow>
-				</TableHeader>
+				<div className="bg-muted flex flex-row justify-between items-center p-4 pt-2">
+					<div className="flex flex-row items-center gap-2">
+						<p className="font-semibold">Rank</p>
+						<p className="font-semibold">Fencer</p>
+					</div>
+
+					{showPoints && (
+						<p className="text-right font-semibold w-24">Points</p>
+					)}
+				</div>
 			)}
-			<TableBody>
-				{data.map(ranking => (
-					<TableRow
-						key={`${ranking.fencer?.id} ${ranking.team?.id} `}
-						className=""
+			{data.map(ranking => (
+				<Fragment key={`${ranking.fencer?.id} ${ranking.team?.id} `}>
+					<Separator />
+					<Link
+						href={
+							ranking.fencer
+								? router.fencer(ranking.fencer?.id)
+								: ""
+						}
+						className="flex flex-row items-center justify-between px-4 py-2 hover:bg-accent"
 					>
-						<TableCell className="text-center w-16">
-							<div className="flex items-center justify-center gap-2">
-								<PositionBadge position={ranking.position} />
-							</div>
-						</TableCell>
-						<TableCell>
-							<div className="flex items-center gap-3 w-full">
-								{ranking.flag && (
-									<Flag
-										flagCode={ranking.flag}
-										className="w-6 h-4 rounded-[6px] flex-shrink-0"
-									/>
-								)}
-								<p className="capitalize !truncate w-full">
-									<span className="font-bold text-foreground">
-										{ranking.fencer &&
-											ranking.fencer.lastName + ","}
-										{ranking.team && ranking.team.name}
-									</span>{" "}
-									{ranking.fencer && (
-										<span className="text-foreground">
-											{ranking.fencer.firstName}
-										</span>
+						<div className="flex flex-row items-center gap-4">
+							<PositionBadge position={ranking.position} />
+							<div>
+								<div className="flex items-center gap-3 w-full">
+									{ranking.flag && (
+										<Flag
+											flagCode={ranking.flag}
+											className="w-6 h-4 rounded-[6px] flex-shrink-0"
+										/>
 									)}
-								</p>
+									<p className="capitalize !truncate w-full">
+										<span className="font-bold text-foreground">
+											{ranking.fencer &&
+												ranking.fencer.lastName + ","}
+											{ranking.team && ranking.team.name}
+										</span>{" "}
+										{ranking.fencer && (
+											<span className="text-foreground">
+												{ranking.fencer.firstName}
+											</span>
+										)}
+									</p>
+								</div>
 							</div>
-						</TableCell>
+						</div>
 						{showPoints && (
-							<TableCell className="text-right">
+							<div className="text-right">
 								<Badge
 									variant="secondary"
 									className="font-mono font-semibold text-sm"
 								>
 									{ranking.points}
 								</Badge>
-							</TableCell>
+							</div>
 						)}
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+					</Link>
+				</Fragment>
+			))}
+		</div>
 	);
 }
 function PositionBadge({ position }: { position: number }) {

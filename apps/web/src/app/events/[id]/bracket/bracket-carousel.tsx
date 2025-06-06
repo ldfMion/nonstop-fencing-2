@@ -14,7 +14,7 @@ import {
 import { Fragment, JSX, useEffect, useState } from "react";
 import { Round } from "~/lib/models";
 import { Button } from "~/components/ui/button";
-import { RoundBadge } from "./round-badge";
+import { RoundBadge } from "../../../../components/custom/round-badge";
 import { Match } from "./types";
 
 export function BracketCarousel<T>({

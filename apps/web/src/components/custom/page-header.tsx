@@ -8,7 +8,7 @@ import {
 import { ReactNode } from "react";
 import { Flag } from "./flag";
 
-export function PageHeader({
+export async function PageHeader({
 	flagCode,
 	title,
 	description,
