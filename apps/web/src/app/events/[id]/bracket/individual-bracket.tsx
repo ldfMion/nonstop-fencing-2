@@ -104,8 +104,8 @@ function mapFencerToMatchEntity(fencer: {
 	flag?: string;
 }) {
 	return {
-		primaryName: fencer.firstName,
-		secondaryName: fencer.lastName,
+		primaryName: fencer.lastName,
+		secondaryName: fencer.firstName,
 		flag: fencer.flag,
 		score: fencer.score,
 	};
