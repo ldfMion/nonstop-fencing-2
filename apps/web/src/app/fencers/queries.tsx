@@ -23,7 +23,7 @@ export async function getFencer(id: number) {
 			.from(fencers)
 			.where(eq(fencers.id, id))
 			.innerJoin(countries, eq(fencers.country, countries.iocCode))
-			.innerJoin(
+			.leftJoin(
 				individualSeasonRankings,
 				eq(fencers.id, individualSeasonRankings.fencer)
 			)

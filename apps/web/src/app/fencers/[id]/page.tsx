@@ -28,6 +28,7 @@ export default async function FencerPage({
 }) {
 	const { id } = await params;
 	const fencer = await getFencer(Number(id));
+	console.log("fencer", fencer);
 	const events = await getEventsWithFencerBouts(Number(id), 2025);
 	return (
 		<>
@@ -35,11 +36,16 @@ export default async function FencerPage({
 				title={toTitleCase(fencer.firstName + " " + fencer.lastName)}
 				description={
 					<div className="flex flex-row gap-2">
-						<p>World #{fencer.rank}</p>
-						<Badge variant="secondary" className="font-semibold">
-							{fencer.gender.toLowerCase()}'s{" "}
-							{fencer.weapon.toLowerCase()}
-						</Badge>
+						{fencer.rank && <p>World #{fencer.rank}</p>}
+						{fencer.gender && fencer.weapon && (
+							<Badge
+								variant="secondary"
+								className="font-semibold"
+							>
+								{fencer.gender.toLowerCase()}'s{" "}
+								{fencer.weapon.toLowerCase()}
+							</Badge>
+						)}
 					</div>
 				}
 				flagCode={fencer.flag ?? undefined}
