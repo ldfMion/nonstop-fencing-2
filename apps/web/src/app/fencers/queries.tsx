@@ -106,3 +106,7 @@ export async function getEventsWithFencerBouts(
 
 	return eventsWithBouts;
 }
+
+export function getAllFencers() {
+	return db.select({ id: fencers.id }).from(fencers);
+}

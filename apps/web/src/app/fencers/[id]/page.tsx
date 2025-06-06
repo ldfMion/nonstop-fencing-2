@@ -1,20 +1,25 @@
 import { PageHeader } from "~/components/custom/page-header";
-import { getEventsWithFencerBouts, getFencer } from "../queries";
-import { cn, formatRelativeDate, toTitleCase } from "~/lib/utils";
+import { getAllFencers, getEventsWithFencerBouts, getFencer } from "../queries";
+import { formatRelativeDate, toTitleCase } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
 import { Flag } from "~/components/custom/flag";
 import { RoundBadge } from "~/components/custom/round-badge";
 import { Round } from "~/lib/models";
 import { Fragment } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { CardTitle } from "~/components/ui/card";
 import { CustomCard } from "~/components/custom/custom-card";
-import {
-	ScoreIndicator,
-	WinLossIndicator,
-} from "~/components/custom/indicator-badges";
+import { ScoreIndicator } from "~/components/custom/indicator-badges";
 import Link from "next/link";
 import { router } from "~/lib/router";
 import { Separator } from "~/components/ui/separator";
+
+export async function generateStaticParams() {
+	const fencers = await getAllFencers();
+	return fencers.map(fencer => ({ id: fencer.id.toString() }));
+}
+
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export default async function FencerPage({
 	params,
